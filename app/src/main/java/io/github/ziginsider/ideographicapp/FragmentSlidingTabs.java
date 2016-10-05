@@ -70,7 +70,9 @@ public class FragmentSlidingTabs extends Fragment {
 
                 //set search
                 MaterialSearchView searchView = (MaterialSearchView) getActivity().findViewById(R.id.search_view);
-                searchView.closeSearch();
+                //TODO state of search restore
+                //searchView.closeSearch();
+                //searchView.setQuery("ffgfg", false);
 
                 viewPager.setCurrentItem(tab.getPosition());
                 selectedTabPosition = viewPager.getCurrentItem();

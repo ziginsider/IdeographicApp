@@ -43,6 +43,7 @@ public class FragmentWork extends Fragment {
     private ArrayList<Topics> mFoundTopics;
     public int topicsCount;
     public ArrayList<Expressions> expFromDB;
+    private ArrayList<Expressions> mFoundExp;
     public int expCount;
 
     private FragmentActivity workContext;
@@ -88,7 +89,6 @@ public class FragmentWork extends Fragment {
             textFooterTopicContent.setText(dba.getTopicById(parentTopicId).getTopicText());
         }
 
-        //TODO refactor minimize topicFromDB and mFoundTopic
         //get child-topics
         topicsFromDB = dba.getTopicByIdParent(parentTopicId);
         topicsCount = topicsFromDB.size();
@@ -96,6 +96,7 @@ public class FragmentWork extends Fragment {
         //get child-expressions
         expFromDB = dba.getExpByIdParent(parentTopicId);
         expCount = expFromDB.size();
+        mFoundExp = (ArrayList<Expressions>) expFromDB.clone();
 
 
         listTopicContent.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -115,7 +116,7 @@ public class FragmentWork extends Fragment {
 
                 } else {
 
-                    Expressions exp = expFromDB.get(position);
+                    Expressions exp = mFoundExp.get(position);
                     Toast.makeText(getActivity(), "PRESS: " + exp.getExpText(), Toast.LENGTH_SHORT).show();
 
                 }
@@ -233,14 +234,9 @@ public class FragmentWork extends Fragment {
 
         if (searchText != null && !searchText.isEmpty()) {
 
-            //List<String> lstFound = new ArrayList<String>();
-
             if (topicsCount > 0) {
 
-                //show topics search result
                 mFoundTopics.clear();
-
-                //FragmentWork fragmentWork = (FragmentWork) getActivity().getSupportFragmentManager().
 
                 for(Topics item:topicsFromDB) {
 
@@ -258,18 +254,26 @@ public class FragmentWork extends Fragment {
 
 
             } else {
-
                 //show expressions search result
+                mFoundExp.clear();
 
+                for(Expressions item:expFromDB) {
+
+                    if (item.getExpText().contains(searchText)) {
+
+                        mFoundExp.add(item);
+                    }
+                }
+
+                ExpAdapter = new CustomListViewExpAdapter(getActivity(),
+                        R.layout.adapter_exp_item,
+                        mFoundExp);
+                listTopicContent.setAdapter(ExpAdapter);
+                ExpAdapter.notifyDataSetChanged();
             }
-
-
-
 
         } else {
 
-//                    ArrayAdapter adapter = new ArrayAdapter(MainActivity.this, android.R.layout.simple_list_item_1, lstSource);
-//                    lstView.setAdapter(adapter);
             showListView();
         }
 
@@ -284,9 +288,8 @@ public class FragmentWork extends Fragment {
 
         } else {
 
-
             Toast.makeText(getActivity(), "I'm a black cat! You have " +
-                    expFromDB.size() + " expessions.", Toast.LENGTH_SHORT).show();
+                    mFoundExp.size() + " expessions.", Toast.LENGTH_SHORT).show();
 
         }
     }
