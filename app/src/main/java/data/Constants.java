@@ -19,4 +19,7 @@ public class Constants {
     public static final String TOPICS_ROOT_NAME = "Topics";
 
     public static final String BUNDLE_ID_TOPIC = "idtopicbundle";
+
+    public static final int SHOW_TOPICS = 0;
+    public static final int SHOW_EXP = 1;
 }

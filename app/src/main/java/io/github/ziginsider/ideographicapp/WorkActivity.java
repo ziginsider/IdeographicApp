@@ -21,6 +21,8 @@ import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
+
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.FragmentById;
@@ -46,6 +48,9 @@ public class WorkActivity extends AppCompatActivity
     @ViewById(R.id.nav_view)
     NavigationView navigationView;
 
+    @ViewById(R.id.search_view)
+    MaterialSearchView searchView;
+
     @FragmentById(R.id.fragment_sliding_tabs)
     FragmentSlidingTabs fragmentSlidingTabs;
 
@@ -70,6 +75,7 @@ public class WorkActivity extends AppCompatActivity
 
         //setup view
         setSupportActionBar(toolbar);
+        //toolbar.heig
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -103,6 +109,9 @@ public class WorkActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.work, menu);
+        MenuItem item = menu.findItem(R.id.action_search);
+        searchView.setMenuItem(item);
+
 
         return true;
     }

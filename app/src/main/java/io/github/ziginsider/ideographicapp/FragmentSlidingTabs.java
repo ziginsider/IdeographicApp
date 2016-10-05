@@ -10,6 +10,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import data.Constants;
 import data.DatabaseHandler;
@@ -64,9 +67,57 @@ public class FragmentSlidingTabs extends Fragment {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 super.onTabSelected(tab);
+
+                //set search
+                MaterialSearchView searchView = (MaterialSearchView) getActivity().findViewById(R.id.search_view);
+                searchView.closeSearch();
+
                 viewPager.setCurrentItem(tab.getPosition());
                 selectedTabPosition = viewPager.getCurrentItem();
                 Log.d("Selected", "Selected " + tab.getPosition());
+
+                final FragmentWork fragmentWork = (FragmentWork) adapter.getItem(selectedTabPosition);
+                //set Search
+                searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
+
+                    @Override
+                    public void onSearchViewShown() {
+
+                    }
+
+                    @Override
+                    public void onSearchViewClosed() {
+                        fragmentWork.showListView();
+                    }
+                });
+
+                searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
+
+                    @Override
+                    public boolean onQueryTextSubmit(String query) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onQueryTextChange(String newText) {
+                        fragmentWork.showSearchResult(newText);
+                        return  true;
+                    }
+                });
+
+                //set fab
+                com.melnykov.fab.FloatingActionButton fab = (com.melnykov.fab.FloatingActionButton)
+                        getActivity().findViewById(R.id.fab);
+
+                fab.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        fragmentWork.fabLauncher();
+                    }
+                });
+
+
             }
 
             @Override

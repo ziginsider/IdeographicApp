@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +12,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.ArrayList;
 
@@ -39,6 +40,7 @@ public class FragmentWork extends Fragment {
     private DatabaseHandler dba;
 
     public ArrayList<Topics> topicsFromDB;
+    private ArrayList<Topics> mFoundTopics;
     public int topicsCount;
     public ArrayList<Expressions> expFromDB;
     public int expCount;
@@ -57,7 +59,7 @@ public class FragmentWork extends Fragment {
         listTopicContent = (ListView) v.findViewById(R.id.list_topic_content);
         textFooterTopicContent = (TextView) v.findViewById(R.id.text_footer_topic_content);
 
-        refreshData();
+
 
         return v;
     }
@@ -67,6 +69,12 @@ public class FragmentWork extends Fragment {
         workContext = (FragmentActivity) context;
         super.onAttach(context);
         dba = new DatabaseHandler(context);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        refreshData();
     }
 
     private void refreshData() {
@@ -80,9 +88,11 @@ public class FragmentWork extends Fragment {
             textFooterTopicContent.setText(dba.getTopicById(parentTopicId).getTopicText());
         }
 
+        //TODO refactor minimize topicFromDB and mFoundTopic
         //get child-topics
         topicsFromDB = dba.getTopicByIdParent(parentTopicId);
         topicsCount = topicsFromDB.size();
+        mFoundTopics = (ArrayList<Topics>) topicsFromDB.clone();
         //get child-expressions
         expFromDB = dba.getExpByIdParent(parentTopicId);
         expCount = expFromDB.size();
@@ -94,7 +104,7 @@ public class FragmentWork extends Fragment {
 
                 if (topicsCount > 0) {
 
-                    Topics topic = topicsFromDB.get(position);
+                    Topics topic = mFoundTopics.get(position);
                     //String text = topic.getTopicText();
 
 
@@ -124,23 +134,45 @@ public class FragmentWork extends Fragment {
             @Override
             public void onClick(View view) {
 
-                if (topicsCount > 0) {
-
-                    Toast.makeText(getActivity(), "I'm a black cat! You have " +
-                            topicsFromDB.size() + " topics.", Toast.LENGTH_SHORT).show();
-
-                } else {
-
-
-                        Toast.makeText(getActivity(), "I'm a black cat! You have " +
-                                expFromDB.size() + " expessions.", Toast.LENGTH_SHORT).show();
-
-                }
-
-
+                fabLauncher();
             }
         });
-        
+
+        //set search
+        MaterialSearchView searchView = (MaterialSearchView) getActivity().findViewById(R.id.search_view);
+
+        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
+
+            @Override
+            public void onSearchViewShown() {
+
+            }
+
+            @Override
+            public void onSearchViewClosed() {
+                showListView();
+            }
+        });
+
+        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
+
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                showSearchResult(newText);
+                return  true;
+            }
+        });
+
+        //searchView.setVisibility(View.INVISIBLE);
+        //searchView.act
+
+
+        //set back (go to previous topic)
         textFooterTopicContent.setOnClickListener( new View.OnClickListener() {
             
             @Override
@@ -163,6 +195,18 @@ public class FragmentWork extends Fragment {
         });
 
 
+        showListView();
+
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        dba.close();
+    }
+
+    public void showListView() {
+
         if (topicsCount > 0) {
 
             //setup adapter topics
@@ -182,12 +226,69 @@ public class FragmentWork extends Fragment {
             ExpAdapter.notifyDataSetChanged();
         }
 
+
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        dba.close();
+    public void showSearchResult(String searchText) {
+
+        if (searchText != null && !searchText.isEmpty()) {
+
+            //List<String> lstFound = new ArrayList<String>();
+
+            if (topicsCount > 0) {
+
+                //show topics search result
+                mFoundTopics.clear();
+
+                //FragmentWork fragmentWork = (FragmentWork) getActivity().getSupportFragmentManager().
+
+                for(Topics item:topicsFromDB) {
+
+                    if (item.getTopicText().contains(searchText)) {
+
+                        mFoundTopics.add(item);
+                    }
+                }
+
+                topicAdapter = new CustomListViewTopicAdapter(getActivity(),
+                        R.layout.adapter_topic_item,
+                        mFoundTopics); //send id topics current tabs
+                listTopicContent.setAdapter(topicAdapter);
+                topicAdapter.notifyDataSetChanged();
+
+
+            } else {
+
+                //show expressions search result
+
+            }
+
+
+
+
+        } else {
+
+//                    ArrayAdapter adapter = new ArrayAdapter(MainActivity.this, android.R.layout.simple_list_item_1, lstSource);
+//                    lstView.setAdapter(adapter);
+            showListView();
+        }
+
+    }
+
+    public void fabLauncher() {
+
+        if (topicsCount > 0) {
+
+            Toast.makeText(getActivity(), "I'm a black cat! You have " +
+                    mFoundTopics.size() + " topics.", Toast.LENGTH_SHORT).show();
+
+        } else {
+
+
+            Toast.makeText(getActivity(), "I'm a black cat! You have " +
+                    expFromDB.size() + " expessions.", Toast.LENGTH_SHORT).show();
+
+        }
     }
 
 
