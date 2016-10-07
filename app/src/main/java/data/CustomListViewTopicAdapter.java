@@ -2,18 +2,21 @@ package data;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
 
 import io.github.ziginsider.ideographicapp.FragmentSlidingTabs;
+import io.github.ziginsider.ideographicapp.FragmentWork;
 import io.github.ziginsider.ideographicapp.R;
 
 import model.Topics;
@@ -26,6 +29,7 @@ public class CustomListViewTopicAdapter extends ArrayAdapter<Topics> {
     private int layoutResourse;
     private Activity activity;
     private ArrayList<Topics> TopicsList = new ArrayList<>();
+    private int mSelectItem;
 
 
     public CustomListViewTopicAdapter(Activity act, int resource, ArrayList<Topics> data) {
@@ -33,7 +37,22 @@ public class CustomListViewTopicAdapter extends ArrayAdapter<Topics> {
         layoutResourse = resource;
         activity = act;
         TopicsList = data;
+
+        //mSelectItem = -1;
+
+//        TextView textView = (TextView) act.findViewById(R.id.item_count);
+//        textView.setText(String.valueOf(TopicsList.size()));
+
+
         notifyDataSetChanged();
+    }
+
+    public int getmSelectItem() {
+        return mSelectItem;
+    }
+
+    public void setmSelectItem(int mSelectItem) {
+        this.mSelectItem = mSelectItem;
     }
 
     @Override
@@ -73,6 +92,8 @@ public class CustomListViewTopicAdapter extends ArrayAdapter<Topics> {
 //            holder.topicId = (TextView) row.findViewById(R.id.topicId);
 //            holder.topicIdParent = (TextView) row.findViewById(R.id.topicIdParent);
 //            holder.topicLabels = (TextView) row.findViewById(R.id.topicLabels);
+
+
 
             row.setTag(holder);
         } else {
@@ -128,6 +149,18 @@ public class CustomListViewTopicAdapter extends ArrayAdapter<Topics> {
 //                dbHandler.close();
 //            }
 //        });
+
+
+        if (position == 3) {
+
+            holder.topicText.setText("ffffffffffffff");
+        }
+
+
+
+
+
+
 
         return row;
     }

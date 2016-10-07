@@ -389,6 +389,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
 
+
     //Get exp by id
     public Expressions getExpById(int idExp) {
         Expressions exp = new Expressions();
@@ -492,6 +493,58 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return topicList;
     }
 
+
+    //Get topics by id topic-parent
+    public ArrayList<Topics> getTopicByIdParentAlphabet(int idParent) {
+
+        topicList.clear();
+
+        SQLiteDatabase dba = this.getReadableDatabase();
+
+        Cursor cursor = dba.query(Constants.TABLE_TOPIC_NAME,
+                new String[]{
+                        Constants.KEY_ID,
+                        Constants.TOPIC_TEXT,
+                        Constants.TOPIC_PARENT_ID,
+                        Constants.TOPIC_LABELS},
+                Constants.TOPIC_PARENT_ID + "=?",
+                new String[] {String.valueOf(idParent)},
+                null,
+                null,
+                Constants.TOPIC_TEXT,
+                null);
+
+        //loop through...
+        if (cursor.moveToFirst()) {
+            do {
+
+                Topics topic = new Topics();
+
+                topic.setTopicText(cursor.getString(cursor.getColumnIndex(Constants.TOPIC_TEXT)));
+                topic.setTopicParentId(cursor.getInt(cursor.getColumnIndex(Constants.TOPIC_PARENT_ID)));
+                topic.setTopicLabels(cursor.getString(cursor.getColumnIndex(Constants.TOPIC_LABELS)));
+                topic.setTopicId(cursor.getInt(cursor.getColumnIndex(Constants.KEY_ID)));
+
+                topicList.add(topic);
+
+            } while (cursor.moveToNext());
+
+            Log.d(Constants.LOG_TAG, ">>> Get Topic by id topics parent: Success");
+
+        } else {
+
+            Log.d(Constants.LOG_TAG, ">>> Get Topic by id topics parent: No matching data. Id Parent = "
+                    + String.valueOf(idParent));
+
+        }
+
+        cursor.close();
+        dba.close();
+
+        return topicList;
+    }
+
+
     //Get expressions by id topic-parent
     public ArrayList<Expressions> getExpByIdParent(int idParent) {
 
@@ -509,6 +562,52 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 null,
                 null,
                 null,
+                null);
+
+        //loop through...
+        if (cursor.moveToFirst()) {
+            do {
+
+                Expressions exp = new Expressions();
+
+                exp.setExpText(cursor.getString(cursor.getColumnIndex(Constants.EXP_TEXT)));
+                exp.setExpParentId(cursor.getInt(cursor.getColumnIndex(Constants.EXP_PARENT_ID)));
+                exp.setExpId(cursor.getInt(cursor.getColumnIndex(Constants.KEY_ID)));
+
+                expList.add(exp);
+
+            } while (cursor.moveToNext());
+
+            Log.d(Constants.LOG_TAG, ">>> Get Expressions by id topics parent: Success");
+
+        } else {
+
+            Log.d(Constants.LOG_TAG, ">>> Get Expressions by id topics parent: No matching data");
+        }
+
+        cursor.close();
+        dba.close();
+
+        return expList;
+    }
+
+    //Get expressions by id topic-parent, order by topic text
+    public ArrayList<Expressions> getExpByIdParentAlphabet(int idParent) {
+
+        expList.clear();
+
+        SQLiteDatabase dba = this.getReadableDatabase();
+
+        Cursor cursor = dba.query(Constants.TABLE_EXP_NAME,
+                new String[]{
+                        Constants.KEY_ID,
+                        Constants.EXP_TEXT,
+                        Constants.EXP_PARENT_ID},
+                Constants.EXP_PARENT_ID + "=?",
+                new String[] {String.valueOf(idParent)},
+                null,
+                null,
+                Constants.EXP_TEXT,
                 null);
 
         //loop through...
@@ -669,4 +768,54 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
 
+    //Get topic by id
+    public ArrayList<String> getTopicLabels(int idTopic) {
+
+        String topicLabelsIdJoin = "";
+        ArrayList<String> listLabels = new ArrayList<String>();
+        String[] labelsIDSplit;
+
+        SQLiteDatabase dba = this.getReadableDatabase();
+
+        Cursor cursor = dba.query(Constants.TABLE_TOPIC_NAME,
+                new String[] {
+                        Constants.KEY_ID,
+                        Constants.TOPIC_TEXT,
+                        Constants.TOPIC_PARENT_ID,
+                        Constants.TOPIC_LABELS },
+                Constants.KEY_ID + "=?",
+                new String[] {String.valueOf(idTopic)},
+                null,
+                null,
+                null,
+                null);
+
+        if (cursor.moveToFirst()) {
+
+            topicLabelsIdJoin = cursor.getString(cursor.getColumnIndex(Constants.TOPIC_LABELS));
+
+        } else {
+
+            //Toast.makeText(getApplicationContext(), " No matching data", Toast.LENGTH_SHORT).show();
+            Log.d(Constants.LOG_TAG, ">>> Get Topic Labels: No matching data");
+        }
+
+        if (!topicLabelsIdJoin.isEmpty()) {
+
+            labelsIDSplit = topicLabelsIdJoin.split(",");
+
+            if (labelsIDSplit.length > 0)
+            {
+                for (int i = 0; i < labelsIDSplit.length; i++) {
+
+                    listLabels.add(getTopicById(Integer.valueOf(labelsIDSplit[i])).getTopicText());
+                }
+            }
+        }
+
+        cursor.close();
+        dba.close();
+
+        return listLabels;
+    }
 }

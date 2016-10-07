@@ -9,7 +9,7 @@
     <RelativeLayout
         android:id="@+id/footer_topic_content"
         android:layout_marginTop="15dp"
-        android:background="@drawable/bg_topic_main"
+        android:background="@drawable/ripple_bg_topic_main"
         android:padding="4dp"
         android:layout_marginRight="30dp"
         android:layout_width="match_parent"
@@ -35,11 +35,66 @@
 
     </RelativeLayout>
 
-    <ListView
-        android:id="@+id/list_topic_content"
+    <RelativeLayout
+        android:id="@+id/info_topic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_below="@id/footer_topic_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp">
+
+        <LinearLayout
+            android:id="@+id/layout_item_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/text_item_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Number of subtopics:" />
+
+            <TextView
+                android:id="@+id/item_count"
+                android:layout_marginLeft="5dp"
+                android:text="33"
+                android:textColor="@color/colorAccent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="5dp"
+            android:id="@+id/layout_labels"
+            android:layout_below="@id/layout_item_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/text_labels"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Labels:" />
+            <TextView
+                android:layout_marginLeft="5dp"
+                android:id="@+id/topic_labels"
+                android:textColor="@color/colorAccent"
+                android:text="no labels"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+    <ListView
+        android:layout_below="@id/info_topic"
+        android:id="@+id/list_topic_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="@style/stlListViewTopics"></ListView>
+
+
 
 </RelativeLayout>

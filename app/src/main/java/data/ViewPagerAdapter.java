@@ -92,7 +92,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
                 tabItemAvatar.setImageResource(R.drawable.lampe);
                 break;
             default:
-                tabItemAvatar.setImageResource(R.drawable.ic_merge_right);
+                //tabItemAvatar.setImageResource(R.drawable.ic_merge_right);
                 break;
         }
 

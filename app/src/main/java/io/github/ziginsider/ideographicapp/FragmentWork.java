@@ -1,15 +1,21 @@
 package io.github.ziginsider.ideographicapp;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +39,10 @@ public class FragmentWork extends Fragment {
     int parentTopicId;
     TextView textFooterTopicContent;
     ListView listTopicContent;
+    TextView itemCount;
+    TextView topicLabels;
+    TextView textItemCount;
+    LinearLayout layoutLabels;
 
     private CustomListViewTopicAdapter topicAdapter;
     private CustomListViewExpAdapter ExpAdapter;
@@ -46,7 +56,13 @@ public class FragmentWork extends Fragment {
     private ArrayList<Expressions> mFoundExp;
     public int expCount;
 
+    ArrayList<String> listTopicLabels;
+
+    //private String mQuerySearch;
+    //private boolean mStateSearch;
+
     private FragmentActivity workContext;
+    private int mSelectItem;
 
     @Nullable
     @Override
@@ -59,8 +75,14 @@ public class FragmentWork extends Fragment {
 
         listTopicContent = (ListView) v.findViewById(R.id.list_topic_content);
         textFooterTopicContent = (TextView) v.findViewById(R.id.text_footer_topic_content);
+        itemCount = (TextView) v.findViewById(R.id.item_count);
+        topicLabels = (TextView) v.findViewById(R.id.topic_labels);
+        textItemCount = (TextView) v.findViewById(R.id.text_item_count);
+        layoutLabels = (LinearLayout) v.findViewById(R.id.layout_labels);
 
+        listTopicLabels = new ArrayList<String>();
 
+        refreshData();
 
         return v;
     }
@@ -75,38 +97,107 @@ public class FragmentWork extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        refreshData();
+
+    }
+//
+//    public String getQuerySearch() {
+//        return mQuerySearch;
+//    }
+//
+//    public void setQuerySearch(String mQuerySearch) {
+//        this.mQuerySearch = mQuerySearch;
+//    }
+//
+//    public boolean isStateSearch() {
+//        return mStateSearch;
+//    }
+//
+//    public void setStateSearch(boolean mStateSearch) {
+//        this.mStateSearch = mStateSearch;
+//    }
+
+
+    public int getmSelectItem() {
+        return mSelectItem;
+    }
+
+    public void setmSelectItem(int mSelectItem) {
+        this.mSelectItem = mSelectItem;
     }
 
     private void refreshData() {
+
+        Log.d("Zig", "begin function refreshData()");
+
+        //get child-topics
+        topicsFromDB = dba.getTopicByIdParentAlphabet(parentTopicId);
+        topicsCount = topicsFromDB.size();
+
+        //get child-expressions
+        expFromDB = dba.getExpByIdParent(parentTopicId);
+        expCount = expFromDB.size();
+
+        //clone fromDB -> foundItems
+        cloneItems();
 
         if (parentTopicId == 0) {
 
             textFooterTopicContent.setText(Constants.TOPICS_ROOT_NAME);
 
+            itemCount.setText(String.valueOf(mFoundTopics.size()));
+
+            layoutLabels.setVisibility(View.GONE);
+
         } else {
 
             textFooterTopicContent.setText(dba.getTopicById(parentTopicId).getTopicText());
+
+            if (!topicsFromDB.isEmpty()) {
+
+                layoutLabels.setVisibility(View.VISIBLE);
+                textItemCount.setText("Number of subtopics:");
+                //itemCount.setText(String.valueOf(mFoundTopics.size()));
+
+                listTopicLabels = dba.getTopicLabels(parentTopicId);
+
+                StringBuilder sb = new StringBuilder();
+                for (String s : listTopicLabels)
+                {
+                    sb.append(s);
+                    sb.append(" ");
+                    sb.append("\t");
+
+                }
+
+                topicLabels.setText(sb);
+
+            } else {
+
+                layoutLabels.setVisibility(View.GONE);
+                textItemCount.setText("Number of expressions:");
+                itemCount.setText(String.valueOf(mFoundExp.size()));
+            }
+
         }
-
-        //get child-topics
-        topicsFromDB = dba.getTopicByIdParent(parentTopicId);
-        topicsCount = topicsFromDB.size();
-        mFoundTopics = (ArrayList<Topics>) topicsFromDB.clone();
-        //get child-expressions
-        expFromDB = dba.getExpByIdParent(parentTopicId);
-        expCount = expFromDB.size();
-        mFoundExp = (ArrayList<Expressions>) expFromDB.clone();
-
 
         listTopicContent.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                if (topicsCount > 0) {
+                Log.d("Zig", "listTopicContent.setOnItemClickListener begin");
+
+
+                if (!topicsFromDB.isEmpty()) {
 
                     Topics topic = mFoundTopics.get(position);
                     //String text = topic.getTopicText();
+
+                    mSelectItem = position;
+                    topicAdapter.setmSelectItem(mSelectItem);
+                    topicAdapter.notifyDataSetChanged();
+                    
+
+                    Log.d("Zig", "press topic text = " + topic.getTopicText());
 
 
                     FragmentSlidingTabs fragmentSlidingTabs = (FragmentSlidingTabs)
@@ -117,10 +208,15 @@ public class FragmentWork extends Fragment {
                 } else {
 
                     Expressions exp = mFoundExp.get(position);
-                    Toast.makeText(getActivity(), "PRESS: " + exp.getExpText(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getActivity(), "PRESS: " + exp.getExpText(), Toast.LENGTH_SHORT).show();
+
+                    ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipData clip = ClipData.newPlainText(exp.getExpText(), exp.getExpText());
+                    clipboard.setPrimaryClip(clip);
 
                 }
 
+//                Log.d("Zig", "listTopicContent.setOnItemClickListener end");
 
             }
         });
@@ -135,39 +231,69 @@ public class FragmentWork extends Fragment {
             @Override
             public void onClick(View view) {
 
+//                Log.d("Zig", "fab.setOnClickListener in FragmentWork");
+
                 fabLauncher();
             }
         });
 
-        //set search
-        MaterialSearchView searchView = (MaterialSearchView) getActivity().findViewById(R.id.search_view);
-
-        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
-
-            @Override
-            public void onSearchViewShown() {
-
-            }
-
-            @Override
-            public void onSearchViewClosed() {
-                showListView();
-            }
-        });
-
-        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
-
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                showSearchResult(newText);
-                return  true;
-            }
-        });
+//        //set search
+//        final MaterialSearchView searchView = (MaterialSearchView) getActivity().findViewById(R.id.search_view);
+//
+//        //searchView.setQuery(getQuerySearch(), false);
+//
+//        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
+//
+//            @Override
+//            public void onSearchViewShown() {
+//                //setStateSearch(true);
+//            }
+//
+//            @Override
+//            public void onSearchViewClosed() {
+//
+//                Log.d("Zig","onSearchViewClosed in FragmentWork"
+//                        + ", for topic parent = "
+//                        + textFooterTopicContent
+//                        + ", mQuerySearch = "
+//                        + getQuerySearch());
+//
+//                showListView();
+//                cloneItems();
+//                setQuerySearch("");
+//
+//                Log.d("Zig","onSearchViewClosed in FragmentWork after showListView(), cloneItems(), setQerySearch(\"\")"
+//                        + ", for topic parent = "
+//                        + textFooterTopicContent
+//                        + ", mQuerySearch = "
+//                        + getQuerySearch());
+//            }
+//        });
+//
+//        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
+//
+//            @Override
+//            public boolean onQueryTextSubmit(String query) {
+//                //showSearchResult(query);
+//                //setQuerySearch(newText);9
+//                return  false;
+//            }
+//
+//            @Override
+//            public boolean onQueryTextChange(String newText) {
+//                showSearchResult(newText);
+//                setQuerySearch(newText);
+//
+//                Log.d("Zig","onQueryTextChange in FragmentWork, newText = "
+//                + newText
+//                + ", for topic parent = "
+//                + textFooterTopicContent
+//                + ", mQuerySearch = "
+//                + getQuerySearch());
+//
+//                return  true;
+//            }
+//        });
 
         //searchView.setVisibility(View.INVISIBLE);
         //searchView.act
@@ -178,6 +304,8 @@ public class FragmentWork extends Fragment {
             
             @Override
             public void onClick(View view) {
+
+//                Log.d("Zig", "textFooterTopicContent.setOnClickListener ");
 
                 if (parentTopicId == 0) {
 
@@ -198,6 +326,8 @@ public class FragmentWork extends Fragment {
 
         showListView();
 
+        Log.d("Zig", "End function RefreshData()");
+
     }
 
     @Override
@@ -208,7 +338,9 @@ public class FragmentWork extends Fragment {
 
     public void showListView() {
 
-        if (topicsCount > 0) {
+       // Log.d("Zig", "showListView() begin, mQuerySearch = " + getQuerySearch());
+
+        if (!topicsFromDB.isEmpty()) {
 
             //setup adapter topics
             topicAdapter = new CustomListViewTopicAdapter(getActivity(),
@@ -227,16 +359,32 @@ public class FragmentWork extends Fragment {
             ExpAdapter.notifyDataSetChanged();
         }
 
-
+       // Log.d("Zig", "showListView() end, mQuerySearch = " + getQuerySearch());
     }
 
     public void showSearchResult(String searchText) {
 
+//        Log.d("Zig", "showSearchResult() begin,"
+//                + " searchText = "
+//                + searchText
+//                + " mQuerySearch = "
+//                + getQuerySearch());
+
         if (searchText != null && !searchText.isEmpty()) {
 
-            if (topicsCount > 0) {
+            //setQuerySearch(searchText);
+            //setStateSearch(true);
 
-                mFoundTopics.clear();
+            if (!topicsFromDB.isEmpty()) {
+
+//                Log.d("Zig", "In showSearchResult()"
+//                        + " topicsFromDB isn't empty ");
+
+                if (mFoundTopics != null) {
+
+                    mFoundTopics.clear();
+                }
+
 
                 for(Topics item:topicsFromDB) {
 
@@ -252,10 +400,21 @@ public class FragmentWork extends Fragment {
                 listTopicContent.setAdapter(topicAdapter);
                 topicAdapter.notifyDataSetChanged();
 
+                //textItemCount.setText("Number of subtopics");
+                //itemCount.setText(String.valueOf(mFoundTopics.size()));
+
+
 
             } else {
+//                Log.d("Zig", "In showSearchResult()"
+//                        + " topicsFromDB is empty ");
+
                 //show expressions search result
-                mFoundExp.clear();
+                if (mFoundTopics != null) {
+
+                    mFoundExp.clear();
+                }
+
 
                 for(Expressions item:expFromDB) {
 
@@ -270,6 +429,10 @@ public class FragmentWork extends Fragment {
                         mFoundExp);
                 listTopicContent.setAdapter(ExpAdapter);
                 ExpAdapter.notifyDataSetChanged();
+
+//                textItemCount.setText("Number of expressions:");
+//                itemCount.setText(String.valueOf(mFoundExp.size()));
+
             }
 
         } else {
@@ -277,11 +440,15 @@ public class FragmentWork extends Fragment {
             showListView();
         }
 
+//        Log.d("Zig", "showSearchResult() end,"
+//                + " mQuerySearch = "
+//                + getQuerySearch());
+
     }
 
     public void fabLauncher() {
 
-        if (topicsCount > 0) {
+        if (!topicsFromDB.isEmpty()) {
 
             Toast.makeText(getActivity(), "I'm a black cat! You have " +
                     mFoundTopics.size() + " topics.", Toast.LENGTH_SHORT).show();
@@ -291,6 +458,16 @@ public class FragmentWork extends Fragment {
             Toast.makeText(getActivity(), "I'm a black cat! You have " +
                     mFoundExp.size() + " expessions.", Toast.LENGTH_SHORT).show();
 
+        }
+    }
+
+    public void cloneItems() {
+
+        if (topicsFromDB != null)  {
+            mFoundTopics = (ArrayList<Topics>) topicsFromDB.clone();
+        }
+        if (expFromDB != null) {
+            mFoundExp = (ArrayList<Expressions>) expFromDB.clone();
         }
     }
 

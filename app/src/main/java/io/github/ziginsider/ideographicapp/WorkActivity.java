@@ -57,21 +57,21 @@ public class WorkActivity extends AppCompatActivity
     @AfterViews
     void init() {
 
-        //Setup DB
-        DatabaseHandler dbHandler = new DatabaseHandler(this);
-        try {
-            dbHandler.createDataBase();
-        } catch (IOException ioe) {
-            throw new Error("Unable to create database");
-        }
-        try {
-            dbHandler.openDataBase();
-        } catch (Exception e) {
-            //throw sqle;
-            Log.d("Main", "Error open db", e);
-        }
-
-        dbHandler.close();
+//        //Setup DB
+//        DatabaseHandler dbHandler = new DatabaseHandler(this);
+//        try {
+//            dbHandler.createDataBase();
+//        } catch (IOException ioe) {
+//            throw new Error("Unable to create database");
+//        }
+//        try {
+//            dbHandler.openDataBase();
+//        } catch (Exception e) {
+//            //throw sqle;
+//            Log.d("Main", "Error open db", e);
+//        }
+//
+//        dbHandler.close();
 
         //setup view
         setSupportActionBar(toolbar);
