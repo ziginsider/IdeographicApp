@@ -151,10 +151,10 @@ public class CustomListViewTopicAdapter extends ArrayAdapter<Topics> {
 //        });
 
 
-        if (position == 3) {
-
-            holder.topicText.setText("ffffffffffffff");
-        }
+//        if (position == 3) {
+//
+//            holder.topicText.setText("ffffffffffffff");
+//        }
 
 
 
