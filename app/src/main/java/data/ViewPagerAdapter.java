@@ -89,7 +89,55 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
                 tabItemAvatar.setImageResource(R.drawable.volcano);
                 break;
             case "Work":
-                tabItemAvatar.setImageResource(R.drawable.lampe);
+                tabItemAvatar.setImageResource(R.drawable.ic_work);
+                break;
+            case "Attitude":
+                tabItemAvatar.setImageResource(R.drawable.ic_attitude);
+                break;
+            case "Circumstances":
+                tabItemAvatar.setImageResource(R.drawable.ic_circumstate);
+                break;
+            case "Culture":
+                tabItemAvatar.setImageResource(R.drawable.ic_culture);
+                break;
+            case "Economy":
+                tabItemAvatar.setImageResource(R.drawable.ic_economy);
+                break;
+            case "Habitation":
+                tabItemAvatar.setImageResource(R.drawable.ic_habitation);
+                break;
+            case "Ideology":
+                tabItemAvatar.setImageResource(R.drawable.ic_ideology);
+                break;
+            case "Language":
+                tabItemAvatar.setImageResource(R.drawable.ic_language);
+                break;
+            case "Logic":
+                tabItemAvatar.setImageResource(R.drawable.ic_logic);
+                break;
+            case "Nature":
+                tabItemAvatar.setImageResource(R.drawable.ic_nature);
+                break;
+            case "Physics":
+                tabItemAvatar.setImageResource(R.drawable.ic_physics);
+                break;
+            case "Topics":
+                tabItemAvatar.setImageResource(R.drawable.ic_merge_right);
+                break;
+            case "Resources":
+                tabItemAvatar.setImageResource(R.drawable.ic_resourse);
+                break;
+            case "Science":
+                tabItemAvatar.setImageResource(R.drawable.ic_science);
+                break;
+            case "Society":
+                tabItemAvatar.setImageResource(R.drawable.ic_social);
+                break;
+            case "State":
+                tabItemAvatar.setImageResource(R.drawable.ic_state);
+                break;
+            case "Technologies":
+                tabItemAvatar.setImageResource(R.drawable.ic_techno);
                 break;
             default:
                 //tabItemAvatar.setImageResource(R.drawable.ic_merge_right);

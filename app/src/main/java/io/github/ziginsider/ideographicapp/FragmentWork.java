@@ -8,10 +8,12 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -43,6 +45,8 @@ public class FragmentWork extends Fragment {
     TextView topicLabels;
     TextView textItemCount;
     LinearLayout layoutLabels;
+    RelativeLayout footerTopicContent;
+    Toolbar toolbar;
 
     private CustomListViewTopicAdapter topicAdapter;
     private CustomListViewExpAdapter ExpAdapter;
@@ -79,6 +83,8 @@ public class FragmentWork extends Fragment {
         topicLabels = (TextView) v.findViewById(R.id.topic_labels);
         textItemCount = (TextView) v.findViewById(R.id.text_item_count);
         layoutLabels = (LinearLayout) v.findViewById(R.id.layout_labels);
+        footerTopicContent = (RelativeLayout) v.findViewById(R.id.footer_topic_content);
+        toolbar = (Toolbar) v.findViewById(R.id.toolbar);
 
         listTopicLabels = new ArrayList<String>();
 
@@ -129,6 +135,8 @@ public class FragmentWork extends Fragment {
 
         Log.d("Zig", "begin function refreshData()");
 
+        topicsFromDB = new ArrayList<Topics>();
+        expFromDB = new ArrayList<Expressions>();
         //get child-topics
         topicsFromDB = dba.getTopicByIdParentAlphabet(parentTopicId);
         topicsCount = topicsFromDB.size();
@@ -300,7 +308,7 @@ public class FragmentWork extends Fragment {
 
 
         //set back (go to previous topic)
-        textFooterTopicContent.setOnClickListener( new View.OnClickListener() {
+        footerTopicContent.setOnClickListener( new View.OnClickListener() {
             
             @Override
             public void onClick(View view) {
@@ -340,26 +348,28 @@ public class FragmentWork extends Fragment {
 
        // Log.d("Zig", "showListView() begin, mQuerySearch = " + getQuerySearch());
 
-        if (!topicsFromDB.isEmpty()) {
+        if (topicsFromDB != null) {
+            if (!topicsFromDB.isEmpty()) {
 
-            //setup adapter topics
-            topicAdapter = new CustomListViewTopicAdapter(getActivity(),
-                    R.layout.adapter_topic_item,
-                    topicsFromDB); //send id topics current tabs
-            listTopicContent.setAdapter(topicAdapter);
-            topicAdapter.notifyDataSetChanged();
+                //setup adapter topics
+                topicAdapter = new CustomListViewTopicAdapter(getActivity(),
+                        R.layout.adapter_topic_item,
+                        topicsFromDB); //send id topics current tabs
+                listTopicContent.setAdapter(topicAdapter);
+                topicAdapter.notifyDataSetChanged();
 
-        } else {
+            } else {
 
-            //setup adapter expressions
-            ExpAdapter = new CustomListViewExpAdapter(getActivity(),
-                    R.layout.adapter_exp_item,
-                    expFromDB);
-            listTopicContent.setAdapter(ExpAdapter);
-            ExpAdapter.notifyDataSetChanged();
+                //setup adapter expressions
+                ExpAdapter = new CustomListViewExpAdapter(getActivity(),
+                        R.layout.adapter_exp_item,
+                        expFromDB);
+                listTopicContent.setAdapter(ExpAdapter);
+                ExpAdapter.notifyDataSetChanged();
+            }
+
+           // Log.d("Zig", "showListView() end, mQuerySearch = " + getQuerySearch());
         }
-
-       // Log.d("Zig", "showListView() end, mQuerySearch = " + getQuerySearch());
     }
 
     public void showSearchResult(String searchText) {
@@ -370,7 +380,7 @@ public class FragmentWork extends Fragment {
 //                + " mQuerySearch = "
 //                + getQuerySearch());
 
-        if (searchText != null && !searchText.isEmpty()) {
+        if (searchText != null && !searchText.isEmpty() && topicsFromDB != null) {
 
             //setQuerySearch(searchText);
             //setStateSearch(true);
@@ -388,7 +398,8 @@ public class FragmentWork extends Fragment {
 
                 for(Topics item:topicsFromDB) {
 
-                    if (item.getTopicText().contains(searchText)) {
+                    //not case sensitive
+                    if (item.getTopicText().toLowerCase().contains(searchText.toLowerCase())) {
 
                         mFoundTopics.add(item);
                     }
@@ -417,8 +428,8 @@ public class FragmentWork extends Fragment {
 
 
                 for(Expressions item:expFromDB) {
-
-                    if (item.getExpText().contains(searchText)) {
+                    //not case sensitive
+                    if (item.getExpText().toLowerCase().contains(searchText.toLowerCase())) {
 
                         mFoundExp.add(item);
                     }
@@ -448,6 +459,7 @@ public class FragmentWork extends Fragment {
 
     public void fabLauncher() {
 
+
         if (!topicsFromDB.isEmpty()) {
 
             Toast.makeText(getActivity(), "I'm a black cat! You have " +
@@ -459,6 +471,9 @@ public class FragmentWork extends Fragment {
                     mFoundExp.size() + " expessions.", Toast.LENGTH_SHORT).show();
 
         }
+
+        //toolbar.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
+        //appBarLayout.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
     }
 
     public void cloneItems() {
