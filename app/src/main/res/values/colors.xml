@@ -1,18 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#818c70</color>
-    <color name="colorPrimaryDark">#62614d</color>
-    <color name="colorAccent">#9eb27e</color>
+    <color name="colorPrimary">#03a9f4</color>
+    <color name="colorPrimaryDark">#0288d1</color>
+    <color name="colorAccent">#03a9f4</color>
 
     <color name="colorBgTopicItem">#ebc0c1c8</color>
 
     <color name="colorBgTopicView">#ffffff</color>
 
-    <color name="clrBgTopicMain">#f8f7ed</color>
+    <color name="clrBgTopicMain">#f2f2f2</color>
 
     <color name="clrIcons">@color/colorPrimaryDark</color>
     <color name="fab_color_primary">@color/colorAccent</color>
     <color name="fab_color_primary_pressed">#40ffcc</color>
     <color name="fab_color_ripple">#dcdcdc</color>
+
+    <color name="transparent">#00000000</color>
+    <!-- card colors -->
+    <color name="card_background">#ffffff</color>
+    <color name="card_shadow_1">#d4d4d4</color>
+    <color name="card_shadow_2">#dddddd</color>
+    <color name="card_detailing">#eee</color>
 
 </resources>

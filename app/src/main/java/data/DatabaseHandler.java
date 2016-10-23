@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
+import model.DoubleItem;
 import model.Expressions;
 import model.Topics;
 
@@ -22,8 +23,9 @@ import model.Topics;
  */
 public class DatabaseHandler extends SQLiteOpenHelper {
 
-    private  final ArrayList<Expressions> expList = new ArrayList<>();
-    private  final ArrayList<Topics> topicList = new ArrayList<>();
+    private final ArrayList<Expressions> expList = new ArrayList<>();
+    private final ArrayList<Topics> topicList = new ArrayList<>();
+    private final ArrayList<DoubleItem> doubleItemsList = new ArrayList<>();
 
     String DB_PATH = null;
 
@@ -493,6 +495,32 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return topicList;
     }
 
+    //Get topics count by id topic-parent
+    public int getTopicCountByIdParent(int idParent) {
+
+        SQLiteDatabase dba = this.getReadableDatabase();
+
+        Cursor cursor = dba.query(Constants.TABLE_TOPIC_NAME,
+                new String[]{
+                        Constants.KEY_ID,
+                        Constants.TOPIC_TEXT,
+                        Constants.TOPIC_PARENT_ID,
+                        Constants.TOPIC_LABELS},
+                Constants.TOPIC_PARENT_ID + "=?",
+                new String[] {String.valueOf(idParent)},
+                null,
+                null,
+                null,
+                null);
+
+        int count = cursor.getCount();
+
+        cursor.close();
+        dba.close();
+
+        return count;
+    }
+
 
     //Get topics by id topic-parent
     public ArrayList<Topics> getTopicByIdParentAlphabet(int idParent) {
@@ -591,6 +619,30 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return expList;
     }
 
+    //Get expressions count by id topic-parent
+    public int getExpCountByIdParent(int idParent) {
+
+        SQLiteDatabase dba = this.getReadableDatabase();
+
+        Cursor cursor = dba.query(Constants.TABLE_EXP_NAME,
+                new String[]{
+                        Constants.KEY_ID,
+                        Constants.EXP_TEXT,
+                        Constants.EXP_PARENT_ID},
+                Constants.EXP_PARENT_ID + "=?",
+                new String[] {String.valueOf(idParent)},
+                null,
+                null,
+                null,
+                null);
+
+        int count = cursor.getCount();
+
+        cursor.close();
+        dba.close();
+
+        return count;
+    }
     //Get expressions by id topic-parent, order by topic text
     public ArrayList<Expressions> getExpByIdParentAlphabet(int idParent) {
 
@@ -818,4 +870,52 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         return listLabels;
     }
+
+
+    //Get all expressions and them parent topics
+    public ArrayList<DoubleItem> getDoubleItems() {
+
+        doubleItemsList.clear();
+
+        SQLiteDatabase dba = this.getReadableDatabase();
+
+        Cursor cursor = dba.query(Constants.TABLE_EXP_NAME + " as EX inner join " +
+                Constants.TABLE_TOPIC_NAME + " as TP on EX." +
+                Constants.EXP_PARENT_ID +
+                " = TP." +
+                Constants.KEY_ID,
+                new String[] {
+                        Constants.EXP_TEXT,
+                        Constants.EXP_PARENT_ID,
+                        Constants.TOPIC_TEXT},
+                null, null, null, null, null );
+
+        //loop through...
+        if (cursor.moveToFirst()) {
+            do {
+
+                Expressions exp = new Expressions();
+                Topics topic = new Topics();
+
+                exp.setExpText(cursor.getString(cursor.getColumnIndex(Constants.EXP_TEXT)));
+                exp.setExpParentId(cursor.getInt(cursor.getColumnIndex(Constants.EXP_PARENT_ID)));
+                topic.setTopicText(cursor.getString(cursor.getColumnIndex(Constants.TOPIC_TEXT)));
+
+                DoubleItem doubleItem = new DoubleItem(exp, topic);
+
+                doubleItemsList.add(doubleItem);
+
+            } while (cursor.moveToNext());
+
+         } else {
+
+            Log.d(Constants.LOG_TAG, ">>> Get all Double items: No matching data");
+        }
+
+        cursor.close();
+        dba.close();
+
+        return doubleItemsList;
+    }
+
 }

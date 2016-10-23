@@ -15,8 +15,7 @@
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:paddingTop="7dp"
-        android:paddingBottom="7dp"
-        android:background="@drawable/bg_tab">
+        android:paddingBottom="7dp">
     <ImageView
         android:id="@+id/image_tab_item"
         android:layout_width="wrap_content"
@@ -31,7 +30,8 @@
         android:layout_gravity="center"
         android:layout_marginStart="1dp"
         android:text="NameTab"
-        android:textColor="@color/colorPrimaryDark"
+        android:textColor="#ffffff"
+        android:textSize="16sp"
         android:layout_marginLeft="10dp" />
     </LinearLayout>
     <!--<TextView-->

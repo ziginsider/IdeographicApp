@@ -2,7 +2,9 @@ package io.github.ziginsider.ideographicapp;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -18,6 +20,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
@@ -27,16 +30,18 @@ import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.FragmentById;
 import org.androidannotations.annotations.ViewById;
+import org.androidannotations.annotations.WindowFeature;
 
 import java.io.IOException;
 
 import data.DatabaseHandler;
 
+@WindowFeature({Window.FEATURE_ACTION_BAR_OVERLAY})
 @EActivity(R.layout.activity_work)
 public class WorkActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    @ViewById(R.id.toolbar)
+    @ViewById(R.id.toolbar_work)
     Toolbar toolbar;
 
     @ViewById(R.id.fab)
@@ -54,46 +59,28 @@ public class WorkActivity extends AppCompatActivity
     @FragmentById(R.id.fragment_sliding_tabs)
     FragmentSlidingTabs fragmentSlidingTabs;
 
+
+
     @AfterViews
     void init() {
 
-//        //Setup DB
-//        DatabaseHandler dbHandler = new DatabaseHandler(this);
-//        try {
-//            dbHandler.createDataBase();
-//        } catch (IOException ioe) {
-//            throw new Error("Unable to create database");
-//        }
-//        try {
-//            dbHandler.openDataBase();
-//        } catch (Exception e) {
-//            //throw sqle;
-//            Log.d("Main", "Error open db", e);
-//        }
-//
-//        dbHandler.close();
+        //getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 
         //setup view
         setSupportActionBar(toolbar);
-        //toolbar.heig
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+        fab.setTag("show");
+
         navigationView.setNavigationItemSelectedListener(this);
-
-
 
         //first fragment: root topic
         fragmentSlidingTabs.addPage(0);
-
-
-
-
     }
-
 
     @Override
     public void onBackPressed() {
@@ -111,7 +98,6 @@ public class WorkActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.work, menu);
         MenuItem item = menu.findItem(R.id.action_search);
         searchView.setMenuItem(item);
-
 
         return true;
     }

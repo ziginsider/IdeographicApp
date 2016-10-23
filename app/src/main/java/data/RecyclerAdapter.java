@@ -1,0 +1,72 @@
+package data;
+
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+
+import io.github.ziginsider.ideographicapp.R;
+import model.DoubleItem;
+import model.Expressions;
+import model.Topics;
+
+/**
+ * Created by zigin on 20.10.2016.
+ */
+
+public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
+
+//    private ArrayList<Expressions> mExpList;
+//    private ArrayList<String> mTopicNameList;
+    private ArrayList<DoubleItem> mDoubleItems;
+    private DatabaseHandler dba;
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+
+        public TextView textExp;
+        public TextView textParentTopic;
+        public int idParentTopic;
+
+        public ViewHolder(View view) {
+            super(view);
+            this.textExp = (TextView) view.findViewById(R.id.txt_item_exp_rv);
+            this.textParentTopic = (TextView) view.findViewById(R.id.txt_item_topic_rv);
+            this.idParentTopic = 0;
+        }
+    }
+
+    public RecyclerAdapter(ArrayList<DoubleItem> doubleItems) {
+        this.mDoubleItems = doubleItems;
+    }
+
+    @Override
+    public RecyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        //create view
+        View v = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.recycler_item, parent, false);
+
+        //there is programmatically change layout: size, paddings, margin, etc...
+
+        ViewHolder vh = new ViewHolder(v);
+
+        return vh;
+    }
+
+    //refresh recycler item
+
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position) {
+
+        holder.textExp.setText(mDoubleItems.get(position).getExp().getExpText());
+        holder.textParentTopic.setText(mDoubleItems.get(position).getTopic().getTopicText());
+        holder.idParentTopic = mDoubleItems.get(position).getExp().getExpParentId();
+    }
+
+    @Override
+    public int getItemCount() {
+        return  mDoubleItems.size();
+    }
+}

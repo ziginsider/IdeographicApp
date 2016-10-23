@@ -1,16 +1,24 @@
 package io.github.ziginsider.ideographicapp;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.OvershootInterpolator;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
@@ -22,6 +30,7 @@ import data.DatabaseHandler;
 import data.ViewPagerAdapter;
 import model.Topics;
 
+
 /**
  * Created by zigin on 29.09.2016.
  */
@@ -31,6 +40,15 @@ public class FragmentSlidingTabs extends Fragment {
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private ViewPagerAdapter adapter;
+
+    com.melnykov.fab.FloatingActionButton fab;
+    TextView textTopicNameBottomSheet;
+    TextView textParentTopicNameBottomSheet;
+    TextView textNumberOfSubtopics;
+    TextView textNumberOfExp;
+    TextView textLabels;
+
+    ArrayList<String> listTopicLabels;
 
     private DatabaseHandler dba;
 
@@ -55,6 +73,9 @@ public class FragmentSlidingTabs extends Fragment {
         dba = new DatabaseHandler(context);
     }
 
+
+
+
     private void getIDs(View view) {
         viewPager = (ViewPager) view.findViewById(R.id.work_view_pager);
         tabLayout = (TabLayout) view.findViewById(R.id.work_tab_layout);
@@ -63,10 +84,17 @@ public class FragmentSlidingTabs extends Fragment {
 //        mQuerySearch = new ArrayList<String>();
 //        mStateSearch = new ArrayList<Boolean>();
         Log.d("Zig", "\nonCreateView in FragmentSlidingTabs");
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            tabLayout.setElevation(0);
+//        }
     }
 
     public int getSelectedTabPosition() {
         return selectedTabPosition;
+    }
+
+    public int getCountTabs() {
+        return adapter.getCount();
     }
 
     private void setEvents() {
@@ -82,6 +110,8 @@ public class FragmentSlidingTabs extends Fragment {
                 Log.d("Zig", "Selected tab, position = " + tab.getPosition());
 
                 final FragmentWork fragmentWork = (FragmentWork) adapter.getItem(selectedTabPosition);
+
+                fragmentWork.showHideView();
 
 //                Log.d("Zig", "Selected tab, fragmentWork.getQuerySearch = " + fragmentWork.getQuerySearch());
 
@@ -137,7 +167,8 @@ public class FragmentSlidingTabs extends Fragment {
                     @Override
                     public boolean onQueryTextSubmit(String query) {
 
-                        return  false;
+                        fragmentWork.showSearchResultTopic(query);
+                        return  true;
                     }
 
                     @Override
@@ -154,30 +185,101 @@ public class FragmentSlidingTabs extends Fragment {
 //                                + adapter.getPageTitle(selectedTabPosition)
 //                                + ", mQuerySearch = "
 //                                + mQuerySearch.get(selectedTabPosition));
-
                         return  true;
                     }
                 });
 
                 //set fab
-                com.melnykov.fab.FloatingActionButton fab = (com.melnykov.fab.FloatingActionButton)
-                        getActivity().findViewById(R.id.fab);
+//                com.melnykov.fab.FloatingActionButton fab = (com.melnykov.fab.FloatingActionButton)
+//                        getActivity().findViewById(R.id.fab);
+//
+//                fab.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//
+//                        Log.d("Zig", "fab.setOnClickListener in FragmentSlidingTabs");
+//
+//                        fragmentWork.fabLauncher();
+//
+////                        ListView listView = (ListView) getActivity().findViewById(R.id.list_topic_content);
+////
+////                        Toast.makeText(getActivity(), String.valueOf(listView.getCount()), Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+
+                //fab.show();
+
+
+                //bottomsheet set
+                RelativeLayout rlBottomSheet = (RelativeLayout) getActivity().
+                        findViewById(R.id.bottom_sheet);
+
+                final BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(rlBottomSheet);
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
+                fab = (com.melnykov.fab.FloatingActionButton) getActivity().findViewById(R.id.fab);
 
                 fab.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
 
-                        Log.d("Zig", "fab.setOnClickListener in FragmentSlidingTabs");
+                        if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
 
-                        fragmentWork.fabLauncher();
+                            InflateBottomSheet();
+                            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
-//                        ListView listView = (ListView) getActivity().findViewById(R.id.list_topic_content);
-//
-//                        Toast.makeText(getActivity(), String.valueOf(listView.getCount()), Toast.LENGTH_SHORT).show();
+                        } else if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+
+                            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                        }
+
                     }
                 });
 
-                fab.show();
+                bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+                    @Override
+                    public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                        if (newState == BottomSheetBehavior.STATE_DRAGGING) {
+                            //Toast.makeText(getActivity(), "Drag Bottomsheet!", Toast.LENGTH_SHORT).show();
+                            fragmentWork.showHideView();
+
+                            InflateBottomSheet();
+
+                        } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                            //Toast.makeText(getActivity(), "Expanded Bottomsheet!", Toast.LENGTH_SHORT).show();
+                            final OvershootInterpolator interpolator = new OvershootInterpolator();
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                                fab.animate().rotation(180f).withLayer().setDuration(300).setInterpolator(interpolator).start();
+                            }
+                        } else if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                            //Toast.makeText(getActivity(), "Collapsed Bottomsheet!", Toast.LENGTH_SHORT).show();
+                            final OvershootInterpolator interpolator = new OvershootInterpolator();
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                                fab.animate().rotation(0.0f).withLayer().setDuration(300).setInterpolator(interpolator).start();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                        // React to dragging events
+
+//                        bottomSheet.setOnTouchListener(new View.OnTouchListener() {
+//                            @Override
+//                            public boolean onTouch(View v, MotionEvent event) {
+//                                //Toast.makeText(getActivity(), "Touch Bottomsheet!", Toast.LENGTH_SHORT).show();
+//                                int action = MotionEventCompat.getActionMasked(event);
+//                                switch (action) {
+//                                    case MotionEvent.ACTION_UP:
+//                                        //Toast.makeText(getActivity(), "Up!", Toast.LENGTH_SHORT).show();
+//                                        return false;
+//                                    default:
+//                                        return true;
+//                                }
+//                            }
+//                        });
+                    }
+                });
 
 
             }
@@ -186,12 +288,87 @@ public class FragmentSlidingTabs extends Fragment {
             public void onTabUnselected(TabLayout.Tab tab) {
                 super.onTabUnselected(tab);
                 //final MaterialSearchView searchView = (MaterialSearchView) getActivity().findViewById(R.id.search_view);
-                //final FragmentWork fragmentWork = (FragmentWork) adapter.getItem(selectedTabPosition);
+//                final FragmentWork fragmentWork = (FragmentWork) adapter.getItem(selectedTabPosition);
+//                fragmentWork.showHideView();
                 //Log.d("Zig", "Unselected tab, position = " + tab.getPosition());
                 //Log.d("Zig", "Unselected tabs, fragmentWork.getQuerySearch = " + fragmentWork.getQuerySearch());
 
             }
         });
+    }
+
+    public void InflateBottomSheet() {
+
+        FragmentWork fragmentWork = (FragmentWork) adapter.getItem(selectedTabPosition);
+
+        int idTopic = fragmentWork.getmParentTopicId();
+
+        if (idTopic == 0) {
+
+            textTopicNameBottomSheet = (TextView) getActivity().
+                    findViewById(R.id.txt_bs_topic_name);
+            textParentTopicNameBottomSheet = (TextView) getActivity().
+                    findViewById(R.id.txt_bs_parent_topic_name);
+            textNumberOfSubtopics = (TextView) getActivity().
+                    findViewById(R.id.txt_bs_number_of_subtopics);
+            textNumberOfExp = (TextView) getActivity().
+                    findViewById(R.id.txt_bs_number_of_exp);
+            textLabels = (TextView) getActivity().
+                    findViewById(R.id.txt_bs_labels);
+
+
+            textTopicNameBottomSheet.setText(Constants.TOPICS_ROOT_NAME);
+            textParentTopicNameBottomSheet.setVisibility(View.INVISIBLE);
+            textLabels.setText("");
+
+
+            textNumberOfSubtopics.setText(String.valueOf(dba.getTopicCountByIdParent(idTopic)));
+            textNumberOfExp.setText(String.valueOf(dba.getExpCountByIdParent(idTopic)));
+
+        } else {
+
+            textTopicNameBottomSheet = (TextView) getActivity().
+                    findViewById(R.id.txt_bs_topic_name);
+            textParentTopicNameBottomSheet = (TextView) getActivity().
+                    findViewById(R.id.txt_bs_parent_topic_name);
+            textNumberOfSubtopics = (TextView) getActivity().
+                    findViewById(R.id.txt_bs_number_of_subtopics);
+            textNumberOfExp = (TextView) getActivity().
+                    findViewById(R.id.txt_bs_number_of_exp);
+            textLabels = (TextView) getActivity().
+                    findViewById(R.id.txt_bs_labels);
+
+            textParentTopicNameBottomSheet.setVisibility(View.VISIBLE);
+
+            //labels
+            listTopicLabels = dba.getTopicLabels(idTopic);
+
+            StringBuilder sb = new StringBuilder();
+            for (String s : listTopicLabels) {
+
+                sb.append(s);
+                sb.append(" ");
+                sb.append("\t");
+            }
+            textLabels.setText(sb);
+
+            //parent topic
+            if (dba.getTopicById(idTopic).getTopicParentId() != 0) {
+
+                textParentTopicNameBottomSheet.setText(dba.getTopicById
+                    (dba.getTopicById(idTopic).getTopicParentId())
+                    .getTopicText());
+
+            } else {
+
+                textParentTopicNameBottomSheet.setText(Constants.TOPICS_ROOT_NAME);
+            }
+
+            textTopicNameBottomSheet.setText(dba.getTopicById(idTopic).getTopicText());
+            textNumberOfSubtopics.setText(String.valueOf(dba.getTopicCountByIdParent(idTopic)));
+            textNumberOfExp.setText(String.valueOf(dba.getExpCountByIdParent(idTopic)));
+
+        }
     }
 
     public void addPage(int idTopic) {
@@ -202,14 +379,11 @@ public class FragmentSlidingTabs extends Fragment {
         FragmentWork fragmentWork = new FragmentWork();
         fragmentWork.setArguments(bundle);
 
-//        mQuerySearch.add("");
-//        mStateSearch.add(false);
-//        Log.d("Zig", "\nAdd page, mQuerySearch = " + mQuerySearch.get(viewPager.getCurrentItem()));
+ //        Log.d("Zig", "\nAdd page, mQuerySearch = " + mQuerySearch.get(viewPager.getCurrentItem()));
 
         if (idTopic == 0) {
 
             adapter.addFragment(fragmentWork, Constants.TOPICS_ROOT_NAME);
-
         } else {
 
             adapter.addFragment(fragmentWork, dba.getTopicById(idTopic).getTopicText());
@@ -219,6 +393,8 @@ public class FragmentSlidingTabs extends Fragment {
 
         viewPager.setCurrentItem(adapter.getCount() - 1);
         setupTabLayout();
+
+        fragmentWork.showHideView();
     }
 
     public void removePage(int position) {

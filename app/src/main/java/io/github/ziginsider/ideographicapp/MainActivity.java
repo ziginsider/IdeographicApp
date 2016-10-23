@@ -86,6 +86,13 @@ public class MainActivity extends AppCompatActivity
         this.startActivity(i);
     }
 
+    @Click(R.id.btn_all_exp)
+    void clickBtnAllExp() {
+
+        Intent i = new Intent(this, ResultTopicSearchActivity_.class);
+        this.startActivity(i);
+    }
+
     @AfterViews
     void init() {
 
@@ -106,7 +113,7 @@ public class MainActivity extends AppCompatActivity
                         .setAction("Action", null).show();
 
                 toolbar.animate().translationY(-toolbar.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
-                getSupportActionBar().hide();
+                //getSupportActionBar().hide();
             }
         });
 

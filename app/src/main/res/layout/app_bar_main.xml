@@ -34,7 +34,7 @@
         fab:fab_colorNormal="@color/fab_color_primary"
         fab:fab_colorPressed="@color/fab_color_primary_pressed"
         fab:fab_colorRipple="@color/fab_color_ripple"
-        fab:fab_type="mini"/>
+        fab:fab_type="normal"/>
 
 
 </android.support.design.widget.CoordinatorLayout>
