@@ -2,6 +2,7 @@ package io.github.ziginsider.ideographicapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -91,6 +92,12 @@ public class MainActivity extends AppCompatActivity
 
         Intent i = new Intent(this, ResultTopicSearchActivity_.class);
         this.startActivity(i);
+    }
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme_NoActionBar);
+        super.onCreate(savedInstanceState);
     }
 
     @AfterViews

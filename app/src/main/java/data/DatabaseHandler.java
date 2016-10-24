@@ -589,7 +589,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 new String[] {String.valueOf(idParent)},
                 null,
                 null,
-                null,
+                Constants.KEY_ID + " DESC", // sort by _id inverse
                 null);
 
         //loop through...
@@ -888,7 +888,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                         Constants.EXP_TEXT,
                         Constants.EXP_PARENT_ID,
                         Constants.TOPIC_TEXT},
-                null, null, null, null, null );
+                null, null, null, null,
+                "EX." + Constants.KEY_ID + " DESC"); // sort by _id inverse
 
         //loop through...
         if (cursor.moveToFirst()) {

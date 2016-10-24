@@ -11,7 +11,7 @@
         <activity
             android:name=".MainActivity_"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,8 +22,8 @@
             android:name=".WorkActivity_"
             android:label="@string/title_activity_work"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".ResultTopicSearchActivity_"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".ResultTopicSearchActivity_" />
     </application>
 
 </manifest>
