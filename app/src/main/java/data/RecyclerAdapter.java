@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -23,17 +24,20 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 //    private ArrayList<String> mTopicNameList;
     private ArrayList<DoubleItem> mDoubleItems;
     private DatabaseHandler dba;
+    private int clickedPosition;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         public TextView textExp;
         public TextView textParentTopic;
         public int idParentTopic;
+        public RelativeLayout relativeLayout;
 
         public ViewHolder(View view) {
             super(view);
             this.textExp = (TextView) view.findViewById(R.id.txt_item_exp_rv);
             this.textParentTopic = (TextView) view.findViewById(R.id.txt_item_topic_rv);
+            this.relativeLayout = (RelativeLayout) view.findViewById(R.id.relative_layout_recycler_item);
             this.idParentTopic = 0;
         }
     }
@@ -58,12 +62,48 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     //refresh recycler item
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, final int position) {
 
         holder.textExp.setText(mDoubleItems.get(position).getExp().getExpText());
         holder.textParentTopic.setText(mDoubleItems.get(position).getTopic().getTopicText());
         holder.idParentTopic = mDoubleItems.get(position).getExp().getExpParentId();
+
+        final DoubleItem item = mDoubleItems.get(position);
+
+        if (position == clickedPosition){
+            holder.relativeLayout.setBackgroundResource(R.drawable.bg_current_topic);
+        } else {
+            holder.relativeLayout.setBackgroundResource(R.drawable.ripple_bg_exp);
+        }
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+
+                //set the position
+                clickedPosition = position;
+
+                //bluetoothPreferences.setBluetoothName(device.getName());
+                //bluetoothPreferences.setBluetoothAddress(device.getAddress());
+                //notify the data has changed
+                notifyDataSetChanged();
+                //notifyItemChanged(position);
+            }
+        });
+
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+
+            @Override
+            public boolean onLongClick(View v) {
+                clickedPosition = position;
+                notifyDataSetChanged();
+                return  true;
+            }
+        });
+
     }
+
 
     @Override
     public int getItemCount() {
