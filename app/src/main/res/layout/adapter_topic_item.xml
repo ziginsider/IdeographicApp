@@ -7,7 +7,8 @@
     android:layout_marginLeft="15dp"
     android:layout_marginRight="5dp"
     android:padding="4dp"
-    android:background="@drawable/ripple_topic_new">
+    android:background="@drawable/ripple_topic_new"
+    android:layout_marginBottom="7dp">
 
     <TextView
         android:id="@+id/text_item_topic_content"

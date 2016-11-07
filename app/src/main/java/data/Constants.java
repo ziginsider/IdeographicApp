@@ -19,4 +19,12 @@ public class Constants {
     public static final String TOPICS_ROOT_NAME = "Topics";
 
     public static final String BUNDLE_ID_TOPIC = "idtopicbundle";
+
+    public static final String INITAL_DATABASE_NAME = "Initaldb.db3";
+    public static final int INITAL_DATABASE_VERSION = 1;
+    public static final String RECENT_TABLE_NAME = "RecentTopics";
+    public static final String RECENT_TOPIC_TEXT = "TextTopic";
+    public static final String RECENT_TOPIC_ID = "IdTopic";
+    public static final String RECENT_TOPIC_WEIGHT = "WeightTopic";
+
 }

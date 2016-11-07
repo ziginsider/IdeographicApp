@@ -1,5 +1,9 @@
 package io.github.ziginsider.ideographicapp;
 
+/**
+ * Created by zigin on 26.10.2016.
+ */
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -32,12 +36,7 @@ import data.PersistantStorage;
 import data.ViewPagerAdapter;
 import model.Topics;
 
-
-/**
- * Created by zigin on 29.09.2016.
- */
-
-public class FragmentSlidingTabs extends Fragment {
+public class FragmentSlidingTabsRecycler extends Fragment {
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
@@ -51,14 +50,10 @@ public class FragmentSlidingTabs extends Fragment {
     TextView textLabels;
 
     ArrayList<String> listTopicLabels;
-    //ArrayList<Integer> listSelectTopicItem;
 
     private DatabaseHandler dba;
 
     private PersistantStorage storage;
-
-//    private ArrayList<String> mQuerySearch;
-//    private ArrayList<Boolean> mStateSearch;
 
     private int selectedTabPosition;
 
@@ -66,11 +61,8 @@ public class FragmentSlidingTabs extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_sliding_tabs, container, false);
+        View view = inflater.inflate(R.layout.fragment_sliding_tabs_recycler, container, false);
         getIDs(view);
-
-//        if (listSelectTopicItem == null)
-//            listSelectTopicItem = new ArrayList<Integer>();
 
         storage = new PersistantStorage();
 
@@ -84,21 +76,11 @@ public class FragmentSlidingTabs extends Fragment {
         dba = new DatabaseHandler(context);
     }
 
-//    public int getSelectTopicItemPosition (int positionTab) {
-//        return listSelectTopicItem.get(positionTab);
-//    }
-
     private void getIDs(View view) {
-        viewPager = (ViewPager) view.findViewById(R.id.work_view_pager);
-        tabLayout = (TabLayout) view.findViewById(R.id.work_tab_layout);
+        viewPager = (ViewPager) view.findViewById(R.id.work_view_pager_recycler);
+        tabLayout = (TabLayout) view.findViewById(R.id.work_tab_layout_recycler);
         adapter = new ViewPagerAdapter(getFragmentManager(), getActivity(), viewPager, tabLayout);
         viewPager.setAdapter(adapter);
-//        mQuerySearch = new ArrayList<String>();
-//        mStateSearch = new ArrayList<Boolean>();
-        Log.d("Zig", "\nonCreateView in FragmentSlidingTabs");
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//            tabLayout.setElevation(0);
-//        }
     }
 
     public int getSelectedTabPosition() {
@@ -107,6 +89,16 @@ public class FragmentSlidingTabs extends Fragment {
 
     public int getCountTabs() {
         return adapter.getCount();
+    }
+
+    public String getSelectTabName() {
+
+        return adapter.getTitle(selectedTabPosition);
+    }
+
+    public String getNextTabName() {
+
+        return adapter.getTitle(selectedTabPosition + 1);
     }
 
     private void setEvents() {
@@ -121,62 +113,31 @@ public class FragmentSlidingTabs extends Fragment {
                 selectedTabPosition = viewPager.getCurrentItem();
                 Log.d("Zig", "Selected tab, position = " + tab.getPosition());
 
-                //////////////////////
+                final FragmentWorkRecycler fragmentWorkRecycler = (FragmentWorkRecycler) adapter.
+                        getItem(selectedTabPosition);
 
-                //listSelectTopicItem.add(selectedTabPosition, selectedTabPosition);
-
-                //////////////////////
-
-
-                final FragmentWork fragmentWork = (FragmentWork) adapter.getItem(selectedTabPosition);
-
-                fragmentWork.showHideView();
-
-//                Log.d("Zig", "Selected tab, fragmentWork.getQuerySearch = " + fragmentWork.getQuerySearch());
+                fragmentWorkRecycler.showHideView();
+                //fragmentWorkRecycler.showListView();
 
                 //set Search
-                final MaterialSearchView searchView = (MaterialSearchView) getActivity().findViewById(R.id.search_view);
+                final MaterialSearchView searchView = (MaterialSearchView) getActivity().
+                        findViewById(R.id.search_view_recycler);
 
-                //if (mStateSearch.get(selectedTabPosition)) {
+                searchView.closeSearch();
 
-                //    searchView.setQuery(mQuerySearch.get(selectedTabPosition), false);
-
-                //} else {
-
-                    searchView.closeSearch();
-                //}
-                fragmentWork.cloneItems();
+                fragmentWorkRecycler.cloneItems();
 
                 searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
 
                     @Override
                     public void onSearchViewShown() {
-                        //mStateSearch.set(selectedTabPosition, true);
                     }
 
                     @Override
                     public void onSearchViewClosed() {
 
-//                        Log.d("Zig","\nonSearchViewClosed in FragmentSlidingTabs before"
-//                                + ", for topic parent = "
-//                                + fragmentWork.textFooterTopicContent.getText()
-//                                + ", for pageTitle = "
-//                                + adapter.getPageTitle(selectedTabPosition)
-//                                + ", mQuerySearch = "
-//                                + mQuerySearch.get(selectedTabPosition));
-
-                        fragmentWork.showListView();
-                        fragmentWork.cloneItems();
-//                        mQuerySearch.set(selectedTabPosition, "");
-//                        mStateSearch.set(selectedTabPosition, false);
-
-//                        Log.d("Zig","onSearchViewClosed in FragmentSlidingTabs after showListView(), cloneItems(), setQerySearch(\"\")"
-//                                + ", for topic parent = "
-//                                + fragmentWork.textFooterTopicContent.getText()
-//                                + ", for pageTitle = "
-//                                + adapter.getPageTitle(selectedTabPosition)
-//                                + ", mQuerySearch = "
-//                                +mQuerySearch.get(selectedTabPosition));
+                        fragmentWorkRecycler.showListView();
+                        fragmentWorkRecycler.cloneItems();
                     }
                 });
 
@@ -186,48 +147,16 @@ public class FragmentSlidingTabs extends Fragment {
                     @Override
                     public boolean onQueryTextSubmit(String query) {
 
-                        fragmentWork.showSearchResultTopic(query);
+                        fragmentWorkRecycler.showSearchResultTopic(query);
                         return  true;
                     }
 
                     @Override
                     public boolean onQueryTextChange(String newText) {
-                        fragmentWork.showSearchResult(newText);
-//                        mQuerySearch.set(selectedTabPosition, newText);
-//                        mStateSearch.set(selectedTabPosition, true);
-
-//                        Log.d("Zig","\nonQueryTextChange in FragmentSlidingTabs, newText = "
-//                                + newText
-//                                + ", for topic parent = "
-//                                + fragmentWork.textFooterTopicContent
-//                                + ", for pageTitle = "
-//                                + adapter.getPageTitle(selectedTabPosition)
-//                                + ", mQuerySearch = "
-//                                + mQuerySearch.get(selectedTabPosition));
+                        fragmentWorkRecycler.showSearchResult(newText);
                         return  true;
                     }
                 });
-
-                //set fab
-//                com.melnykov.fab.FloatingActionButton fab = (com.melnykov.fab.FloatingActionButton)
-//                        getActivity().findViewById(R.id.fab);
-//
-//                fab.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//
-//                        Log.d("Zig", "fab.setOnClickListener in FragmentSlidingTabs");
-//
-//                        fragmentWork.fabLauncher();
-//
-////                        ListView listView = (ListView) getActivity().findViewById(R.id.list_topic_content);
-////
-////                        Toast.makeText(getActivity(), String.valueOf(listView.getCount()), Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-
-                //fab.show();
-
 
                 //bottomsheet set
                 RelativeLayout rlBottomSheet = (RelativeLayout) getActivity().
@@ -236,7 +165,7 @@ public class FragmentSlidingTabs extends Fragment {
                 final BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(rlBottomSheet);
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
-                fab = (com.melnykov.fab.FloatingActionButton) getActivity().findViewById(R.id.fab);
+                fab = (com.melnykov.fab.FloatingActionButton) getActivity().findViewById(R.id.fab_recycler);
 
                 fab.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -251,7 +180,6 @@ public class FragmentSlidingTabs extends Fragment {
 
                             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                         }
-
                     }
                 });
 
@@ -259,8 +187,8 @@ public class FragmentSlidingTabs extends Fragment {
                     @Override
                     public void onStateChanged(@NonNull View bottomSheet, int newState) {
                         if (newState == BottomSheetBehavior.STATE_DRAGGING) {
-                            //Toast.makeText(getActivity(), "Drag Bottomsheet!", Toast.LENGTH_SHORT).show();
-                            fragmentWork.showHideView();
+
+                            fragmentWorkRecycler.showHideView();
 
                             InflateBottomSheet();
 
@@ -282,21 +210,6 @@ public class FragmentSlidingTabs extends Fragment {
                     @Override
                     public void onSlide(@NonNull View bottomSheet, float slideOffset) {
                         // React to dragging events
-
-//                        bottomSheet.setOnTouchListener(new View.OnTouchListener() {
-//                            @Override
-//                            public boolean onTouch(View v, MotionEvent event) {
-//                                //Toast.makeText(getActivity(), "Touch Bottomsheet!", Toast.LENGTH_SHORT).show();
-//                                int action = MotionEventCompat.getActionMasked(event);
-//                                switch (action) {
-//                                    case MotionEvent.ACTION_UP:
-//                                        //Toast.makeText(getActivity(), "Up!", Toast.LENGTH_SHORT).show();
-//                                        return false;
-//                                    default:
-//                                        return true;
-//                                }
-//                            }
-//                        });
                     }
                 });
 
@@ -306,21 +219,16 @@ public class FragmentSlidingTabs extends Fragment {
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
                 super.onTabUnselected(tab);
-                //final MaterialSearchView searchView = (MaterialSearchView) getActivity().findViewById(R.id.search_view);
-//                final FragmentWork fragmentWork = (FragmentWork) adapter.getItem(selectedTabPosition);
-//                fragmentWork.showHideView();
-                //Log.d("Zig", "Unselected tab, position = " + tab.getPosition());
-                //Log.d("Zig", "Unselected tabs, fragmentWork.getQuerySearch = " + fragmentWork.getQuerySearch());
-
             }
         });
     }
 
     public void InflateBottomSheet() {
 
-        FragmentWork fragmentWork = (FragmentWork) adapter.getItem(selectedTabPosition);
+        FragmentWorkRecycler fragmentWorkRecycler = (FragmentWorkRecycler) adapter.
+                getItem(selectedTabPosition);
 
-        int idTopic = fragmentWork.getmParentTopicId();
+        int idTopic = fragmentWorkRecycler.getmParentTopicId();
 
         if (idTopic == 0) {
 
@@ -375,8 +283,8 @@ public class FragmentSlidingTabs extends Fragment {
             if (dba.getTopicById(idTopic).getTopicParentId() != 0) {
 
                 textParentTopicNameBottomSheet.setText(dba.getTopicById
-                    (dba.getTopicById(idTopic).getTopicParentId())
-                    .getTopicText());
+                        (dba.getTopicById(idTopic).getTopicParentId())
+                        .getTopicText());
 
             } else {
 
@@ -394,21 +302,32 @@ public class FragmentSlidingTabs extends Fragment {
         //show topic content
         Bundle bundle = new Bundle();
         bundle.putInt(Constants.BUNDLE_ID_TOPIC, idTopic);
-        FragmentWork fragmentWork = new FragmentWork();
-        fragmentWork.setArguments(bundle);
+        FragmentWorkRecycler fragmentWorkRecycler = new FragmentWorkRecycler();
+        fragmentWorkRecycler.setArguments(bundle);
 
         if (idTopic == 0) {
 
             storage.init(getContext());
             storage.addProperty(Constants.TOPICS_ROOT_NAME, "nichts");
 
-            adapter.addFragment(fragmentWork, Constants.TOPICS_ROOT_NAME);
+            adapter.addFragment(fragmentWorkRecycler, Constants.TOPICS_ROOT_NAME);
         } else {
 
             storage.init(getContext());
-            storage.addProperty(dba.getTopicById(idTopic).getTopicText(), "nichts");
+            Topics topic = dba.getTopicById(idTopic);
+            String nameParentTopic;
 
-            adapter.addFragment(fragmentWork, dba.getTopicById(idTopic).getTopicText());
+            if (topic.getTopicParentId() == 0) {
+                nameParentTopic = Constants.TOPICS_ROOT_NAME;
+            } else {
+
+                nameParentTopic = dba.getTopicById(topic.getTopicParentId()).getTopicText();
+            }
+
+            if (!(nameParentTopic.equals(topic.getTopicText()))) {
+                storage.addProperty(topic.getTopicText(), "nichts");
+            }
+            adapter.addFragment(fragmentWorkRecycler, topic.getTopicText());
         }
         adapter.notifyDataSetChanged();
         if (adapter.getCount() > 0) tabLayout.setupWithViewPager(viewPager);
@@ -416,15 +335,10 @@ public class FragmentSlidingTabs extends Fragment {
         viewPager.setCurrentItem(adapter.getCount() - 1);
         setupTabLayout();
 
-        fragmentWork.showHideView();
+        fragmentWorkRecycler.showHideView();
     }
 
     public void removePage(int position) {
-
-//        mQuerySearch.remove(position);
-//        mStateSearch.remove(position);
-        //final FragmentWork fragmentWork = (FragmentWork) adapter.getItem(position);
-        //Log.d("Zig", "Add page, fragmentWork.getQuerySearch = " + fragmentWork.getQuerySearch());
 
         adapter.removeFragment(position);
         setupTabLayout();
@@ -444,5 +358,4 @@ public class FragmentSlidingTabs extends Fragment {
         dba.close();
     }
 }
-
 

@@ -141,7 +141,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
             } catch (IOException e) {
 
-                Log.d(Constants.LOG_TAG, "Coping database ereror", e);
+                Log.d(Constants.LOG_TAG, "Coping database error", e);
             }
         }
     }
@@ -860,7 +860,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             {
                 for (int i = 0; i < labelsIDSplit.length; i++) {
 
-                    listLabels.add(getTopicById(Integer.valueOf(labelsIDSplit[i])).getTopicText());
+                    if (!labelsIDSplit[i].equals(""))
+                        listLabels.add(getTopicById(Integer.valueOf(labelsIDSplit[i])).
+                                getTopicText());
                 }
             }
         }

@@ -52,6 +52,8 @@ public class ResultTopicSearchActivity extends AppCompatActivity {
         // создаем адаптер
         mAdapter = new RecyclerAdapter(mDoubleItems);
         mRecyclerView.setAdapter(mAdapter);
+
+        dba.close();
     }
 
 

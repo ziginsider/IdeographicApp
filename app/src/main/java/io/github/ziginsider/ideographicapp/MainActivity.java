@@ -94,6 +94,20 @@ public class MainActivity extends AppCompatActivity
         this.startActivity(i);
     }
 
+    @Click(R.id.btn_topics_recycler)
+    void clickBtnTopicRecycler() {
+
+        Intent i = new Intent(this, WorkActivityRecycler_.class);
+        this.startActivity(i);
+    }
+
+    @Click(R.id.btn_recent_topics)
+    void clickBtnRecentTopics() {
+
+        Intent i = new Intent(this, RecentTopicActivity_.class);
+        this.startActivity(i);
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         setTheme(R.style.AppTheme_NoActionBar);
@@ -186,6 +200,9 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
+
+            Intent i = new Intent(this, RecentTopicActivity_.class);
+            this.startActivity(i);
 
         } else if (id == R.id.nav_manage) {
 

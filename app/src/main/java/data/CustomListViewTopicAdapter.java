@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,37 +33,36 @@ public class CustomListViewTopicAdapter extends ArrayAdapter<Topics> {
     private int layoutResourse;
     private Activity activity;
     private ArrayList<Topics> TopicsList = new ArrayList<>();
-//    private int mSelectItem;
-//    private boolean mFlagSelect;
-
+    private PersistantStorage storage;
+    private String mNameSelectTopic;
+    private DatabaseHandler dba;
+    //private int mSelectItem;
+    //private boolean mFlagSelect;
+    //FragmentSlidingTabs fragmentSlidingTabs;
+    //private ViewPager viewPager;
 
     public CustomListViewTopicAdapter(Activity act, int resource, ArrayList<Topics> data) {
         super(act, resource, data);
         layoutResourse = resource;
         activity = act;
         TopicsList = data;
+        storage = new PersistantStorage();
+        dba = new DatabaseHandler(getContext());
 
-        //mSelectItem = -1;
+        storage.init(getContext());
+         if (data.get(0).getTopicParentId() == 0) {
 
-//        TextView textView = (TextView) act.findViewById(R.id.item_count);
-//        textView.setText(String.valueOf(TopicsList.size()));
-       // mFlagSelect = false;
+            mNameSelectTopic = storage.getProperty(Constants.TOPICS_ROOT_NAME);
 
+        } else {
+            mNameSelectTopic = storage.getProperty(dba.getTopicById(data.get(0).getTopicParentId()).
+                    getTopicText());
+        }
 
         notifyDataSetChanged();
     }
+//
 
-//    public int getmSelectItem() {
-//        return mSelectItem;
-//    }
-//
-//    public void setmSelectItem(int mSelectItem) {
-//        this.mSelectItem = mSelectItem;
-//    }
-//
-//    public void setmFlagSelect(boolean mFlagSelect) {
-//        this.mFlagSelect = mFlagSelect;
-//    }
 
     @Override
     public int getCount() {
@@ -96,22 +98,31 @@ public class CustomListViewTopicAdapter extends ArrayAdapter<Topics> {
             holder = new ViewHolder();
 
             holder.topicText = (TextView) row.findViewById(R.id.text_item_topic_content);
-            //holder.topicLayout = (RelativeLayout) row.findViewById(R.id.relative_topic_content);
+            holder.topicLayout = (RelativeLayout) row.findViewById(R.id.relative_topic_content);
 
-//            //
-//            if (mFlagSelect) {
-//                if (position == mSelectItem) {
-//
-//                    holder.topicLayout.setBackgroundResource(R.drawable.bg_current_topic);
-//
-//                }
+
+
+//            int selectItemPosition = fragmentSlidingTabs.
+//                    getSelectTopicItemPosition(fragmentSlidingTabs.getSelectedTabPosition());
+
+
+//            if (position == 1) {
+//                holder.topicLayout.setBackgroundResource(R.drawable.bg_current_topic);
+//            } else {
+//                holder.topicLayout.setBackgroundResource(R.drawable.ripple_topic_new);
 //            }
+
 
 //            holder.topicId = (TextView) row.findViewById(R.id.topicId);
 //            holder.topicIdParent = (TextView) row.findViewById(R.id.topicIdParent);
 //            holder.topicLabels = (TextView) row.findViewById(R.id.topicLabels);
 
+            if (getItem(position).getTopicText().equals(mNameSelectTopic)) {
 
+                holder.topicLayout.setBackgroundResource(R.drawable.bg_current_topic);
+            } else {
+                holder.topicLayout.setBackgroundResource(R.drawable.ripple_topic_new);
+            }
 
             row.setTag(holder);
         } else {
@@ -125,6 +136,9 @@ public class CustomListViewTopicAdapter extends ArrayAdapter<Topics> {
 //        holder.topicIdParent.setText("Parent id = " + String.valueOf(holder.topic.getTopicParentId()));
 //        holder.topicId.setText("Topic id = " + String.valueOf(holder.topic.getTopicId()));
 //        holder.topicLabels.setText("Labels = " + holder.topic.getTopicLabels());
+
+
+
 
 
 //        final ViewHolder finalHolder = holder;
@@ -154,7 +168,8 @@ public class CustomListViewTopicAdapter extends ArrayAdapter<Topics> {
     public class ViewHolder {
         Topics topic;
         TextView topicText;
-        //RelativeLayout topicLayout;
+
+        RelativeLayout topicLayout;
 //        TextView topicIdParent;
 //        TextView topicId;
 //        TextView topicLabels;

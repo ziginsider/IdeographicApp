@@ -68,7 +68,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         holder.textParentTopic.setText(mDoubleItems.get(position).getTopic().getTopicText());
         holder.idParentTopic = mDoubleItems.get(position).getExp().getExpParentId();
 
-        final DoubleItem item = mDoubleItems.get(position);
+        //final DoubleItem item = mDoubleItems.get(position);
 
         if (position == clickedPosition){
             holder.relativeLayout.setBackgroundResource(R.drawable.bg_current_topic);

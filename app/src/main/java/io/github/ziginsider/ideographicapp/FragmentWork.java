@@ -30,6 +30,7 @@ import data.Constants;
 import data.CustomListViewExpAdapter;
 import data.CustomListViewTopicAdapter;
 import data.DatabaseHandler;
+import data.PersistantStorage;
 import model.Expressions;
 import model.Topics;
 
@@ -62,10 +63,10 @@ public class FragmentWork extends Fragment {
 
     public ArrayList<Topics> topicsFromDB;
     private ArrayList<Topics> mFoundTopics;
-    public int topicsCount;
+    //public int topicsCount;
     public ArrayList<Expressions> expFromDB;
     private ArrayList<Expressions> mFoundExp;
-    public int expCount;
+    //public int expCount;
 
     //ArrayList<String> listTopicLabels;
 
@@ -73,9 +74,12 @@ public class FragmentWork extends Fragment {
     //private boolean mStateSearch;
 
     private FragmentActivity workContext;
-//    private int mSelectItem;
-//    private boolean mFlagSelect;
+    //private int mSelectItem;
+    //private boolean mFlagSelect;
     private int mLastFirstVisibleItem;
+    private PersistantStorage storage;
+
+    //private int mSelectItemPosition;
 
     @Nullable
     @Override
@@ -101,6 +105,8 @@ public class FragmentWork extends Fragment {
         //mSelectItem = -1;
         //mFlagSelect = false;
 
+        storage = new PersistantStorage();
+
         refreshData();
 
         return v;
@@ -124,6 +130,10 @@ public class FragmentWork extends Fragment {
         return mParentTopicId;
     }
 
+//    public int getSelectItemPosition() {
+//        return mSelectItemPosition;
+//    }
+
     private void refreshData() {
 
         Log.d("Zig", "begin function refreshData()");
@@ -132,11 +142,11 @@ public class FragmentWork extends Fragment {
         expFromDB = new ArrayList<Expressions>();
         //get child-topics
         topicsFromDB = dba.getTopicByIdParentAlphabet(mParentTopicId);
-        topicsCount = topicsFromDB.size();
+        //topicsCount = topicsFromDB.size();
 
         //get child-expressions
         expFromDB = dba.getExpByIdParent(mParentTopicId);
-        expCount = expFromDB.size();
+        //expCount = expFromDB.size();
 
         //clone fromDB -> foundItems
         cloneItems();
@@ -154,21 +164,21 @@ public class FragmentWork extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Log.d("Zig", "listTopicContent.setOnItemClickListener begin");
-
+                Log.d("Zig", "listTopicContentRecycler.setOnItemClickListener begin");
 
                 if (!topicsFromDB.isEmpty()) {
 
-//                    mSelectItem = position;
-//                    mFlagSelect = true;
+                    //save select item position
+                    storage.init(getContext());
+                    if (mParentTopicId == 0) {
 
-                    //topicAdapter.setmSelectItem(mSelectItem);
-                    //topicAdapter.notifyDataSetChanged();
-//                    if (mFlagSelect) {
-//                        topicAdapter.setmSelectItem(mSelectItem);
-//                        topicAdapter.setmFlagSelect(true);
-//                        //mFlagSelect = false;
-//                    }
+                        storage.addProperty(Constants.TOPICS_ROOT_NAME,
+                                mFoundTopics.get(position).getTopicText());
+                    } else {
+                        storage.addProperty(dba.getTopicById(mParentTopicId).getTopicText(),
+                                mFoundTopics.get(position).getTopicText());
+                    }
+
 
                     FragmentSlidingTabs fragmentSlidingTabs = (FragmentSlidingTabs)
                             workContext.getSupportFragmentManager().findFragmentById(R.id.fragment_sliding_tabs);
@@ -208,7 +218,7 @@ public class FragmentWork extends Fragment {
 
                 }
 
-//                Log.d("Zig", "listTopicContent.setOnItemClickListener end");
+//                Log.d("Zig", "listTopicContentRecycler.setOnItemClickListener end");
 
             }
 
@@ -420,7 +430,7 @@ public class FragmentWork extends Fragment {
 //                if (mFlagSelect) {
 //                    topicAdapter.setmSelectItem(mSelectItem);
 //                    topicAdapter.setmFlagSelect(true);
-//                    //mFlagSelect = false;
+//                    mFlagSelect = false;
 //                }
 
                 listTopicContent.setAdapter(topicAdapter);
@@ -476,7 +486,7 @@ public class FragmentWork extends Fragment {
 //                topicAdapter = new CustomListViewTopicAdapter(getActivity(),
 //                        R.layout.adapter_topic_item,
 //                        mFoundTopics); //send id topics current tabs
-//                listTopicContent.setAdapter(topicAdapter);
+//                listTopicContentRecycler.setAdapter(topicAdapter);
 //                topicAdapter.notifyDataSetChanged();
 //
 //                //textItemCount.setText("Number of subtopics");
@@ -538,24 +548,24 @@ public class FragmentWork extends Fragment {
 
     }
 
-    public void fabLauncher() {
-
-
-        if (!topicsFromDB.isEmpty()) {
-
-            Toast.makeText(getActivity(), "I'm a black cat! You have " +
-                    mFoundTopics.size() + " topics.", Toast.LENGTH_SHORT).show();
-
-        } else {
-
-            Toast.makeText(getActivity(), "I'm a black cat! You have " +
-                    mFoundExp.size() + " expessions.", Toast.LENGTH_SHORT).show();
-
-        }
-
-        //toolbar.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
-        //appBarLayout.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
-    }
+//    public void fabLauncher() {
+//
+//
+//        if (!topicsFromDB.isEmpty()) {
+//
+//            Toast.makeText(getActivity(), "I'm a black cat! You have " +
+//                    mFoundTopics.size() + " topics.", Toast.LENGTH_SHORT).show();
+//
+//        } else {
+//
+//            Toast.makeText(getActivity(), "I'm a black cat! You have " +
+//                    mFoundExp.size() + " expessions.", Toast.LENGTH_SHORT).show();
+//
+//        }
+//
+//        //toolbar.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
+//        //appBarLayout.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
+//    }
 
     public void cloneItems() {
 
