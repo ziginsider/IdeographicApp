@@ -3,7 +3,6 @@ package io.github.ziginsider.ideographicapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
@@ -24,8 +23,11 @@ import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
+import data.Constants;
 import data.DatabaseHandler;
+import data.InitalDatabaseHandler;
 
 @EActivity(R.layout.activity_main)
 public class MainActivity extends AppCompatActivity
@@ -57,6 +59,8 @@ public class MainActivity extends AppCompatActivity
 //        navigationView.setNavigationItemSelectedListener(this);
 //    }
 
+    InitalDatabaseHandler dba;
+    DatabaseHandler dbHandler;
 
     @ViewById(R.id.toolbar)
     Toolbar toolbar;
@@ -70,27 +74,37 @@ public class MainActivity extends AppCompatActivity
     @ViewById(R.id.nav_view)
     NavigationView navigationView;
 
-    @ViewById(R.id.btn_all_topics)
+    @ViewById(R.id.btn_open_recent)
     Button btnAllTopics;
 
-    @Click(R.id.btn_all_topics)
+    @Click(R.id.btn_open_recent)
     void clickBtnAllTopics() {
 
-        Intent i = new Intent(this, WorkActivity_.class);
+        ArrayList<Integer> idTopicsPageList = new ArrayList<Integer>();
+        idTopicsPageList.clear();
 
-//        Bundle mBundle = new Bundle();
-//        mBundle.putSerializable("tabsCursor", tabsCursor);
-//
-//        i.putExtras(mBundle);
+        int currentId = dba.getIdTopicTopRecentTopics();
 
-        //startActivity(i);
-        this.startActivity(i);
+        idTopicsPageList.add(currentId);
+
+        if (currentId != 0) {
+            do {
+                currentId = dbHandler.getTopicById(currentId).getTopicParentId();
+                idTopicsPageList.add(currentId);
+
+            } while (currentId != 0);
+        }
+        Intent i = new Intent(MainActivity.this,
+                WorkActivityRecycler_.class);
+        i.putExtra(Constants.EXTRA_TOPICS_OPEN_TABS, idTopicsPageList);
+        startActivity(i);
     }
 
     @Click(R.id.btn_all_exp)
     void clickBtnAllExp() {
 
         Intent i = new Intent(this, ResultTopicSearchActivity_.class);
+
         this.startActivity(i);
     }
 
@@ -98,6 +112,9 @@ public class MainActivity extends AppCompatActivity
     void clickBtnTopicRecycler() {
 
         Intent i = new Intent(this, WorkActivityRecycler_.class);
+        ArrayList<Integer> startTopicsList = new ArrayList<>();
+        startTopicsList.add(0); //set topics root = "Topics"
+        i.putExtra(Constants.EXTRA_TOPICS_OPEN_TABS, startTopicsList);
         this.startActivity(i);
     }
 
@@ -105,6 +122,15 @@ public class MainActivity extends AppCompatActivity
     void clickBtnRecentTopics() {
 
         Intent i = new Intent(this, RecentTopicActivity_.class);
+        //i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        this.startActivity(i);
+    }
+
+    @Click(R.id.btn_favorite_exp)
+    void clickBtnFavoriteExp() {
+
+        Intent i = new Intent(this, FavoriteExpActivity_.class);
+        //i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         this.startActivity(i);
     }
 
@@ -138,8 +164,10 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        dba = new InitalDatabaseHandler(this); //setup inital db
+
         //Setup DB
-        DatabaseHandler dbHandler = new DatabaseHandler(this);
+        dbHandler = new DatabaseHandler(this);
         try {
             dbHandler.createDataBase();
         } catch (IOException ioe) {
@@ -153,6 +181,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         dbHandler.close();
+
     }
 
 
@@ -215,5 +244,12 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    protected void onDestroy() {
+        dba.close();
+        dbHandler.close();
+        super.onDestroy();
     }
 }

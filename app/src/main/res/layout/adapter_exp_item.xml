@@ -6,25 +6,27 @@
     android:layout_height="wrap_content"
     android:layout_marginLeft="5dp"
     android:layout_marginRight="5dp"
+    android:layout_marginTop="10dp"
     android:padding="8dp"
     android:background="@drawable/ripple_exp_new">
+
 
     <TextView
         android:id="@+id/txt_view_exp"
         android:text="Expression"
         android:textColor="#000000"
         android:textSize="16sp"
-        android:layout_marginRight="20dp"
+        android:layout_marginRight="25dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
     <ImageView
-        android:id="@+id/imgChevronTopicChild"
-        android:layout_marginLeft="5dp"
+        android:id="@+id/img_favorite_add"
+        android:layout_marginLeft="10dp"
         android:layout_marginTop="2dp"
         android:layout_alignParentRight="true"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
-        android:src="@drawable/ic_settings_exp" />
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:src="@drawable/bookmark_no" />
 
 </RelativeLayout>

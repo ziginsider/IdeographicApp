@@ -431,7 +431,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
 //    //Get Topic parent id with id
-//    public int getTopicParentIdWithId(int idTopic) {
+//    public int getTopicParentIdWithId(int idExp) {
 //
 //    }
 //
@@ -441,7 +441,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 //    }
 //
 //    //Get Topic Labels with id
-//    public String getTopicLabelsWithId(int idTopic) {
+//    public String getTopicLabelsWithId(int idExp) {
 //
 //    }
 

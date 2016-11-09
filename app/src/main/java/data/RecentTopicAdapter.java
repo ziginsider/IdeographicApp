@@ -1,5 +1,6 @@
 package data;
 
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import io.github.ziginsider.ideographicapp.R;
+import io.github.ziginsider.ideographicapp.WorkActivityRecycler_;
 import model.RecentTopics;
 
 /**
@@ -20,7 +22,7 @@ import model.RecentTopics;
 public class RecentTopicAdapter extends RecyclerView.Adapter<RecentTopicAdapter.ViewHolder> {
 
     private ArrayList<RecentTopics> recentTopicsList;
-    private int clickedPosition;
+    //private int clickedPosition;
     private DatabaseHandler dba;
     private int countItems;
 
@@ -70,11 +72,11 @@ public class RecentTopicAdapter extends RecyclerView.Adapter<RecentTopicAdapter.
         holder.numberTopic.setText(String.valueOf(position + 1) + ".");
         holder.idTopic = recentTopicsList.get(position).getTopicId();
 
-        if (position == clickedPosition){
-            holder.relativeLayout.setBackgroundResource(R.drawable.bg_current_topic);
-        } else {
-            holder.relativeLayout.setBackgroundResource(R.drawable.ripple_bg_exp);
-        }
+//        if (position == clickedPosition){
+//            holder.relativeLayout.setBackgroundResource(R.drawable.bg_current_topic);
+//        } else {
+//            holder.relativeLayout.setBackgroundResource(R.drawable.ripple_bg_exp);
+//        }
 
         if (dba.getTopicCountByIdParent(holder.idTopic) > 0) {
             holder.imageNextItem.setImageResource(R.drawable.ic_chevron_color_right);
@@ -82,31 +84,33 @@ public class RecentTopicAdapter extends RecyclerView.Adapter<RecentTopicAdapter.
             holder.imageNextItem.setImageResource(R.drawable.ic_three_circle_green);
         }
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
 
-            @Override
-            public void onClick(View view) {
 
-                //set the position
-                clickedPosition = position;
-
-                //bluetoothPreferences.setBluetoothName(device.getName());
-                //bluetoothPreferences.setBluetoothAddress(device.getAddress());
-                //notify the data has changed
-                notifyDataSetChanged();
-                //notifyItemChanged(position);
-            }
-        });
-
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-
-            @Override
-            public boolean onLongClick(View v) {
-                clickedPosition = position;
-                notifyDataSetChanged();
-                return  true;
-            }
-        });
+//        holder.itemView.setOnClickListener(new View.OnClickListener() {
+//
+//            @Override
+//            public void onClick(View view) {
+//
+//                //set the position
+//                clickedPosition = position;
+//
+//                //bluetoothPreferences.setBluetoothName(device.getName());
+//                //bluetoothPreferences.setBluetoothAddress(device.getAddress());
+//                //notify the data has changed
+//                notifyDataSetChanged();//notifyItemChanged(position);
+//
+//            }
+//        });
+//
+//        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+//
+//            @Override
+//            public boolean onLongClick(View v) {
+//                clickedPosition = position;
+//                notifyDataSetChanged();
+//                return  true;
+//            }
+//        });
 
         if (position == (countItems - 1)) {
             dba.close();

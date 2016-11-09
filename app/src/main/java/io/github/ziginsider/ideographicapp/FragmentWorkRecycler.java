@@ -22,11 +22,14 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
+import data.AsyncProvider;
 import data.Constants;
 import data.DatabaseHandler;
 import data.InitalDatabaseHandler;
@@ -45,6 +48,7 @@ public class FragmentWorkRecycler extends Fragment {
     RecyclerView listTopicContentRecycler;
 
     AppBarLayout tabbar;
+    AppBarLayout appbar;
     ViewPager viewPager;
     com.melnykov.fab.FloatingActionButton fab;
 
@@ -62,7 +66,8 @@ public class FragmentWorkRecycler extends Fragment {
     //private RecyclerView.Adapter mAdapterTopic;
     private RecyclerTopicAdapter mAdapterTopic;
     private RecyclerExpAdapter mAdapterExp;
-    private RecyclerView.LayoutManager mLayoutManager;
+    //private RecyclerView.LayoutManager mLayoutManager;
+    android.support.v7.widget.LinearLayoutManager mLayoutManager;
 
     private AfterItemClickTask afterItemClickTask;
 
@@ -259,6 +264,47 @@ public class FragmentWorkRecycler extends Fragment {
 //            }
 //        });
 
+//        tabbar = (AppBarLayout) getActivity().findViewById(R.id.appbar_layout_recycler);
+//        appbar = (AppBarLayout) getActivity().findViewById(R.id.appbar_layout_work_recycler);
+//        viewPager = (ViewPager) getActivity().findViewById(R.id.work_view_pager_recycler);
+//
+//
+//        listTopicContentRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            int mLastFirstVisibleItem = 0;
+//
+//            @Override
+//            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+//            }
+//
+//            @Override
+//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//                super.onScrolled(recyclerView, dx, dy);
+//                final int currentFirstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
+//
+//                if (currentFirstVisibleItem > this.mLastFirstVisibleItem) {
+//
+//                    tabbar.animate().translationY(-appbar.getBottom()).
+//                            setInterpolator(new AccelerateInterpolator()).start();
+//                    appbar.animate().translationY(-appbar.getBottom()).
+//                            setInterpolator(new AccelerateInterpolator()).start();
+//                    viewPager.animate().translationY(-(tabbar.getBottom())).
+//                            setInterpolator(new AccelerateInterpolator()).start();
+//
+//                } else if (currentFirstVisibleItem < this.mLastFirstVisibleItem) {
+//
+//                    tabbar.animate().translationY(0).
+//                            setInterpolator(new DecelerateInterpolator()).start();
+//                    appbar.animate().translationY(0).
+//                            setInterpolator(new DecelerateInterpolator()).start();
+//                    viewPager.animate().translationY(0).
+//                            setInterpolator(new DecelerateInterpolator()).start();
+//                }
+//
+//                this.mLastFirstVisibleItem = currentFirstVisibleItem;
+//            }
+//        });
+
+
 
         Log.d("Zig", "End function RefreshData()");
 
@@ -397,7 +443,7 @@ public class FragmentWorkRecycler extends Fragment {
                                 }
                                 //get child topic
                                 Topics topic = mFoundTopics.get(position);
-                                //Log.d("Zig", "press topic text = " + topic.getTopicText());
+                                //Log.d("Zig", "press topic text = " + topic.get TopicText());
                                 fragmentSlidingTabsRecycler.addPage(topic.getTopicId());
                             }
 
@@ -641,83 +687,8 @@ public class FragmentWorkRecycler extends Fragment {
         @Override
         protected Void doInBackground(Integer... params) {
 
-            int topicId = params[0];
-            int currentWeight = 0;
-            int setWeight = 0;
-            RecentTopics currentRecentTopic;
-            int maxTotalRecent = 20;
-
-            InitalDatabaseHandler dba = new InitalDatabaseHandler(mContext);
-            DatabaseHandler dba_data = new DatabaseHandler(mContext);
-
-            ArrayList<RecentTopics> recentList = dba.getRecentTopicsList();
-
-            //if the topic is on the recent
-            if (dba.getRecentCountByIdTopic(topicId) > 0) {
-
-                currentRecentTopic = dba.getRecentTopicByTopicId(topicId);
-                currentWeight = currentRecentTopic.getTopicWeight();
-                setWeight = dba.getRecentMaxWeight();
-
-                for(int i = 0; i < recentList.size(); i++) {
-
-                    if (recentList.get(i).getTopicWeight() > currentWeight) {
-
-                        //recentList.get(i).downTopicWeight();
-                        dba.updateTopicWeightByIdTopic(recentList.get(i).getTopicId(),
-                                (recentList.get(i).getTopicWeight() - 1));
-
-                    } else if(recentList.get(i).getTopicWeight() == currentWeight) {
-
-                        //recentList.get(i).setTopicWeight(setWeight);
-                        dba.updateTopicWeightByIdTopic(recentList.get(i).getTopicId(), setWeight);
-                    }
-                }
-            } else { //if the topic isn't on the recent
-
-
-                int totalRecent = dba.getTotalRecentTopics();
-                //if it is first recent
-                if (totalRecent == 0) {
-
-                    currentRecentTopic = new RecentTopics(
-                            dba_data.getTopicById(topicId).getTopicText(),
-                            topicId,
-                            1);
-                    dba.addRecentTopic(currentRecentTopic);
-
-                } else if (totalRecent < maxTotalRecent) {
-
-                    setWeight = dba.getRecentMaxWeight() + 1;
-
-                    currentRecentTopic = new RecentTopics(
-                            dba_data.getTopicById(topicId).getTopicText(),
-                            topicId,
-                            setWeight);
-                    dba.addRecentTopic(currentRecentTopic);
-                } else {
-
-                    for(int i = 0; i < recentList.size(); i++) {
-
-                        dba.updateTopicWeightByIdTopic(recentList.get(i).getTopicId(),
-                                (recentList.get(i).getTopicWeight() - 1));
-                    }
-
-                    dba.deleteLastRecentTopic();
-
-                    setWeight = maxTotalRecent;
-
-                    currentRecentTopic = new RecentTopics(
-                            dba_data.getTopicById(topicId).getTopicText(),
-                            topicId,
-                            setWeight);
-                    dba.addRecentTopic(currentRecentTopic);
-                }
-            }
-
-
-            dba.close();
-            dba_data.close();
+            AsyncProvider asyncProvider = new AsyncProvider();
+            asyncProvider.setRecentTopic(mContext, params[0]);
 
             return null;
         }

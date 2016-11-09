@@ -33,6 +33,10 @@
         <activity
             android:name=".RecentTopicActivity_"
             android:label="@string/title_activity_recent_topic"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".FavoriteExpActivity_"
+            android:label="@string/title_activity_favorite_exp"
             android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <uses-library

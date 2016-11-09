@@ -9,6 +9,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
+import model.FavoriteExpressions;
 import model.RecentTopics;
 
 /**
@@ -18,8 +19,8 @@ import model.RecentTopics;
 public class InitalDatabaseHandler extends SQLiteOpenHelper {
 
     private final ArrayList<RecentTopics> recentTopicsList = new ArrayList<>();
+    private final ArrayList<FavoriteExpressions> favoriteExpList = new ArrayList<>();
 
-    String DB_PATH = null;
 
     public InitalDatabaseHandler(Context context) {
         super(context, Constants.INITAL_DATABASE_NAME, null, Constants.INITAL_DATABASE_VERSION);
@@ -35,13 +36,24 @@ public class InitalDatabaseHandler extends SQLiteOpenHelper {
                 Constants.RECENT_TOPIC_WEIGHT + " INT" +
                 ")"; //';' ??
 
+        String CREATE_FAVORITE_TABLE = "CREATE TABLE " + Constants.FAVORITE_TABLE_NAME +
+                "(" + Constants.KEY_ID + " INTEGER PRIMARY KEY," +
+                Constants.FAVORITE_EXP_TEXT + " TEXT, " +
+                Constants.FAVORITE_EXP_ID + " INT, " +
+                Constants.FAVORITE_PARENT_TOPIC_ID + " INT" +
+                ")";
+
         db.execSQL(CREATE_RECENT_TABLE);
+        db.execSQL(CREATE_FAVORITE_TABLE);
+
+
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
         db.execSQL("DROP TABLE IF EXISTS " + Constants.RECENT_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + Constants.FAVORITE_TABLE_NAME);
 
         //create a new one
         onCreate(db);
@@ -171,6 +183,40 @@ public class InitalDatabaseHandler extends SQLiteOpenHelper {
         return recentTopicsList;
     }
 
+    public int getIdTopicTopRecentTopics() {
+
+        int idTopicTop = 0;
+
+        SQLiteDatabase dba = this.getReadableDatabase();
+
+        Cursor cursor = dba.query(Constants.RECENT_TABLE_NAME,
+                new String[]{Constants.KEY_ID,
+                        Constants.RECENT_TOPIC_TEXT,
+                        Constants.RECENT_TOPIC_ID,
+                        Constants.RECENT_TOPIC_WEIGHT},
+                null,
+                null,
+                null,
+                null,
+                Constants.RECENT_TOPIC_WEIGHT + " DESC");
+
+        //loop through...
+        if (cursor.moveToFirst()) {
+
+            idTopicTop = cursor.getInt(cursor.getColumnIndex(Constants.RECENT_TOPIC_ID));
+
+            Log.d(Constants.LOG_TAG, ">>> Get id topic top recent topics: success");
+        } else {
+
+            Log.d(Constants.LOG_TAG, ">>> Get id topic top recent topics: No matching data");
+        }
+
+        cursor.close();
+        dba.close();
+
+        return idTopicTop;
+    }
+
     public int getRecentMaxWeight() {
 
         int maxWeight = 0;
@@ -241,6 +287,7 @@ public class InitalDatabaseHandler extends SQLiteOpenHelper {
         Log.d(Constants.LOG_TAG, ">>> Count Recent Topics = " + String.valueOf(totalRecentTopics));
 
         cursor.close();
+        dba.close();
 
         return totalRecentTopics;
     }
@@ -262,7 +309,103 @@ public class InitalDatabaseHandler extends SQLiteOpenHelper {
                 new String[] {String.valueOf(0)});
         db.close();
     }
+///////////////////////////////////////////////////////////////////
+// FAVORITE LIST
+// Ziginsider 09/11/2016
+//////////////////////////////////////////////////////////////////
 
+    //add exp to favorite list
+    public  void addFavoriteExp(FavoriteExpressions favoriteExp){
+        SQLiteDatabase dba = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(Constants.FAVORITE_EXP_TEXT, favoriteExp.getTextExp());
+        values.put(Constants.FAVORITE_EXP_ID, favoriteExp.getIdExp());
+        values.put(Constants.FAVORITE_PARENT_TOPIC_ID, favoriteExp.getIdParentTopic());
+
+        dba.insert(Constants.FAVORITE_TABLE_NAME, null, values);
+        dba.close();
+    }
+
+    //delete exp from favorite list
+    public void deleteFavoriteExp(int idExp) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.delete(Constants.FAVORITE_TABLE_NAME, Constants.FAVORITE_EXP_ID + " = ? ",
+                new String[] {String.valueOf(idExp)});
+        db.close();
+    }
+
+    //get all items favorite list
+    public ArrayList<FavoriteExpressions> getFavoriteExpList() {
+
+        favoriteExpList.clear();
+
+        SQLiteDatabase dba = this.getReadableDatabase();
+
+        Cursor cursor = dba.query(Constants.FAVORITE_TABLE_NAME,
+                new String[]{Constants.KEY_ID,
+                        Constants.FAVORITE_EXP_TEXT,
+                        Constants.FAVORITE_EXP_ID,
+                        Constants.FAVORITE_PARENT_TOPIC_ID},
+                null,
+                null,
+                null,
+                null,
+                null);
+
+        //loop through...
+        if (cursor.moveToFirst()) {
+            do {
+                FavoriteExpressions favoriteExp = new FavoriteExpressions();
+
+                favoriteExp.setTextExp(cursor.getString(cursor.
+                        getColumnIndex(Constants.FAVORITE_EXP_TEXT)));
+                favoriteExp.setIdExp(cursor.getInt(cursor.
+                        getColumnIndex(Constants.FAVORITE_EXP_ID)));
+                favoriteExp.setIdParentTopic(cursor.getInt(cursor.
+                        getColumnIndex(Constants.FAVORITE_PARENT_TOPIC_ID)));
+                favoriteExp.setIdFavoriteExp(cursor.getInt(cursor.
+                        getColumnIndex(Constants.KEY_ID)));
+
+                favoriteExpList.add(favoriteExp);
+
+            } while (cursor.moveToNext());
+
+            Log.d(Constants.LOG_TAG, ">>> Get all Favorite Exp: success");
+        } else {
+
+            Log.d(Constants.LOG_TAG, ">>> Get all Favorite Exp: No matching data");
+        }
+
+        cursor.close();
+        dba.close();
+
+        return favoriteExpList;
+    }
+
+    public boolean isExpInFavoriteList(int idExp) {
+
+        boolean flag = false;
+
+        String query = "SELECT * FROM " + Constants.FAVORITE_TABLE_NAME +
+                " WHERE " + Constants.FAVORITE_EXP_ID + " = ? ";
+
+        SQLiteDatabase dba = this.getReadableDatabase();
+        Cursor cursor = dba.rawQuery(query, new String[] {String.valueOf(idExp)});
+
+        if (cursor != null) {
+
+            if (cursor.getCount() > 0) {
+                flag = true;
+            }
+        }
+
+        cursor.close();
+        dba.close();
+
+        return flag;
+    }
 
 
 }

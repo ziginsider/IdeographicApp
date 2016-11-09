@@ -1,6 +1,10 @@
 package io.github.ziginsider.ideographicapp;
 
+import android.content.Context;
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,15 +20,19 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
 
 import java.util.ArrayList;
 
+import data.AsyncProvider;
+import data.Constants;
 import data.DatabaseHandler;
 import data.InitalDatabaseHandler;
 import data.RecentTopicAdapter;
 import data.RecyclerAdapter;
+import data.RecyclerItemClickListener;
 import model.RecentTopics;
 
 @EActivity(R.layout.activity_recent_topic)
@@ -32,9 +40,11 @@ public class RecentTopicActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     InitalDatabaseHandler dba;
+    DatabaseHandler dba_data;
     ArrayList<RecentTopics> recentTopicsList;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    private AfterItemClickTask afterItemClickTask;
 
     @ViewById(R.id.recycler_view_recent_topic)
     RecyclerView mRecyclerView;
@@ -43,6 +53,12 @@ public class RecentTopicActivity extends AppCompatActivity
     void init() {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        AppBarLayout.LayoutParams params =
+                (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
+
+        params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
+                | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
+
         setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -55,6 +71,7 @@ public class RecentTopicActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         dba = new InitalDatabaseHandler(this);
+        dba_data = new DatabaseHandler(this);
         //get all expressions
         recentTopicsList = dba.getRecentTopicsList();
 
@@ -69,7 +86,46 @@ public class RecentTopicActivity extends AppCompatActivity
         mAdapter = new RecentTopicAdapter(recentTopicsList);
         mRecyclerView.setAdapter(mAdapter);
 
+
+        mRecyclerView.addOnItemTouchListener(
+                new RecyclerItemClickListener(this,
+                        mRecyclerView,
+                        new RecyclerItemClickListener.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(View view, int position) {
+
+                                ArrayList<Integer> idTopicsPageList = new ArrayList<Integer>();
+                                idTopicsPageList.clear();
+
+                                int currentId = recentTopicsList.get(position).getTopicId();
+                                //add to recent topics
+                                afterItemClickTask = new AfterItemClickTask(RecentTopicActivity.this);
+                                afterItemClickTask.execute(currentId);
+
+                                idTopicsPageList.add(currentId);
+                                do {
+                                    currentId = dba_data.getTopicById(currentId).getTopicParentId();
+                                    idTopicsPageList.add(currentId);
+
+                                } while (currentId != 0);
+
+
+
+                                Intent i = new Intent(RecentTopicActivity.this,
+                                        WorkActivityRecycler_.class);
+                                i.putExtra(Constants.EXTRA_TOPICS_OPEN_TABS, idTopicsPageList);
+                                startActivity(i);
+                                RecentTopicActivity.this.finish();
+                            }
+
+                            @Override
+                            public void onItemLongClick(View view, int position) {
+                                // ...
+                            }
+                        }));
+
         dba.close();
+        dba_data.close();
 
     }
 
@@ -128,5 +184,33 @@ public class RecentTopicActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    class AfterItemClickTask extends AsyncTask<Integer, Void, Void> {
+
+        private Context mContext;
+
+        public AfterItemClickTask(Context context) {
+            mContext = context;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+        }
+
+        @Override
+        protected Void doInBackground(Integer... params) {
+
+            AsyncProvider asyncProvider = new AsyncProvider();
+            asyncProvider.setRecentTopic(mContext, params[0]);
+
+            return null;
+        }
     }
 }

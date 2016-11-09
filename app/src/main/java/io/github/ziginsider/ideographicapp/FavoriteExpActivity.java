@@ -1,96 +1,97 @@
 package io.github.ziginsider.ideographicapp;
 
-import android.content.Intent;
+import android.support.design.widget.AppBarLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
-
-import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.FragmentById;
 import org.androidannotations.annotations.ViewById;
-import org.androidannotations.annotations.WindowFeature;
 
 import java.util.ArrayList;
 
-import data.Constants;
+import data.DatabaseHandler;
+import data.FavoriteAdapter;
+import data.InitalDatabaseHandler;
+import data.RecentTopicAdapter;
+import model.FavoriteExpressions;
+import model.RecentTopics;
 
-@WindowFeature({Window.FEATURE_ACTION_BAR_OVERLAY})
-@EActivity(R.layout.activity_work_recycler)
-public class WorkActivityRecycler extends AppCompatActivity
+@EActivity(R.layout.activity_favorite_exp)
+public class FavoriteExpActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    @ViewById(R.id.toolbar_work_recycler)
-    Toolbar toolbar;
+    InitalDatabaseHandler dba;
+    DatabaseHandler dba_data;
+    ArrayList<FavoriteExpressions> favoriteExpList;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
+    //private RecentTopicActivity.AfterItemClickTask afterItemClickTask;
 
-    @ViewById(R.id.fab_recycler)
-    com.melnykov.fab.FloatingActionButton fab;
-
-    @ViewById(R.id.drawer_layout_recycler)
-    DrawerLayout drawer;
-
-    @ViewById(R.id.nav_view_recycler)
-    NavigationView navigationView;
-
-    @ViewById(R.id.search_view_recycler)
-    MaterialSearchView searchView;
-
-    @FragmentById(R.id.fragment_sliding_tabs_recycler)
-    FragmentSlidingTabsRecycler fragmentSlidingTabsRecycler;
+    @ViewById(R.id.recycler_view_favorite_exp)
+    RecyclerView mRecyclerView;
 
     @AfterViews
     void init() {
 
-        //setup view
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        AppBarLayout.LayoutParams params =
+                (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
+
+        params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
+                | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
         setSupportActionBar(toolbar);
 
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        fab.setTag("show");
-
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        //first fragment: root topic
-        ArrayList<Integer> idTopicsPageList = getIntent().
-                getIntegerArrayListExtra(Constants.EXTRA_TOPICS_OPEN_TABS);
+        dba = new InitalDatabaseHandler(this);
+        dba_data = new DatabaseHandler(this);
+        //get all expressions
+        favoriteExpList = dba.getFavoriteExpList();
 
-        for (int i = (idTopicsPageList.size() - 1); i >= 0; i--) { //set tabs
-            fragmentSlidingTabsRecycler.addPage(idTopicsPageList.get(i));
-        }
+        // если мы уверены, что изменения в контенте не изменят размер layout-а RecyclerView
+        // передаем параметр true - это увеличивает производительность
+        //mRecyclerView.setHasFixedSize(true);
+
+        // используем linear layout manager
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        // создаем адаптер
+        mAdapter = new FavoriteAdapter(favoriteExpList);
+        mRecyclerView.setAdapter(mAdapter);
     }
+
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout_recycler);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
-            //Intent i = new Intent(this, MainActivity_.class);
-            //i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            //this.startActivity(i);
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.work, menu);
-        MenuItem item = menu.findItem(R.id.action_search);
-        searchView.setMenuItem(item);
-
+        getMenuInflater().inflate(R.menu.favorite_exp, menu);
         return true;
     }
 
@@ -129,9 +130,8 @@ public class WorkActivityRecycler extends AppCompatActivity
 
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout_recycler);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 }
-

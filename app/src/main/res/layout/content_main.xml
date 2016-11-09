@@ -15,47 +15,59 @@
 
     <Button
         android:id="@+id/btn_topics_recycler"
-        android:text="Show Topics Test"
-        android:padding="7dp"
-        android:layout_width="200dp"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="60dp"
-        android:background="@drawable/ripple_bg_btn_main_activity"/>
-
-    <Button
-        android:id="@+id/btn_all_exp"
-        android:layout_below="@id/btn_topics_recycler"
-        android:text="Show All Exp"
-        android:padding="7dp"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="60dp"
-        android:background="@drawable/ripple_bg_btn_main_activity"/>
-
-
-    <Button
-        android:id="@+id/btn_all_topics"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/btn_all_exp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="30dp"
         android:background="@drawable/ripple_bg_btn_main_activity"
         android:padding="7dp"
-        android:text="Show Topics old" />
+        android:text="Show Topics" />
+
+    <Button
+        android:id="@+id/btn_open_recent"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btn_topics_recycler"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/ripple_bg_btn_main_activity"
+        android:padding="7dp"
+        android:text="Open Recent" />
+
+
+
 
     <Button
         android:id="@+id/btn_recent_topics"
-        android:text="Show Recent Topics"
-        android:layout_below="@id/btn_all_topics"
-        android:padding="7dp"
-        android:layout_width="200dp"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
+        android:layout_below="@id/btn_open_recent"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp"
-        android:background="@drawable/ripple_bg_btn_main_activity"/>
+        android:layout_marginTop="60dp"
+        android:background="@drawable/ripple_bg_btn_main_activity"
+        android:padding="5dp"
+        android:text="Show Recent Topics" />
 
 
+    <Button
+        android:id="@+id/btn_favorite_exp"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btn_recent_topics"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/ripple_bg_btn_main_activity"
+        android:padding="5dp"
+        android:text="Show Favorite Exp" />
+
+    <Button
+        android:id="@+id/btn_all_exp"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btn_favorite_exp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/ripple_bg_btn_main_activity"
+        android:padding="5dp"
+        android:text="Show All Exp" />
 </RelativeLayout>
