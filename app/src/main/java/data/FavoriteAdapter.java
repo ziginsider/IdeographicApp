@@ -105,7 +105,6 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
                 ClipData clip = ClipData.newPlainText(favoriteExpList.get(position).getTextExp(),
                         favoriteExpList.get(position).getTextExp());
                 clipboard.setPrimaryClip(clip);
-
                 Toast.makeText(view.getContext(), "Copied to clipboard", Toast.LENGTH_SHORT).show();
 
             }
