@@ -3,7 +3,7 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_camera"
+            android:id="@+id/nav_start"
             android:icon="@drawable/ic_black_cat"
             android:title="Recent" />
         <item
@@ -11,11 +11,11 @@
             android:icon="@drawable/ic_black_cat"
             android:title="TODO Settings" />
         <item
-            android:id="@+id/nav_slideshow"
+            android:id="@+id/nav_recent_show"
             android:icon="@drawable/ic_black_cat"
             android:title="Exit" />
         <item
-            android:id="@+id/nav_manage"
+            android:id="@+id/nav_statistic"
             android:icon="@drawable/ic_black_cat"
             android:title="Brrrrrrrr" />
     </group>
@@ -23,11 +23,11 @@
     <item android:title="Divider">
         <menu>
             <item
-                android:id="@+id/nav_share"
+                android:id="@+id/nav_options"
                 android:icon="@drawable/ic_black_cat"
                 android:title="1" />
             <item
-                android:id="@+id/nav_send"
+                android:id="@+id/nav_help"
                 android:icon="@drawable/ic_black_cat"
                 android:title="2" />
         </menu>

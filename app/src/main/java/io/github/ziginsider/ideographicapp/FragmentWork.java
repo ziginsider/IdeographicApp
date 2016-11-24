@@ -102,7 +102,7 @@ public class FragmentWork extends Fragment {
         //toolbar = (Toolbar) v.findViewById(R.id.toolbar_work);
 
         //listTopicLabels = new ArrayList<String>();
-        //mSelectItem = -1;
+        //mSelectItem = -ic_intro_1;
         //mFlagSelect = false;
 
         storage = new PersistantStorage();
@@ -157,7 +157,7 @@ public class FragmentWork extends Fragment {
 //
 //        } else {
 //
-//            textFooterTopicContent.setText(dba.getTopicById(mParentTopicId).getTopicText());
+//            textFooterTopicContent.setText(dba_inital.getTopicById(mParentTopicId).getTopicText());
 //        }
 
         listTopicContent.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -186,7 +186,7 @@ public class FragmentWork extends Fragment {
 //                    Toast.makeText(workContext, "Numbers of tabs = " +
 //                            String.valueOf(fragmentSlidingTabs.getCountTabs()) +
 //                            "\nPosition current tabs = " +
-//                            String.valueOf(fragmentSlidingTabs.getSelectedTabPosition() + 1), Toast.LENGTH_LONG).show();
+//                            String.valueOf(fragmentSlidingTabs.getSelectedTabPosition() + ic_intro_1), Toast.LENGTH_LONG).show();
 
                     //if do not have child topics
                     if (fragmentSlidingTabs.getCountTabs() == (fragmentSlidingTabs.getSelectedTabPosition() + 1) ) {

@@ -1,17 +1,5 @@
 package io.github.ziginsider.ideographicapp;
 
-import android.app.SearchManager;
-import android.content.Context;
-import android.os.Build;
-import android.os.Bundle;
-import android.support.annotation.RequiresApi;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
-import android.support.v7.widget.SearchView;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -21,8 +9,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
 
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
@@ -31,10 +17,6 @@ import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.FragmentById;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.WindowFeature;
-
-import java.io.IOException;
-
-import data.DatabaseHandler;
 
 @WindowFeature({Window.FEATURE_ACTION_BAR_OVERLAY})
 @EActivity(R.layout.activity_work)
@@ -123,17 +105,17 @@ public class WorkActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_start) {
             // Handle the camera action
         } else if (id == R.id.nav_gallery) {
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_recent_show) {
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_statistic) {
 
-        } else if (id == R.id.nav_share) {
+        } else if (id == R.id.nav_options) {
 
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_help) {
 
         }
 

@@ -8,4 +8,7 @@
     <string name="title_activity_work">WorkActivity</string>
     <string name="title_activity_recent_topic">RecentTopicActivity</string>
     <string name="title_activity_favorite_exp">FavoriteExpActivity</string>
+    <string name="title_activity_statistic_topic">StatisticTopicActivity</string>
+
+    <string name="app_intro">Intro</string>
 </resources>

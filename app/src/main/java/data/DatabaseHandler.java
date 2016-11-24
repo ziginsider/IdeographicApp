@@ -431,17 +431,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
 //    //Get Topic parent id with id
-//    public int getTopicParentIdWithId(int idExp) {
+//    public int getTopicParentIdWithId(int idTopic) {
 //
 //    }
 //
 //    //Get Exp parent id with id
-//    public int getExpParentIdWithId(int idExp) {
+//    public int getExpParentIdWithId(int idTopic) {
 //
 //    }
 //
 //    //Get Topic Labels with id
-//    public String getTopicLabelsWithId(int idExp) {
+//    public String getTopicLabelsWithId(int idTopic) {
 //
 //    }
 

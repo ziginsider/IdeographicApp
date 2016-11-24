@@ -3,34 +3,52 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_black_cat"
-            android:title="11111111" />
+            android:id="@+id/nav_start"
+            android:icon="@drawable/nav_start"
+            android:title="Begin" />
         <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_black_cat"
-            android:title="33333333333" />
+            android:id="@+id/nav_recent_open"
+            android:icon="@drawable/nav_go_recent"
+            android:title="Open recent" />
         <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_black_cat"
-            android:title="44444444444" />
+            android:id="@+id/nav_recent_show"
+            android:icon="@drawable/nav_recent"
+            android:title="List recent" />
         <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_black_cat"
-            android:title="5555555555" />
+            android:id="@+id/nav_statistic"
+            android:icon="@drawable/nav_statistic"
+            android:title="Statistic" />
+        <item
+            android:id="@+id/nav_favorite"
+            android:icon="@drawable/nav_favorite"
+            android:title="Favorite exp" />
+        <item
+            android:id="@+id/nav_all_exp"
+            android:icon="@drawable/nav_exp_all"
+            android:title="All exp" />
     </group>
 
-    <item android:title="6666666666">
-        <menu>
-            <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_black_cat"
-                android:title="777" />
-            <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_black_cat"
-                android:title="888" />
-        </menu>
-    </item>
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_help"
+            android:icon="@drawable/nav_help"
+            android:title="Help" />
+        <item
+            android:id="@+id/nav_options"
+            android:icon="@drawable/nav_options"
+            android:title="Options" />
+
+    </group>
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_rate"
+            android:icon="@drawable/nav_rate"
+            android:title="Rate" />
+        <item
+            android:id="@+id/nav_exit"
+            android:icon="@drawable/nav_exit"
+            android:title="Exit" />
+    </group>
 
 </menu>

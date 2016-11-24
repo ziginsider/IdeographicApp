@@ -124,6 +124,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
 
                 } catch (Exception e) {
                     //notifyDataSetChanged();
+
                 }
 
             }

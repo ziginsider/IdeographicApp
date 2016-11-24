@@ -4,22 +4,17 @@ package io.github.ziginsider.ideographicapp;
  * Created by zigin on 26.10.2016.
  */
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
+
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
@@ -27,18 +22,15 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 import data.AsyncProvider;
 import data.Constants;
 import data.DatabaseHandler;
-import data.InitalDatabaseHandler;
 import data.PersistantStorage;
 import data.RecyclerExpAdapter;
 import data.RecyclerItemClickListener;
 import data.RecyclerTopicAdapter;
 import model.Expressions;
-import model.RecentTopics;
 import model.Topics;
 
 public class FragmentWorkRecycler extends Fragment {
@@ -47,9 +39,6 @@ public class FragmentWorkRecycler extends Fragment {
 
     RecyclerView listTopicContentRecycler;
 
-    AppBarLayout tabbar;
-    AppBarLayout appbar;
-    ViewPager viewPager;
     com.melnykov.fab.FloatingActionButton fab;
 
     private DatabaseHandler dba;
@@ -63,15 +52,11 @@ public class FragmentWorkRecycler extends Fragment {
     private FragmentActivity workContext;
     private PersistantStorage storage;
 
-    //private RecyclerView.Adapter mAdapterTopic;
     private RecyclerTopicAdapter mAdapterTopic;
     private RecyclerExpAdapter mAdapterExp;
-    //private RecyclerView.LayoutManager mLayoutManager;
     android.support.v7.widget.LinearLayoutManager mLayoutManager;
 
     private AfterItemClickTask afterItemClickTask;
-
-    //private int mSelectItemPosition;
 
     @Nullable
     @Override
@@ -118,7 +103,6 @@ public class FragmentWorkRecycler extends Fragment {
         expFromDB = new ArrayList<Expressions>();
         //get child-topics
         topicsFromDB = dba.getTopicByIdParentAlphabet(mParentTopicId);
-        //topicsCount = topicsFromDB.size();
 
         //get child-expressions
         expFromDB = dba.getExpByIdParent(mParentTopicId);
@@ -126,188 +110,50 @@ public class FragmentWorkRecycler extends Fragment {
         //clone fromDB -> foundItems
         cloneItems();
 
-//        listTopicContentRecycler.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//
-//                Log.d("Zig", "listTopicContentRecycler.setOnItemClickListener begin");
-//
-//                if (!topicsFromDB.isEmpty()) {
-//
-//                    //save select item position
-//                    storage.init(getContext());
-//                    if (mParentTopicId == 0) {
-//
-//                        storage.addProperty(Constants.TOPICS_ROOT_NAME,
-//                                mFoundTopics.get(position).getTopicText());
-//
-//                        Log.d("Zig", "\n+++++++ Press Add topic witn name = " +
-//                                Constants.TOPICS_ROOT_NAME +
-//                                "\n select topic = " +
-//                                mFoundTopics.get(position).getTopicText());
-//                    } else {
-//                        storage.addProperty(dba.getTopicById(mParentTopicId).getTopicText(),
-//                                mFoundTopics.get(position).getTopicText());
-//
-//                        Log.d("Zig", "\n+++++++ Press Add topic witn name = " +
-//                                dba.getTopicById(mParentTopicId).getTopicText() +
-//                                "\nselect topic = " +
-//                                mFoundTopics.get(position).getTopicText());
-//                    }
-//
-//
-//                    FragmentSlidingTabs fragmentSlidingTabs = (FragmentSlidingTabs)
-//                            workContext.getSupportFragmentManager().findFragmentById(R.id.fragment_sliding_tabs);
-//
-//
-//                    //if do not have child topics
-//                    if (fragmentSlidingTabs.getCountTabs() == (fragmentSlidingTabs.getSelectedTabPosition() + 1) ) {
-//                        //get child topic
-//                        Topics topic = mFoundTopics.get(position);
-//                        //Log.d("Zig", "press topic text = " + topic.getTopicText());
-//                        fragmentSlidingTabs.addPage(topic.getTopicId());
-//
-//                    } else {
-//
-//                        //remove child topics
-//                        while (fragmentSlidingTabs.getCountTabs() != (fragmentSlidingTabs.getSelectedTabPosition() + 1)) {
-//
-//                            fragmentSlidingTabs.removePage(fragmentSlidingTabs.getSelectedTabPosition() + 1);
-//                        }
-//                        //get child topic
-//                        Topics topic = mFoundTopics.get(position);
-//                        //Log.d("Zig", "press topic text = " + topic.getTopicText());
-//                        fragmentSlidingTabs.addPage(topic.getTopicId());
-//                    }
-//                } else {
-//
-//                    Expressions exp = mFoundExp.get(position);
-//                    //Toast.makeText(getActivity(), "PRESS: " + exp.getExpText(), Toast.LENGTH_SHORT).show();
-//
-//                    ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-//                    ClipData clip = ClipData.newPlainText(exp.getExpText(), exp.getExpText());
-//                    clipboard.setPrimaryClip(clip);
-//
-//                }
-//            }
-//
-//
-//        });
-
-//        listTopicContentRecycler.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-//
-//            @Override
-//            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-//
-//                Toast.makeText(getActivity(), "Long click", Toast.LENGTH_SHORT).show();
-//                return true;
-//            }
-//        });
-
         fab = (com.melnykov.fab.FloatingActionButton) getActivity().findViewById(R.id.fab_recycler);
 
         showListView();
         showHideView();
 
-//        //show and hide toolbar from scroll
-//        mLastFirstVisibleItem = listTopicContentRecycler.getFirstVisiblePosition();
-//        //mLastFirstVisibleItem = 0;
-//
-//        tabbar = (AppBarLayout) getActivity().findViewById(R.id.appbar_layout_recycler);
-//        viewPager = (ViewPager) getActivity().findViewById(R.id.work_view_pager_recycler);
-//
-//        listTopicContentRecycler.setOnScrollListener(new AbsListView.OnScrollListener() {
-//            @Override
-//            public void onScrollStateChanged(AbsListView view, int scrollState) {
-//
-//            }
-//
-//            @Override
-//            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-//
-//                if (view.getId() == listTopicContentRecycler.getId()) {
-//                    final int currentFirstVisibleItem = listTopicContentRecycler.getFirstVisiblePosition();
-//
-//                    if (currentFirstVisibleItem > mLastFirstVisibleItem) {
-//
-//                        tabbar.animate().translationY(-tabbar.getBottom()).
-//                                setInterpolator(new AccelerateInterpolator()).start();
-//
-//                        viewPager.animate().translationY(-(tabbar.getBottom())).
-//                                setInterpolator(new AccelerateInterpolator()).start();
-//
-//                        fab.animate().translationY(fab.getBottom()).
-//                                setInterpolator(new AccelerateInterpolator(2)).start();
-//
-//                        fab.setTag("hide");
-//
-//                    } else if (currentFirstVisibleItem < mLastFirstVisibleItem) {
-//
-//                        tabbar.animate().translationY(0).
-//                                setInterpolator(new DecelerateInterpolator()).start();
-//
-//                        viewPager.animate().translationY(0).
-//                                setInterpolator(new DecelerateInterpolator()).start();
-//
-//                        fab.animate().translationY(0).
-//                                setInterpolator(new DecelerateInterpolator()).start();
-////                        ResizeAnimation resizeAnimation = new ResizeAnimation(tabbar,
-////                                tabbar.getWidth(),
-////                                tabbarHeight);
-////                        resizeAnimation.setInterpolator(new AccelerateInterpolator());
-////                        tabbar.startAnimation(resizeAnimation);
-//                        fab.setTag("show");
-//                    }
-//
-//                    mLastFirstVisibleItem = currentFirstVisibleItem;
-//                }
-//            }
-//        });
 
 //        tabbar = (AppBarLayout) getActivity().findViewById(R.id.appbar_layout_recycler);
 //        appbar = (AppBarLayout) getActivity().findViewById(R.id.appbar_layout_work_recycler);
 //        viewPager = (ViewPager) getActivity().findViewById(R.id.work_view_pager_recycler);
 //
 //
-//        listTopicContentRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
-//            int mLastFirstVisibleItem = 0;
-//
-//            @Override
-//            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-//            }
-//
-//            @Override
-//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-//                super.onScrolled(recyclerView, dx, dy);
-//                final int currentFirstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
-//
-//                if (currentFirstVisibleItem > this.mLastFirstVisibleItem) {
-//
-//                    tabbar.animate().translationY(-appbar.getBottom()).
-//                            setInterpolator(new AccelerateInterpolator()).start();
-//                    appbar.animate().translationY(-appbar.getBottom()).
-//                            setInterpolator(new AccelerateInterpolator()).start();
-//                    viewPager.animate().translationY(-(tabbar.getBottom())).
-//                            setInterpolator(new AccelerateInterpolator()).start();
-//
-//                } else if (currentFirstVisibleItem < this.mLastFirstVisibleItem) {
-//
-//                    tabbar.animate().translationY(0).
-//                            setInterpolator(new DecelerateInterpolator()).start();
-//                    appbar.animate().translationY(0).
-//                            setInterpolator(new DecelerateInterpolator()).start();
-//                    viewPager.animate().translationY(0).
-//                            setInterpolator(new DecelerateInterpolator()).start();
-//                }
-//
-//                this.mLastFirstVisibleItem = currentFirstVisibleItem;
-//            }
-//        });
+        listTopicContentRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            int mLastFirstVisibleItem = 0;
 
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            }
 
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                final int currentFirstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
 
+                if (currentFirstVisibleItem > this.mLastFirstVisibleItem) {
+
+                    if (fab.getTag() == "show") {
+                        fab.animate().translationY(fab.getBottom()).
+                                setInterpolator(new AccelerateInterpolator()).
+                                setDuration(getResources().
+                                        getInteger(android.R.integer.config_mediumAnimTime)).
+                                start();
+                        fab.setTag("hide");
+                    }
+                } else if (currentFirstVisibleItem < this.mLastFirstVisibleItem) {
+
+                    fab.animate().translationY(0).
+                            setInterpolator(new DecelerateInterpolator()).start();
+                    fab.setTag("show");
+                }
+
+                this.mLastFirstVisibleItem = currentFirstVisibleItem;
+            }
+        });
         Log.d("Zig", "End function RefreshData()");
-
     }
 
     @Override
@@ -318,24 +164,14 @@ public class FragmentWorkRecycler extends Fragment {
 
     public void showHideView() {
 
-//        if(fab != null)
-//        {
-//            if (fab.getTag() == "hide") {
-//
-//                tabbar = (AppBarLayout) getActivity().findViewById(R.id.appbar_layout_recycler);
-//                viewPager = (ViewPager) getActivity().findViewById(R.id.work_view_pager_recycler);
-//
-//                tabbar.animate().translationY(0).
-//                        setInterpolator(new DecelerateInterpolator()).start();
-//                viewPager.animate().translationY(0).
-//                        setInterpolator(new DecelerateInterpolator()).start();
-//                fab.animate().translationY(0).
-//                        setInterpolator(new DecelerateInterpolator()).start();
-//
-//                fab.setTag("show");
-//                //Toast.makeText(getActivity(), "I'am working", Toast.LENGTH_SHORT).show();
-//            }
-//        }
+        if(fab != null)
+        {
+            if (fab.getTag() == "hide") {
+                fab.animate().translationY(0).
+                        setInterpolator(new DecelerateInterpolator()).start();
+                fab.setTag("show");
+            }
+        }
     }
 
     public void showListView() {
@@ -346,56 +182,10 @@ public class FragmentWorkRecycler extends Fragment {
             if (!topicsFromDB.isEmpty()) {
 
 
-//                //setup adapter topics
-//                topicAdapterRecycler = new CustomListViewTopicAdapter(getActivity(),
-//                        R.layout.adapter_topic_item,
-//                        topicsFromDB); //send id topics current tabs
-//                listTopicContentRecycler.setAdapter(topicAdapterRecycler);
-//                topicAdapterRecycler.notifyDataSetChanged();
-
-
-//                mLayoutManager = new LinearLayoutManager(getContext());
-//                listTopicContentRecycler.setLayoutManager(mLayoutManager);
-
-
                 // создаем адаптер
                 //
                 mAdapterTopic = new RecyclerTopicAdapter(topicsFromDB);
                 listTopicContentRecycler.setAdapter(mAdapterTopic);
-
-//                FragmentSlidingTabsRecycler fragmentSlidingTabsRecycler =
-//                        (FragmentSlidingTabsRecycler) workContext.
-//                                getSupportFragmentManager().
-//                                findFragmentById(R.id.fragment_sliding_tabs_recycler);
-//
-//                if ((fragmentSlidingTabsRecycler.getSelectedTabPosition() + 1) !=
-//                        fragmentSlidingTabsRecycler.getCountTabs()) {
-//
-//                    for (int i = 0; i < topicsFromDB.size(); i++){
-//
-//                        if (topicsFromDB.get(i).getTopicText().
-//                                equals(fragmentSlidingTabsRecycler.getNextTabName())) {
-//
-//                            mAdapterTopic.setClickedPosition(i);
-//                            mAdapterTopic.notifyDataSetChanged();
-//
-//                            Log.d("Zig", "\n-----------> Yeeeeeeeeees!");
-//                        }
-//                        Log.d("Zig", "\n-----------> Topic name = " +
-//                                topicsFromDB.get(i).getTopicText() +
-//                                "\n---------> TabNext name = " +
-//                                fragmentSlidingTabsRecycler.getNextTabName() +
-//                                "\n");
-//
-//                    }
-//                }
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-//                    if (Objects.equals(fragmentSlidingTabsRecycler.getSelectTabName(), "Logic")) {
-//                    mAdapterTopic.setClickedPosition(2);
-//                    mAdapterTopic.notifyDataSetChanged();}
-//                }
-
-                //mAdapterTopic.notifyDataSetChanged();
 
                 //recyclerview item click
                 listTopicContentRecycler.addOnItemTouchListener(
@@ -428,15 +218,12 @@ public class FragmentWorkRecycler extends Fragment {
                                     (fragmentSlidingTabsRecycler.getSelectedTabPosition() + 1)) {
                                 //get child topic
                                 Topics topic = mFoundTopics.get(position);
-                                //Log.d("Zig", "press topic text = " + topic.getTopicText());
                                 fragmentSlidingTabsRecycler.addPage(topic.getTopicId());
 
                             } else {
-
                                 //remove child topics
                                 while (fragmentSlidingTabsRecycler.getCountTabs() !=
                                         (fragmentSlidingTabsRecycler.getSelectedTabPosition() + 1)) {
-
                                     fragmentSlidingTabsRecycler.
                                             removePage(fragmentSlidingTabsRecycler.
                                                     getSelectedTabPosition() + 1);
@@ -446,10 +233,6 @@ public class FragmentWorkRecycler extends Fragment {
                                 //Log.d("Zig", "press topic text = " + topic.get TopicText());
                                 fragmentSlidingTabsRecycler.addPage(topic.getTopicId());
                             }
-
-
-
-
                         }
 //                     else {
 //
@@ -461,8 +244,6 @@ public class FragmentWorkRecycler extends Fragment {
 //                        clipboard.setPrimaryClip(clip);
 //
 //                    }
-//
-                    //
                         //set recent topic
                         afterItemClickTask = new AfterItemClickTask(getContext());
                         afterItemClickTask.execute(mFoundTopics.get(position).getTopicId());
@@ -473,78 +254,13 @@ public class FragmentWorkRecycler extends Fragment {
                         // ...
                     }
                 }));
-
-//                //set ItemClick:
-//                mAdapterTopic.setOnItemClickListener(new RecyclerTopicAdapter.OnItemClickListener() {
-//                    @Override
-//                    public void onItemClick(View v, int position) {
-//
-//                        //select item:
-//                        mAdapterTopic.setClickedPosition(position);
-//                        mAdapterTopic.notifyDataSetChanged();
-//
-//                        if (!topicsFromDB.isEmpty()) {
-//
-//                            FragmentSlidingTabsRecycler fragmentSlidingTabsRecycler =
-//                                    (FragmentSlidingTabsRecycler) workContext.
-//                                            getSupportFragmentManager().
-//                                            findFragmentById(R.id.fragment_sliding_tabs_recycler);
-//
-//                            //if do not have child topics
-//                            if (fragmentSlidingTabsRecycler.getCountTabs() ==
-//                                    (fragmentSlidingTabsRecycler.getSelectedTabPosition() + 1)) {
-//                                //get child topic
-//                                Topics topic = mFoundTopics.get(position);
-//                                //Log.d("Zig", "press topic text = " + topic.getTopicText());
-//                                fragmentSlidingTabsRecycler.addPage(topic.getTopicId());
-//
-//                            } else {
-//
-//                                //remove child topics
-//                                while (fragmentSlidingTabsRecycler.getCountTabs() !=
-//                                        (fragmentSlidingTabsRecycler.getSelectedTabPosition() + 1)) {
-//
-//                                    fragmentSlidingTabsRecycler.
-//                                            removePage(fragmentSlidingTabsRecycler.
-//                                                    getSelectedTabPosition() + 1);
-//                                }
-//                                //get child topic
-//                                Topics topic = mFoundTopics.get(position);
-//                                //Log.d("Zig", "press topic text = " + topic.getTopicText());
-//                                fragmentSlidingTabsRecycler.addPage(topic.getTopicId());
-//                            }
-//                        }
-////                     else {
-////
-////                        Expressions exp = mFoundExp.get(position);
-////
-////                        ClipboardManager clipboard = (ClipboardManager) getActivity().
-////                                getSystemService(Context.CLIPBOARD_SERVICE);
-////                        ClipData clip = ClipData.newPlainText(exp.getExpText(), exp.getExpText());
-////                        clipboard.setPrimaryClip(clip);
-////
-////                    }
-//                    }
-//
-//
-//                });
-
             } else {
 
-                //setup adapter expressions
-//                ExpAdapterRecycler = new CustomListViewExpAdapter(getActivity(),
-//                        R.layout.adapter_exp_item,
-//                        expFromDB);
-//                listTopicContentRecycler.setAdapter(ExpAdapterRecycler);
-//                ExpAdapterRecycler.notifyDataSetChanged();
-//                mLayoutManager = new LinearLayoutManager(getContext());
-//                listTopicContentRecycler.setLayoutManager(mLayoutManager);
                 // создаем адаптер
                 mAdapterExp = new RecyclerExpAdapter(expFromDB);
                 listTopicContentRecycler.setAdapter(mAdapterExp);
                 mAdapterExp.notifyDataSetChanged();
             }
-            // Log.d("Zig", "showListView() end, mQuerySearch = " + getQuerySearch());
         }
     }
 
@@ -616,13 +332,8 @@ public class FragmentWorkRecycler extends Fragment {
             }
 
         } else {
-
             showListView();
         }
-
-//        Log.d("Zig", "showSearchResult() end,"
-//                + " mQuerySearch = "
-//                + getQuerySearch());
     }
 
     public void showSearchResultTopic(String searchText) {
@@ -633,7 +344,6 @@ public class FragmentWorkRecycler extends Fragment {
                 Toast.makeText(getActivity(), "TODO result of subtopic search: " + searchText,
                         Toast.LENGTH_SHORT).show();
             }
-
         }
     }
 
@@ -689,6 +399,7 @@ public class FragmentWorkRecycler extends Fragment {
 
             AsyncProvider asyncProvider = new AsyncProvider();
             asyncProvider.setRecentTopic(mContext, params[0]);
+            asyncProvider.setStatisticTopic(mContext, params[0]);
 
             return null;
         }

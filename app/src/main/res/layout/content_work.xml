@@ -21,6 +21,4 @@
         tools:layout="@layout/fragment_sliding_tabs" />
 
 
-
-
 </RelativeLayout>

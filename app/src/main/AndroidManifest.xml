@@ -37,7 +37,14 @@
         <activity
             android:name=".FavoriteExpActivity_"
             android:label="@string/title_activity_favorite_exp"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".StatisticTopicActivity_"
+            android:label="@string/title_activity_statistic_topic"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+
+        <activity android:name=".Intro"
+            android:label="@string/app_intro" />
 
         <uses-library
             android:name="com.sec.android.app.multiwindow"

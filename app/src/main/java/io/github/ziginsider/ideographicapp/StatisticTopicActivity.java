@@ -1,5 +1,8 @@
 package io.github.ziginsider.ideographicapp;
 
+import android.content.Context;
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.design.widget.AppBarLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
@@ -18,23 +22,26 @@ import org.androidannotations.annotations.ViewById;
 
 import java.util.ArrayList;
 
+import data.AsyncProvider;
+import data.Constants;
 import data.DatabaseHandler;
-import data.FavoriteAdapter;
 import data.InitalDatabaseHandler;
-import model.FavoriteExpressions;
+import data.RecyclerItemClickListener;
+import data.StatisticAdapter;
+import model.StatisticTopic;
 
-@EActivity(R.layout.activity_favorite_exp)
-public class FavoriteExpActivity extends AppCompatActivity
+@EActivity(R.layout.activity_statistic_topic)
+public class StatisticTopicActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    InitalDatabaseHandler dba;
+    InitalDatabaseHandler dba_inital;
     DatabaseHandler dba_data;
-    ArrayList<FavoriteExpressions> favoriteExpList;
+    ArrayList<StatisticTopic> statisticTopicList;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-    //private RecentTopicActivity.AfterItemClickTask afterItemClickTask;
+    private StatisticTopicActivity.AfterItemClickTask afterItemClickTask;
 
-    @ViewById(R.id.recycler_view_favorite_exp)
+    @ViewById(R.id.recycler_view_statistic_topic)
     RecyclerView mRecyclerView;
 
     @AfterViews
@@ -47,6 +54,7 @@ public class FavoriteExpActivity extends AppCompatActivity
 
         params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
                 | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
+
         setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -58,23 +66,66 @@ public class FavoriteExpActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        dba = new InitalDatabaseHandler(this);
+        dba_inital = new InitalDatabaseHandler(this);
         dba_data = new DatabaseHandler(this);
         //get all expressions
-        favoriteExpList = dba.getFavoriteExpList();
+        statisticTopicList = dba_inital.getStatisticTopicList();
 
         // если мы уверены, что изменения в контенте не изменят размер layout-а RecyclerView
         // передаем параметр true - это увеличивает производительность
-        //mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setHasFixedSize(true);
 
         // используем linear layout manager
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
         // создаем адаптер
-        mAdapter = new FavoriteAdapter(favoriteExpList);
+        mAdapter = new StatisticAdapter(statisticTopicList);
         mRecyclerView.setAdapter(mAdapter);
-    }
 
+        mRecyclerView.addOnItemTouchListener(
+                new RecyclerItemClickListener(this,
+                        mRecyclerView,
+                        new RecyclerItemClickListener.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(View view, int position) {
+
+                                ArrayList<Integer> idTopicsPageList = new ArrayList<Integer>();
+                                idTopicsPageList.clear();
+
+                                int currentId = statisticTopicList.get(position).getIdTopic();
+                                //add to recent topics
+                                afterItemClickTask = new StatisticTopicActivity.
+                                        AfterItemClickTask(StatisticTopicActivity.this);
+                                afterItemClickTask.execute(currentId);
+
+                                idTopicsPageList.add(currentId);
+                                do {
+                                    currentId = dba_data.getTopicById(currentId).getTopicParentId();
+                                    idTopicsPageList.add(currentId);
+
+                                } while (currentId != 0);
+
+
+
+                                Intent i = new Intent(StatisticTopicActivity.this,
+                                        WorkActivityRecycler_.class);
+                                i.putExtra(Constants.EXTRA_TOPICS_OPEN_TABS, idTopicsPageList);
+                                startActivity(i);
+                                StatisticTopicActivity.this.finish();
+                            }
+
+                            @Override
+                            public void onItemLongClick(View view, int position) {
+                                // ...
+                            }
+                        }
+                )
+        );
+
+        dba_inital.close();
+        dba_data.close();
+
+    }
 
     @Override
     public void onBackPressed() {
@@ -89,7 +140,7 @@ public class FavoriteExpActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.favorite_exp, menu);
+        getMenuInflater().inflate(R.menu.statistic_topic, menu);
         return true;
     }
 
@@ -131,5 +182,34 @@ public class FavoriteExpActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    class AfterItemClickTask extends AsyncTask<Integer, Void, Void> {
+
+        private Context mContext;
+
+        public AfterItemClickTask(Context context) {
+            mContext = context;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+        }
+
+        @Override
+        protected Void doInBackground(Integer... params) {
+
+            AsyncProvider asyncProvider = new AsyncProvider();
+            asyncProvider.setRecentTopic(mContext, params[0]);
+            asyncProvider.setStatisticTopic(mContext, params[0]);
+
+            return null;
+        }
     }
 }

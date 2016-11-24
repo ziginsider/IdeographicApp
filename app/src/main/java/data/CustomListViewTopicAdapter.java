@@ -106,7 +106,7 @@ public class CustomListViewTopicAdapter extends ArrayAdapter<Topics> {
 //                    getSelectTopicItemPosition(fragmentSlidingTabs.getSelectedTabPosition());
 
 
-//            if (position == 1) {
+//            if (position == ic_intro_1) {
 //                holder.topicLayout.setBackgroundResource(R.drawable.bg_current_topic);
 //            } else {
 //                holder.topicLayout.setBackgroundResource(R.drawable.ripple_topic_new);
@@ -151,7 +151,7 @@ public class CustomListViewTopicAdapter extends ArrayAdapter<Topics> {
 //        });
 
 
-//        if (position == 3) {
+//        if (position == ic_intro_3) {
 //
 //            holder.topicText.setText("ffffffffffffff");
 //        }

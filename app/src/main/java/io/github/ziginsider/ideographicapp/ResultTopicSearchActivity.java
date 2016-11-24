@@ -36,8 +36,8 @@ public class ResultTopicSearchActivity extends AppCompatActivity {
 //        for (Expressions exp : mDoubleItems) {
 //
 //            Topics topic;
-//            topic = dba.getTopicById(exp.getExpParentId());
-//            //mListTopicName.add((dba.getTopicById(exp.getExpParentId())).getTopicText());
+//            topic = dba_inital.getTopicById(exp.getExpParentId());
+//            //mListTopicName.add((dba_inital.getTopicById(exp.getExpParentId())).getTopicText());
 //            mListTopicName.add("Ziginsider");
 //            //mListTopicName.add(topic.getTopicText());
 //        }

@@ -5,6 +5,7 @@ import android.content.Context;
 import java.util.ArrayList;
 
 import model.RecentTopics;
+import model.StatisticTopic;
 
 /**
  * Created by zigin on 08.11.2016.
@@ -91,6 +92,28 @@ public class AsyncProvider {
         }
         dba.close();
         dba_data.close();
+    }
+
+    public void setStatisticTopic(Context context, int topicId) {
+
+        InitalDatabaseHandler dba_inital = new InitalDatabaseHandler(context);
+        DatabaseHandler dba_data = new DatabaseHandler(context);
+
+        if (dba_inital.isTopicInStatisticList(topicId)) {
+
+            dba_inital.upTopicCounterByIdTopic(topicId);
+
+        } else {
+            StatisticTopic statisticTopic = new StatisticTopic();
+
+            statisticTopic.setTextTopic(dba_data.getTopicById(topicId).getTopicText());
+            statisticTopic.setIdTopic(topicId);
+            statisticTopic.setCounterTopic(1);
+
+            dba_inital.addStatisticTopic(statisticTopic);
+        }
+        dba_data.close();
+        dba_inital.close();
     }
 }
 

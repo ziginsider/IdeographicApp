@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 import model.FavoriteExpressions;
 import model.RecentTopics;
+import model.StatisticTopic;
 
 /**
  * Created by zigin on 06.11.2016.
@@ -20,6 +21,7 @@ public class InitalDatabaseHandler extends SQLiteOpenHelper {
 
     private final ArrayList<RecentTopics> recentTopicsList = new ArrayList<>();
     private final ArrayList<FavoriteExpressions> favoriteExpList = new ArrayList<>();
+    private final ArrayList<StatisticTopic> statisticTopicsList = new ArrayList<>();
 
 
     public InitalDatabaseHandler(Context context) {
@@ -34,7 +36,7 @@ public class InitalDatabaseHandler extends SQLiteOpenHelper {
                 Constants.RECENT_TOPIC_TEXT + " TEXT, " +
                 Constants.RECENT_TOPIC_ID + " INT, " +
                 Constants.RECENT_TOPIC_WEIGHT + " INT" +
-                ")"; //';' ??
+                ")";
 
         String CREATE_FAVORITE_TABLE = "CREATE TABLE " + Constants.FAVORITE_TABLE_NAME +
                 "(" + Constants.KEY_ID + " INTEGER PRIMARY KEY," +
@@ -43,8 +45,16 @@ public class InitalDatabaseHandler extends SQLiteOpenHelper {
                 Constants.FAVORITE_PARENT_TOPIC_ID + " INT" +
                 ")";
 
+        String CREATE_STATISTIC_TABLE = "CREATE TABLE " + Constants.STATISTIC_TABLE_NAME +
+                "(" + Constants.KEY_ID + " INTEGER PRIMARY KEY," +
+                Constants.STATISTIC_TOPIC_TEXT + " TEXT, " +
+                Constants.STATISTIC_TOPIC_ID + " INT, " +
+                Constants.STATISTIC_TOPIC_COUNTER + " INT" +
+                ")";
+
         db.execSQL(CREATE_RECENT_TABLE);
         db.execSQL(CREATE_FAVORITE_TABLE);
+        db.execSQL(CREATE_STATISTIC_TABLE);
 
 
     }
@@ -54,6 +64,7 @@ public class InitalDatabaseHandler extends SQLiteOpenHelper {
 
         db.execSQL("DROP TABLE IF EXISTS " + Constants.RECENT_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + Constants.FAVORITE_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + Constants.STATISTIC_TABLE_NAME);
 
         //create a new one
         onCreate(db);
@@ -405,6 +416,149 @@ public class InitalDatabaseHandler extends SQLiteOpenHelper {
         dba.close();
 
         return flag;
+    }
+
+
+///////////////////////////////////////////////////////////////////
+// STATISTIC TOPICS
+// Ziginsider 15/11/2016
+//////////////////////////////////////////////////////////////////
+//add exp to statistic list
+    public void addStatisticTopic(StatisticTopic statisticTopic){
+        SQLiteDatabase dba = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(Constants.STATISTIC_TOPIC_TEXT, statisticTopic.getTextTopic());
+        values.put(Constants.STATISTIC_TOPIC_ID, statisticTopic.getIdTopic());
+        values.put(Constants.STATISTIC_TOPIC_COUNTER, statisticTopic.getCounterTopic());
+
+        dba.insert(Constants.STATISTIC_TABLE_NAME, null, values);
+        dba.close();
+    }
+
+    //get all items favorite list
+    //
+    public ArrayList<StatisticTopic> getStatisticTopicList() {
+
+        statisticTopicsList.clear();
+
+        SQLiteDatabase dba = this.getReadableDatabase();
+
+        Cursor cursor = dba.query(Constants.STATISTIC_TABLE_NAME,
+                new String[]{Constants.KEY_ID,
+                        Constants.STATISTIC_TOPIC_TEXT,
+                        Constants.STATISTIC_TOPIC_ID,
+                        Constants.STATISTIC_TOPIC_COUNTER},
+                null,
+                null,
+                null,
+                null,
+                Constants.STATISTIC_TOPIC_COUNTER  + " DESC");
+
+        //loop through...
+        if (cursor.moveToFirst()) {
+            do {
+                StatisticTopic statisticTopic = new StatisticTopic();
+
+                statisticTopic.setTextTopic(cursor.getString(cursor.
+                        getColumnIndex(Constants.STATISTIC_TOPIC_TEXT)));
+                statisticTopic.setIdTopic(cursor.getInt(cursor.
+                        getColumnIndex(Constants.STATISTIC_TOPIC_ID)));
+                statisticTopic.setCounterTopic(cursor.getInt(cursor.
+                        getColumnIndex(Constants.STATISTIC_TOPIC_COUNTER)));
+                statisticTopic.setIdStatisticTopic(cursor.getInt(cursor.
+                        getColumnIndex(Constants.KEY_ID)));
+
+                statisticTopicsList.add(statisticTopic);
+
+            } while (cursor.moveToNext());
+
+            Log.d(Constants.LOG_TAG, ">>> Get all Statistic topics: success");
+        } else {
+
+            Log.d(Constants.LOG_TAG, ">>> Get all Statistic topics: No matching data");
+        }
+
+        cursor.close();
+        dba.close();
+
+        return statisticTopicsList;
+    }
+
+    public boolean isTopicInStatisticList(int idStatistic) {
+
+        boolean flag = false;
+
+        String query = "SELECT * FROM " + Constants.STATISTIC_TABLE_NAME +
+                " WHERE " + Constants.STATISTIC_TOPIC_ID + " = ? ";
+
+        SQLiteDatabase dba = this.getReadableDatabase();
+        Cursor cursor = dba.rawQuery(query, new String[] {String.valueOf(idStatistic)});
+
+        if (cursor != null) {
+
+            if (cursor.getCount() > 0) {
+                flag = true;
+            }
+        }
+        cursor.close();
+        dba.close();
+
+        return flag;
+    }
+
+    public int upTopicCounterByIdTopic(int idTopic) {
+
+        int newCounter = getCounterTopicByTopicId(idTopic) + 1;
+
+        SQLiteDatabase dba = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        values.put(Constants.STATISTIC_TOPIC_COUNTER, newCounter);
+
+        int totalUpdated = 0;
+
+        totalUpdated = dba.update(Constants.STATISTIC_TABLE_NAME,
+                values,
+                Constants.STATISTIC_TOPIC_ID + "=?",
+                new String[] {String.valueOf(idTopic)});
+
+        dba.close();
+
+        return totalUpdated;
+    }
+
+    //Get recent topic by id
+    public int getCounterTopicByTopicId(int idTopic) {
+
+        int Counter = 0;
+
+        SQLiteDatabase dba = this.getReadableDatabase();
+
+        Cursor cursor = dba.query(Constants.STATISTIC_TABLE_NAME,
+                new String[] {
+                        Constants.STATISTIC_TOPIC_COUNTER },
+                Constants.STATISTIC_TOPIC_ID + "=?",
+                new String[] {String.valueOf(idTopic)},
+                null,
+                null,
+                null,
+                null);
+
+        if (cursor.moveToFirst()) {
+
+            Counter = cursor.getInt(cursor.getColumnIndex(Constants.STATISTIC_TOPIC_COUNTER));
+
+        } else {
+
+            Log.d(Constants.LOG_TAG, ">>> Get Counter Topic by id: No matching data");
+        }
+
+        cursor.close();
+        dba.close();
+
+        return Counter;
     }
 
 

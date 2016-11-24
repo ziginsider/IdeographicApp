@@ -34,4 +34,10 @@ public class Constants {
     public static final String FAVORITE_EXP_ID = "FavoriteIdExp";
     public static final String FAVORITE_PARENT_TOPIC_ID = "FavoriteParentTopicId";
 
+    public static final String STATISTIC_TABLE_NAME = "StatisticTopicsTable";
+    public static final String STATISTIC_TOPIC_TEXT = "StatisticTextTopic";
+    public static final String STATISTIC_TOPIC_ID = "StatisticIdTopic";
+    public static final String STATISTIC_TOPIC_COUNTER = "StatisticCounterTopic";
+
+
 }

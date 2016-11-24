@@ -3,10 +3,7 @@ package io.github.ziginsider.ideographicapp;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -20,7 +17,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
 
@@ -31,7 +27,6 @@ import data.Constants;
 import data.DatabaseHandler;
 import data.InitalDatabaseHandler;
 import data.RecentTopicAdapter;
-import data.RecyclerAdapter;
 import data.RecyclerItemClickListener;
 import model.RecentTopics;
 
@@ -122,7 +117,9 @@ public class RecentTopicActivity extends AppCompatActivity
                             public void onItemLongClick(View view, int position) {
                                 // ...
                             }
-                        }));
+                        }
+                )
+        );
 
         dba.close();
         dba_data.close();
@@ -167,17 +164,17 @@ public class RecentTopicActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_start) {
             // Handle the camera action
         } else if (id == R.id.nav_gallery) {
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_recent_show) {
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_statistic) {
 
-        } else if (id == R.id.nav_share) {
+        } else if (id == R.id.nav_options) {
 
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_help) {
 
         }
 
