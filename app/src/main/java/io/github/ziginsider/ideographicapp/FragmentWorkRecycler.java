@@ -135,19 +135,19 @@ public class FragmentWorkRecycler extends Fragment {
 
                 if (currentFirstVisibleItem > this.mLastFirstVisibleItem) {
 
-                    if (fab.getTag() == "show") {
-                        fab.animate().translationY(fab.getBottom()).
-                                setInterpolator(new AccelerateInterpolator()).
-                                setDuration(getResources().
-                                        getInteger(android.R.integer.config_mediumAnimTime)).
-                                start();
-                        fab.setTag("hide");
-                    }
+//                    if (fab.getTag() == "show") {
+//                        fab.animate().translationY(fab.getBottom()).
+//                                setInterpolator(new AccelerateInterpolator()).
+//                                setDuration(getResources().
+//                                        getInteger(android.R.integer.config_mediumAnimTime)).
+//                                start();
+//                        fab.setTag("hide");
+//                    }
                 } else if (currentFirstVisibleItem < this.mLastFirstVisibleItem) {
 
-                    fab.animate().translationY(0).
-                            setInterpolator(new DecelerateInterpolator()).start();
-                    fab.setTag("show");
+//                    fab.animate().translationY(0).
+//                            setInterpolator(new DecelerateInterpolator()).start();
+//                    fab.setTag("show");
                 }
 
                 this.mLastFirstVisibleItem = currentFirstVisibleItem;
@@ -164,14 +164,14 @@ public class FragmentWorkRecycler extends Fragment {
 
     public void showHideView() {
 
-        if(fab != null)
-        {
-            if (fab.getTag() == "hide") {
-                fab.animate().translationY(0).
-                        setInterpolator(new DecelerateInterpolator()).start();
-                fab.setTag("show");
-            }
-        }
+//        if(fab != null)
+//        {
+//            if (fab.getTag() == "hide") {
+//                fab.animate().translationY(0).
+//                        setInterpolator(new DecelerateInterpolator()).start();
+//                fab.setTag("show");
+//            }
+//        }
     }
 
     public void showListView() {

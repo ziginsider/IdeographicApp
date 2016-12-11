@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
@@ -122,8 +123,7 @@ public class StatisticTopicActivity extends AppCompatActivity
                 )
         );
 
-        dba_inital.close();
-        dba_data.close();
+
 
     }
 
@@ -166,16 +166,78 @@ public class StatisticTopicActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_start) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+
+            Intent i = new Intent(this, WorkActivityRecycler_.class);
+            ArrayList<Integer> startTopicsList = new ArrayList<>();
+            startTopicsList.add(0); //set topics root = "Topics"
+            i.putExtra(Constants.EXTRA_TOPICS_OPEN_TABS, startTopicsList);
+            this.startActivity(i);
+            this.finish();
+
+        } else if (id == R.id.nav_recent_open) {
+
+            ArrayList<Integer> idTopicsPageList = new ArrayList<Integer>();
+            idTopicsPageList.clear();
+
+            int currentId = dba_inital.getIdTopicTopRecentTopics();
+
+            idTopicsPageList.add(currentId);
+
+            if (currentId != 0) {
+                do {
+                    currentId = dba_data.getTopicById(currentId).getTopicParentId();
+                    idTopicsPageList.add(currentId);
+
+                } while (currentId != 0);
+            }
+            Intent i = new Intent(this,
+                    WorkActivityRecycler_.class);
+            i.putExtra(Constants.EXTRA_TOPICS_OPEN_TABS, idTopicsPageList);
+            this.startActivity(i);
+            this.finish();
 
         } else if (id == R.id.nav_recent_show) {
 
+            Intent i = new Intent(this, RecentTopicActivity_.class);
+            this.startActivity(i);
+            this.finish();
+
         } else if (id == R.id.nav_statistic) {
+
+
+        } else if (id == R.id.nav_favorite) {
+
+            Intent i = new Intent(this, FavoriteExpActivity_.class);
+            this.startActivity(i);
+            this.finish();
+
+        } else if (id == R.id.nav_all_exp) {
+
+            Intent i = new Intent(this, ResultTopicSearchActivity_.class);
+            this.startActivity(i);
+            this.finish();
+
+        } else if (id == R.id.nav_help) {
+
+            //  Launch app intro
+            Intent i = new Intent(this, Intro.class);
+            startActivity(i);
 
         } else if (id == R.id.nav_options) {
 
-        } else if (id == R.id.nav_help) {
+            Intent i = new Intent(this, OptionsActivity.class);
+            this.startActivity(i);
+
+        } else if (id == R.id.nav_rate) {
+
+            Toast.makeText(this, "TODO: rate it", Toast.LENGTH_SHORT).show();
+
+        } else if (id == R.id.nav_exit) {
+
+            Intent homeIntent = new Intent(Intent.ACTION_MAIN);
+            homeIntent.addCategory( Intent.CATEGORY_HOME );
+            homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(homeIntent);
 
         }
 
@@ -211,5 +273,12 @@ public class StatisticTopicActivity extends AppCompatActivity
 
             return null;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        dba_inital.close();
+        dba_data.close();
+        super.onDestroy();
     }
 }

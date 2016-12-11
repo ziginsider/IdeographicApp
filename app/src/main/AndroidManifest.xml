@@ -27,9 +27,9 @@
         <activity android:name=".ResultTopicSearchActivity_" />
         <activity
             android:name=".WorkActivityRecycler_"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_work"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".RecentTopicActivity_"
             android:label="@string/title_activity_recent_topic"
@@ -41,10 +41,16 @@
         <activity
             android:name=".StatisticTopicActivity_"
             android:label="@string/title_activity_statistic_topic"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Intro"
+            android:label="@string/app_intro" />
+        <activity android:name=".OptionsActivity" />
+        <activity
+            android:name=".WorkTwoActivity_"
+            android:label="@string/title_activity_work_two"
             android:theme="@style/AppTheme.NoActionBar"></activity>
 
-        <activity android:name=".Intro"
-            android:label="@string/app_intro" />
 
         <uses-library
             android:name="com.sec.android.app.multiwindow"

@@ -1,5 +1,6 @@
 package io.github.ziginsider.ideographicapp;
 
+import android.content.Intent;
 import android.support.design.widget.AppBarLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
@@ -18,6 +20,7 @@ import org.androidannotations.annotations.ViewById;
 
 import java.util.ArrayList;
 
+import data.Constants;
 import data.DatabaseHandler;
 import data.FavoriteAdapter;
 import data.InitalDatabaseHandler;
@@ -115,21 +118,90 @@ public class FavoriteExpActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_start) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+
+            Intent i = new Intent(this, WorkActivityRecycler_.class);
+            ArrayList<Integer> startTopicsList = new ArrayList<>();
+            startTopicsList.add(0); //set topics root = "Topics"
+            i.putExtra(Constants.EXTRA_TOPICS_OPEN_TABS, startTopicsList);
+            this.startActivity(i);
+            this.finish();
+
+        } else if (id == R.id.nav_recent_open) {
+
+            ArrayList<Integer> idTopicsPageList = new ArrayList<Integer>();
+            idTopicsPageList.clear();
+
+            int currentId = dba.getIdTopicTopRecentTopics();
+
+            idTopicsPageList.add(currentId);
+
+            if (currentId != 0) {
+                do {
+                    currentId = dba_data.getTopicById(currentId).getTopicParentId();
+                    idTopicsPageList.add(currentId);
+
+                } while (currentId != 0);
+            }
+            Intent i = new Intent(this,
+                    WorkActivityRecycler_.class);
+            i.putExtra(Constants.EXTRA_TOPICS_OPEN_TABS, idTopicsPageList);
+            this.startActivity(i);
+            this.finish();
 
         } else if (id == R.id.nav_recent_show) {
 
+            Intent i = new Intent(this, RecentTopicActivity_.class);
+            this.startActivity(i);
+            this.finish();
+
         } else if (id == R.id.nav_statistic) {
+
+            Intent i = new Intent(this, StatisticTopicActivity_.class);
+            this.startActivity(i);
+            this.finish();
+
+        } else if (id == R.id.nav_favorite) {
+
+
+        } else if (id == R.id.nav_all_exp) {
+
+            Intent i = new Intent(this, ResultTopicSearchActivity_.class);
+            this.startActivity(i);
+            this.finish();
+
+        } else if (id == R.id.nav_help) {
+
+            //  Launch app intro
+            Intent i = new Intent(this, Intro.class);
+            startActivity(i);
 
         } else if (id == R.id.nav_options) {
 
-        } else if (id == R.id.nav_help) {
+            Intent i = new Intent(this, OptionsActivity.class);
+            this.startActivity(i);
+
+        } else if (id == R.id.nav_rate) {
+
+            Toast.makeText(this, "TODO: rate it", Toast.LENGTH_SHORT).show();
+
+        } else if (id == R.id.nav_exit) {
+
+            Intent homeIntent = new Intent(Intent.ACTION_MAIN);
+            homeIntent.addCategory( Intent.CATEGORY_HOME );
+            homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(homeIntent);
 
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    protected void onDestroy() {
+        dba.close();
+        dba_data.close();
+        super.onDestroy();
     }
 }

@@ -38,7 +38,7 @@ public class Intro extends AppIntro2 {
                 Color.parseColor("#FF3EB6EC")
         ));
 
-        addSlide(AppIntroFragment.newInstance("Goodbye!",
+        addSlide(AppIntroFragment.newInstance("Start work...",
                 "He could hear the mop in the back of the hall or maybe the kitchen...",
                 R.drawable.ic_intro_4,
                 Color.parseColor("#FF5FBFEB")

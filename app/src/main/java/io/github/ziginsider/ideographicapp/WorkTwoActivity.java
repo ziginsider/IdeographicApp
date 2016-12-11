@@ -1,19 +1,18 @@
 package io.github.ziginsider.ideographicapp;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Handler;
-import android.preference.PreferenceManager;
+import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
 import android.widget.Toast;
 
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
@@ -22,42 +21,37 @@ import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.FragmentById;
 import org.androidannotations.annotations.ViewById;
-import org.androidannotations.annotations.WindowFeature;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import data.Constants;
 import data.DatabaseHandler;
 import data.InitalDatabaseHandler;
 
-@WindowFeature({Window.FEATURE_ACTION_BAR_OVERLAY})
-@EActivity(R.layout.activity_work_recycler)
-public class WorkActivityRecycler extends AppCompatActivity
+@EActivity(R.layout.activity_work_two)
+public class WorkTwoActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     InitalDatabaseHandler dba;
     DatabaseHandler dbHandler;
 
-    boolean doubleBackToExitPressedOnce = false;
-
-    @ViewById(R.id.toolbar_work_recycler)
+    @ViewById(R.id.toolbar_work)
     Toolbar toolbar;
 
-    @ViewById(R.id.fab_recycler)
-    com.melnykov.fab.FloatingActionButton fab;
+    @ViewById(R.id.fab)
+    FloatingActionButton fab;
 
-    @ViewById(R.id.drawer_layout_recycler)
+    @ViewById(R.id.drawer_layout)
     DrawerLayout drawer;
 
-    @ViewById(R.id.nav_view_recycler)
+    @ViewById(R.id.nav_view)
     NavigationView navigationView;
 
-    @ViewById(R.id.search_view_recycler)
-    MaterialSearchView searchView;
+    @FragmentById(R.id.fragment_sliding_tabs_recycler_one)
+    FragmentSlidingTabs fragmentSlidingTabsOne;
 
-    @FragmentById(R.id.fragment_sliding_tabs_recycler)
-    FragmentSlidingTabsRecycler fragmentSlidingTabsRecycler;
+    @FragmentById(R.id.fragment_sliding_tabs_recycler_two)
+    FragmentSlidingTabs fragmentSlidingTabsTwo;
 
     @AfterViews
     void init() {
@@ -67,100 +61,39 @@ public class WorkActivityRecycler extends AppCompatActivity
         //Setup DB
         dbHandler = new DatabaseHandler(this);
 
-        //setup view
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        fab.setTag("show");
-
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                //  Initialize SharedPreferences
-                SharedPreferences getPrefs = PreferenceManager
-                        .getDefaultSharedPreferences(getBaseContext());
+        fragmentSlidingTabsOne.addPage(0);
+        fragmentSlidingTabsTwo.addPage(0);
 
-                //  Create a new boolean and preference and set it to true
-                boolean isFirstStart = getPrefs.getBoolean("firstStart", true);
-
-                //  If the activity has never started before...
-                if (isFirstStart) {
-
-                    //  Launch app intro
-                    Intent i = new Intent(WorkActivityRecycler.this, Intro.class);
-                    startActivity(i);
-
-                    //  Make a new preferences editor
-                    SharedPreferences.Editor e = getPrefs.edit();
-
-                    //  Edit preference to make it false because we don't want this to run again
-                    e.putBoolean("firstStart", false);
-
-                    //  Apply changes
-                    e.apply();
-                }
-            }
-        });
-
-        // Start the thread
-        t.start();
-
-
-//        try {
-//            dbHandler.createDataBase();
-//        } catch (IOException ioe) {
-//            throw new Error("Unable to create database");
-//        }
-//        try {
-//            dbHandler.openDataBase();
-//        } catch (Exception e) {
-//            //throw sqle;
-//            Log.d("Main", "Error open db", e);
-//        }
-
-        ArrayList<Integer> idTopicsPageList = new ArrayList<>();
-
-        //first fragment: root topic
-        if (getIntent().getIntegerArrayListExtra(Constants.EXTRA_TOPICS_OPEN_TABS) != null){
-
-             idTopicsPageList = getIntent().
-                    getIntegerArrayListExtra(Constants.EXTRA_TOPICS_OPEN_TABS);
-        } else {
-
-            idTopicsPageList.add(0);
-        }
-
-        for (int i = (idTopicsPageList.size() - 1); i >= 0; i--) { //set tabs
-            fragmentSlidingTabsRecycler.addPage(idTopicsPageList.get(i));
-        }
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout_recycler);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            if (doubleBackToExitPressedOnce) {
-                super.onBackPressed();
-                return;
-            }
-            this.doubleBackToExitPressedOnce = true;
-            Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
-
-            new Handler().postDelayed(new Runnable() {
-
-                @Override
-                public void run() {
-                    doubleBackToExitPressedOnce=false;
-                }
-            }, 2000);
+            super.onBackPressed();
         }
     }
 
@@ -168,9 +101,6 @@ public class WorkActivityRecycler extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.work, menu);
-        MenuItem item = menu.findItem(R.id.action_search);
-        searchView.setMenuItem(item);
-
         return true;
     }
 
@@ -220,7 +150,7 @@ public class WorkActivityRecycler extends AppCompatActivity
 
                 } while (currentId != 0);
             }
-            Intent i = new Intent(WorkActivityRecycler.this,
+            Intent i = new Intent(this,
                     WorkActivityRecycler_.class);
             i.putExtra(Constants.EXTRA_TOPICS_OPEN_TABS, idTopicsPageList);
             this.startActivity(i);
@@ -249,7 +179,7 @@ public class WorkActivityRecycler extends AppCompatActivity
         } else if (id == R.id.nav_help) {
 
             //  Launch app intro
-            Intent i = new Intent(WorkActivityRecycler.this, Intro.class);
+            Intent i = new Intent(this, Intro.class);
             startActivity(i);
 
         } else if (id == R.id.nav_options) {
@@ -259,8 +189,9 @@ public class WorkActivityRecycler extends AppCompatActivity
 
         } else if (id == R.id.nav_rate) {
 
-            //Toast.makeText(this, "TODO: rate it", Toast.LENGTH_SHORT).show();
-            //Intent i = new Intent(this, WorkTwoActivity_.class);
+            Toast.makeText(this, "TODO: rate it", Toast.LENGTH_SHORT).show();
+//            Intent i = new Intent(this, WorkTwoActivity_.class);
+//            this.startActivity(i);
 
         } else if (id == R.id.nav_exit) {
 
@@ -271,8 +202,7 @@ public class WorkActivityRecycler extends AppCompatActivity
 
         }
 
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout_recycler);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -284,4 +214,3 @@ public class WorkActivityRecycler extends AppCompatActivity
         super.onDestroy();
     }
 }
-
