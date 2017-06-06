@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_result_topic_search"
     android:layout_width="match_parent"
@@ -10,12 +11,28 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="io.github.ziginsider.ideographicapp.ResultTopicSearchActivity">
 
-    <android.support.v7.widget.RecyclerView
+
+    <!--<android.support.v7.widget.RecyclerView-->
+    <!--android:id="@+id/recycler_view_result_topic_search"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:clipToPadding="false"-->
+    <!--android:paddingBottom="8dp"-->
+    <!--android:paddingTop="8dp">-->
+
+    <!--</android.support.v7.widget.RecyclerView>-->
+
+    <com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
         android:id="@+id/recycler_view_result_topic_search"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="vertical">
+        app:fastScrollAutoHide="true"
+        app:fastScrollAutoHideDelay="1500"
+        app:fastScrollPopupBackgroundSize="88dp"
+        app:fastScrollPopupBgColor="@color/colorAccent"
+        app:fastScrollPopupTextColor="@android:color/primary_text_dark"
+        app:fastScrollPopupTextSize="56sp"
+        app:fastScrollThumbColor="@color/colorAccent" />
 
-    </android.support.v7.widget.RecyclerView>
 
 </RelativeLayout>

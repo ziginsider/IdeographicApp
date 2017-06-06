@@ -8,6 +8,7 @@ package io.github.ziginsider.ideographicapp;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -18,7 +19,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.ScaleAnimation;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -252,6 +255,19 @@ public class FragmentWorkRecycler extends Fragment {
                     @Override
                     public void onItemLongClick(View view, int position) {
                         // ...
+                        ScaleAnimation growAnim = new ScaleAnimation(1.0f,
+                                1.2f,
+                                1.0f,
+                                1.2f,
+                                Animation.RELATIVE_TO_SELF,
+                                0.5F,
+                                Animation.RELATIVE_TO_SELF,
+                                0.5F);
+                        growAnim.setDuration(300);
+                        view.startAnimation(growAnim);
+                        view.setHapticFeedbackEnabled(true);
+
+
                     }
                 }));
             } else {

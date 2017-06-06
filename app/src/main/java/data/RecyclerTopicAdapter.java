@@ -48,9 +48,9 @@ public class RecyclerTopicAdapter extends RecyclerView.Adapter<RecyclerTopicAdap
 //
 //                @Override
 //                public void onClick(View v) {
-//                    if (RecyclerTopicAdapter.listener != null) {
-//                        RecyclerTopicAdapter.listener.onItemClick(view, getLayoutPosition());
-//                    }
+////                    if (RecyclerTopicAdapter.listener != null) {
+////                        RecyclerTopicAdapter.listener.onItemClick(view, getLayoutPosition());
+////                    }
 //                }
 //            });
         }
@@ -95,6 +95,8 @@ public class RecyclerTopicAdapter extends RecyclerView.Adapter<RecyclerTopicAdap
         holder.textTopic.setText(mTopicsList.get(position).getTopicText());
         holder.idTopic = mTopicsList.get(position).getTopicId();
 
+        //holder.itemView.setLongClickable(true);
+
 //        if (position == clickedPosition){
 //            holder.relativeLayout.setBackgroundResource(R.drawable.bg_current_topic);
 //        } else {
@@ -131,12 +133,13 @@ public class RecyclerTopicAdapter extends RecyclerView.Adapter<RecyclerTopicAdap
 //
 //            @Override
 //            public boolean onLongClick(View v) {
-//                clickedPosition = position;
-//                notifyDataSetChanged();
+////                clickedPosition = position;
+////                notifyDataSetChanged();
 //                return  true;
 //            }
 //        });
 
+        //TODO what is it??
         if (position == (countItem - 1)) {
 
             dba.close();

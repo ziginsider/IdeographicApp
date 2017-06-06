@@ -8,12 +8,17 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.bignerdranch.expandablerecyclerview.Model.ParentObject;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.List;
 
+import model.AllExpChild;
+import model.AllExpParent;
 import model.DoubleItem;
 import model.Expressions;
 import model.Topics;
@@ -26,6 +31,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private final ArrayList<Expressions> expList = new ArrayList<>();
     private final ArrayList<Topics> topicList = new ArrayList<>();
     private final ArrayList<DoubleItem> doubleItemsList = new ArrayList<>();
+    private final ArrayList<ParentObject> parentObjectsList = new ArrayList<>();
 
     String DB_PATH = null;
 
@@ -919,6 +925,61 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         dba.close();
 
         return doubleItemsList;
+    }
+
+    //Get all expressions (parent)and them transcription, definition and parent topics (child)
+    public ArrayList<ParentObject> getAllExpParent() {
+
+        parentObjectsList.clear();
+
+        SQLiteDatabase dba = this.getReadableDatabase();
+
+        Cursor cursor = dba.query(Constants.TABLE_EXP_NAME + " as EX inner join " +
+                        Constants.TABLE_TOPIC_NAME + " as TP on EX." +
+                        Constants.EXP_PARENT_ID +
+                        " = TP." +
+                        Constants.KEY_ID,
+                new String[] {
+                        Constants.EXP_TEXT,
+                        Constants.EXP_PARENT_ID,
+                        Constants.TOPIC_TEXT},
+                null, null, null, null,
+                "EX." + Constants.KEY_ID + " DESC"); // sort by _id inverse
+
+        //loop through...
+        if (cursor.moveToFirst()) {
+            do {
+
+//                Expressions exp = new Expressions();
+//                Topics topic = new Topics();
+//
+//                exp.setExpText(cursor.getString(cursor.getColumnIndex(Constants.EXP_TEXT)));
+//                exp.setExpParentId(cursor.getInt(cursor.getColumnIndex(Constants.EXP_PARENT_ID)));
+//                topic.setTopicText(cursor.getString(cursor.getColumnIndex(Constants.TOPIC_TEXT)));
+
+                AllExpParent titleParent =
+                        new AllExpParent(cursor.getString(cursor.getColumnIndex(Constants.EXP_TEXT)),
+                                cursor.getInt(cursor.getColumnIndex(Constants.EXP_PARENT_ID)));
+
+                List<Object> childList = new ArrayList<>();
+                String topicText = cursor.getString(cursor.getColumnIndex(Constants.TOPIC_TEXT));
+                childList.add(new AllExpChild("[ˈkɒntɛmˌpleɪtɪv]",
+                        "=denoting, concerned with, or inclined to contemplation",
+                        topicText));
+                titleParent.setChildObjectList(childList);
+                parentObjectsList.add(titleParent);
+
+            } while (cursor.moveToNext());
+
+        } else {
+
+            Log.d(Constants.LOG_TAG, ">>> Get all exp parent-child items: No matching data");
+        }
+
+        cursor.close();
+        dba.close();
+
+        return parentObjectsList;
     }
 
 }
