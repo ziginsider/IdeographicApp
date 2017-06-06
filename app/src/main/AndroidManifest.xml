@@ -29,7 +29,7 @@
             android:name=".WorkActivityRecycler_"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_work"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".RecentTopicActivity_"
             android:label="@string/title_activity_recent_topic"
@@ -49,8 +49,7 @@
         <activity
             android:name=".WorkTwoActivity_"
             android:label="@string/title_activity_work_two"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <uses-library
             android:name="com.sec.android.app.multiwindow"
@@ -72,7 +71,7 @@
             android:name="com.sec.android.multiwindow.MINIMUM_SIZE_H"
             android:value="598.0dip" />
 
-
+        <activity android:name=".CardStackActivity"></activity>
     </application>
 
 </manifest>

@@ -171,15 +171,16 @@ public class FragmentSlidingTabsRecycler extends Fragment {
                     @Override
                     public void onClick(View view) {
 
-                        if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
-
-                            InflateBottomSheet();
-                            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-
-                        } else if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-
-                            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                        }
+//                        if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+//
+//                            InflateBottomSheet();
+//                            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+//
+//                        } else if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+//
+//                            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+//                        }
+                        startActivity(new Intent(getContext(),CardStackActivity.class));
                     }
                 });
 
