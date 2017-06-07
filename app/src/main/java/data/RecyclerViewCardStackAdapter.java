@@ -56,6 +56,14 @@ public class RecyclerViewCardStackAdapter extends RecyclerView.Adapter<RecyclerV
         holder.bottom.setText(String.valueOf(cards.get(position).mPosition));
         //holder.img.setImageResource(cards.get(position).mImgRes);
         Log.d(this.getClass().getSimpleName(), "position:" + position);
+
+        //click close icon
+        holder.closeIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                remove(position);
+            }
+        });
     }
 
     @Override
@@ -73,12 +81,14 @@ public class RecyclerViewCardStackAdapter extends RecyclerView.Adapter<RecyclerV
 
         private TextView top;
         private TextView bottom;
+        private ImageView closeIcon;
         //private ImageView img;
 
         TestViewHolder(View view) {
             super(view);
-            top = (TextView) view.findViewById(R.id.top);
+            top = (TextView) view.findViewById(R.id.card_stack_top_text);
             bottom = (TextView) view.findViewById(R.id.bottom);
+            closeIcon = (ImageView) view.findViewById(R.id.card_stack_close_icon);
             //img = (ImageView) view.findViewById(R.id.img);
         }
     }
