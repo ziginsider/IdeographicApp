@@ -2,6 +2,7 @@ package io.github.ziginsider.ideographicapp;
 
 import android.content.Intent;
 import android.support.design.widget.AppBarLayout;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.design.widget.NavigationView;
@@ -12,6 +13,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import org.androidannotations.annotations.AfterViews;
@@ -40,6 +43,10 @@ public class FavoriteExpActivity extends AppCompatActivity
     @ViewById(R.id.recycler_view_favorite_exp)
     RecyclerView mRecyclerView;
 
+    static Button notifCount;
+    static int mNotifCount = 0;
+
+
     @AfterViews
     void init() {
 
@@ -50,7 +57,12 @@ public class FavoriteExpActivity extends AppCompatActivity
 
         params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
                 | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
+
         setSupportActionBar(toolbar);
+
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setHomeButtonEnabled(true);
+        //getSupportActionBar().setIcon(R.drawable.shape_counter_card_stack);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -89,11 +101,33 @@ public class FavoriteExpActivity extends AppCompatActivity
         }
     }
 
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.favorite_exp, menu);
+//        return true;
+//    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.favorite_exp, menu);
-        return true;
+
+//        View count = menu.findItem(R.id.action_settings).getActionView();
+//        notifCount = (Button) count.findViewById(R.id.notif_count);
+//        notifCount.setText(String.valueOf(4));
+
+        MenuItem item = menu.findItem(R.id.action_settings);
+        MenuItemCompat.setActionView(item, R.layout.feed_update_count);
+        notifCount = (Button) MenuItemCompat.getActionView(item);
+        notifCount.setText(String.valueOf(mNotifCount));
+        notifCount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(v.getContext(), "URrrrrra!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -105,10 +139,20 @@ public class FavoriteExpActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            setNotifCount(mNotifCount + 1);
+            return true;
+        }
+        if(id == R.id.icon1) {
+            setNotifCount(mNotifCount + 1);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setNotifCount(int count){
+        mNotifCount = count;
+        invalidateOptionsMenu();
     }
 
     @SuppressWarnings("StatementWithEmptyBody")

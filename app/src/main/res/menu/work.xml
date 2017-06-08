@@ -6,5 +6,17 @@
         android:icon="@drawable/ic_action_action_search"
         android:orderInCategory="100"
         android:title="Search..."
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/shape_counter_card_stack"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"
+        android:actionLayout="@layout/feed_update_count"
+        app:showAsAction="ifRoom" />
+
+
+
 </menu>
+
+

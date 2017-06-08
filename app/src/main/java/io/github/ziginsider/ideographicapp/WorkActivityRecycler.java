@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -13,7 +14,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
@@ -56,8 +59,13 @@ public class WorkActivityRecycler extends AppCompatActivity
     @ViewById(R.id.search_view_recycler)
     MaterialSearchView searchView;
 
+    static Button notifCount;
+    static int mNotifCount = 0;
+
     @FragmentById(R.id.fragment_sliding_tabs_recycler)
     FragmentSlidingTabsRecycler fragmentSlidingTabsRecycler;
+
+    private View mInfoNotificationBadge;
 
     @AfterViews
     void init() {
@@ -168,10 +176,31 @@ public class WorkActivityRecycler extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.work, menu);
-        MenuItem item = menu.findItem(R.id.action_search);
-        searchView.setMenuItem(item);
 
-        return true;
+        MenuItem itemSearch = menu.findItem(R.id.action_search);
+        searchView.setMenuItem(itemSearch);
+
+
+        MenuItem item = menu.findItem(R.id.action_settings);
+        MenuItemCompat.setActionView(item, R.layout.feed_update_count);
+        notifCount = (Button) MenuItemCompat.getActionView(item);
+        notifCount.setText(String.valueOf(mNotifCount));
+        notifCount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(v.getContext(), "URrrrrra!", Toast.LENGTH_SHORT).show();
+                mNotifCount++;
+            }
+        });
+
+        return super.onCreateOptionsMenu(menu);
+
+        //return true;
+    }
+
+    private void setNotifCount(int count){
+        mNotifCount = count;
+        invalidateOptionsMenu();
     }
 
     @Override
@@ -183,8 +212,13 @@ public class WorkActivityRecycler extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            setNotifCount(mNotifCount + 1);
             return true;
         }
+//        if (id == R.id.action_badge) {
+//
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }

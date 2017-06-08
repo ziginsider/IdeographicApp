@@ -38,8 +38,12 @@ public class WorkActivity extends AppCompatActivity
     @ViewById(R.id.search_view)
     MaterialSearchView searchView;
 
+
+
     @FragmentById(R.id.fragment_sliding_tabs)
     FragmentSlidingTabs fragmentSlidingTabs;
+
+
 
 
 
