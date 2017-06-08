@@ -248,7 +248,7 @@ public class FragmentWorkRecycler extends Fragment {
 //
 //                    }
                         //set recent topic
-                        afterItemClickTask = new AfterItemClickTask(getContext());
+                        afterItemClickTask = new AfterItemClickTask(workContext);
                         afterItemClickTask.execute(mFoundTopics.get(position).getTopicId());
                     }
 

@@ -136,8 +136,8 @@ public class FragmentSlidingTabsRecycler extends Fragment {
                     @Override
                     public void onSearchViewClosed() {
 
-                        fragmentWorkRecycler.showListView();
-                        fragmentWorkRecycler.cloneItems();
+                        //fragmentWorkRecycler.showListView();
+                        //fragmentWorkRecycler.cloneItems();
                     }
                 });
 
@@ -310,7 +310,7 @@ public class FragmentSlidingTabsRecycler extends Fragment {
             storage.init(getContext());
             storage.addProperty(Constants.TOPICS_ROOT_NAME, "nichts");
 
-            adapter.addFragment(fragmentWorkRecycler, Constants.TOPICS_ROOT_NAME);
+            adapter.addFragment(fragmentWorkRecycler, Constants.TOPICS_ROOT_NAME, 0);
         } else {
 
             storage.init(getContext());
@@ -327,7 +327,7 @@ public class FragmentSlidingTabsRecycler extends Fragment {
             if (!(nameParentTopic.equals(topic.getTopicText()))) {
                 storage.addProperty(topic.getTopicText(), "nichts");
             }
-            adapter.addFragment(fragmentWorkRecycler, topic.getTopicText());
+            adapter.addFragment(fragmentWorkRecycler, topic.getTopicText(), idTopic);
         }
         adapter.notifyDataSetChanged();
         if (adapter.getCount() > 0) tabLayout.setupWithViewPager(viewPager);

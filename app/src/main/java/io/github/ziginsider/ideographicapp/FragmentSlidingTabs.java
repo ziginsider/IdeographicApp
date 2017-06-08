@@ -402,13 +402,13 @@ public class FragmentSlidingTabs extends Fragment {
             storage.init(getContext());
             storage.addProperty(Constants.TOPICS_ROOT_NAME, "nichts");
 
-            adapter.addFragment(fragmentWork, Constants.TOPICS_ROOT_NAME);
+            adapter.addFragment(fragmentWork, Constants.TOPICS_ROOT_NAME, 0);
         } else {
 
             storage.init(getContext());
             storage.addProperty(dba.getTopicById(idTopic).getTopicText(), "nichts");
 
-            adapter.addFragment(fragmentWork, dba.getTopicById(idTopic).getTopicText());
+            adapter.addFragment(fragmentWork, dba.getTopicById(idTopic).getTopicText(), idTopic);
         }
         adapter.notifyDataSetChanged();
         if (adapter.getCount() > 0) tabLayout.setupWithViewPager(viewPager);

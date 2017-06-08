@@ -26,6 +26,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
     private final ArrayList<Fragment> mFragmentList = new ArrayList<>();
     private final ArrayList<String> mFragmentTitleList = new ArrayList<>();
+    private final ArrayList<Integer> mFragmentIdList = new ArrayList<>();
     Context context;
     ViewPager viewPager;
     TabLayout tabLayout;
@@ -47,12 +48,21 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         return  mFragmentTitleList.get(position);
     }
 
+
     @Override
     public int getCount() {
         return mFragmentList.size();
     }
 
-    public void addFragment(Fragment fragment, String title) {
+    public void addFragment(Fragment fragment, String title, Integer id) {
+        int count = mFragmentList.size();
+        if (count > 1) {
+            if (mFragmentIdList.get(count - 1).equals(id)) { //if previous topic id == current
+                return; // not add
+            }
+        }
+
+        mFragmentIdList.add(id);
         mFragmentList.add(fragment);
         mFragmentTitleList.add(title);
     }
@@ -62,6 +72,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         Fragment fragment = mFragmentList.get(position);
         mFragmentList.remove(fragment);
         mFragmentTitleList.remove(position);
+        mFragmentIdList.remove(position);
         destroyFragmentView(viewPager, position, fragment);
         notifyDataSetChanged();
     }
