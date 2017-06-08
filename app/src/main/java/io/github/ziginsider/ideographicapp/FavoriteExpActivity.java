@@ -43,9 +43,6 @@ public class FavoriteExpActivity extends AppCompatActivity
     @ViewById(R.id.recycler_view_favorite_exp)
     RecyclerView mRecyclerView;
 
-    static Button notifCount;
-    static int mNotifCount = 0;
-
 
     @AfterViews
     void init() {
@@ -113,19 +110,8 @@ public class FavoriteExpActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.favorite_exp, menu);
 
 //        View count = menu.findItem(R.id.action_settings).getActionView();
-//        notifCount = (Button) count.findViewById(R.id.notif_count);
-//        notifCount.setText(String.valueOf(4));
-
-        MenuItem item = menu.findItem(R.id.action_settings);
-        MenuItemCompat.setActionView(item, R.layout.feed_update_count);
-        notifCount = (Button) MenuItemCompat.getActionView(item);
-        notifCount.setText(String.valueOf(mNotifCount));
-        notifCount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(v.getContext(), "URrrrrra!", Toast.LENGTH_SHORT).show();
-            }
-        });
+//        buttonBadgeCardStack = (Button) count.findViewById(R.id.notif_count);
+//        buttonBadgeCardStack.setText(String.valueOf(4));
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -139,21 +125,14 @@ public class FavoriteExpActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            setNotifCount(mNotifCount + 1);
+
             return true;
         }
-        if(id == R.id.icon1) {
-            setNotifCount(mNotifCount + 1);
-            return true;
-        }
+
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void setNotifCount(int count){
-        mNotifCount = count;
-        invalidateOptionsMenu();
-    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override

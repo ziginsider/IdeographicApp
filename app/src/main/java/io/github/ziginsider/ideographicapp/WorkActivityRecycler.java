@@ -11,7 +11,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,7 +26,6 @@ import org.androidannotations.annotations.FragmentById;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.WindowFeature;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import data.Constants;
@@ -43,6 +41,8 @@ public class WorkActivityRecycler extends AppCompatActivity
     DatabaseHandler dbHandler;
 
     boolean doubleBackToExitPressedOnce = false;
+    static Button buttonBadgeCardStack;
+    static int mCardStackCount = 0;
 
     @ViewById(R.id.toolbar_work_recycler)
     Toolbar toolbar;
@@ -59,13 +59,8 @@ public class WorkActivityRecycler extends AppCompatActivity
     @ViewById(R.id.search_view_recycler)
     MaterialSearchView searchView;
 
-    static Button notifCount;
-    static int mNotifCount = 0;
-
     @FragmentById(R.id.fragment_sliding_tabs_recycler)
     FragmentSlidingTabsRecycler fragmentSlidingTabsRecycler;
-
-    private View mInfoNotificationBadge;
 
     @AfterViews
     void init() {
@@ -135,9 +130,9 @@ public class WorkActivityRecycler extends AppCompatActivity
         ArrayList<Integer> idTopicsPageList = new ArrayList<>();
 
         //first fragment: root topic
-        if (getIntent().getIntegerArrayListExtra(Constants.EXTRA_TOPICS_OPEN_TABS) != null){
+        if (getIntent().getIntegerArrayListExtra(Constants.EXTRA_TOPICS_OPEN_TABS) != null) {
 
-             idTopicsPageList = getIntent().
+            idTopicsPageList = getIntent().
                     getIntegerArrayListExtra(Constants.EXTRA_TOPICS_OPEN_TABS);
         } else {
 
@@ -166,7 +161,7 @@ public class WorkActivityRecycler extends AppCompatActivity
 
                 @Override
                 public void run() {
-                    doubleBackToExitPressedOnce=false;
+                    doubleBackToExitPressedOnce = false;
                 }
             }, 2000);
         }
@@ -180,26 +175,24 @@ public class WorkActivityRecycler extends AppCompatActivity
         MenuItem itemSearch = menu.findItem(R.id.action_search);
         searchView.setMenuItem(itemSearch);
 
-
-        MenuItem item = menu.findItem(R.id.action_settings);
-        MenuItemCompat.setActionView(item, R.layout.feed_update_count);
-        notifCount = (Button) MenuItemCompat.getActionView(item);
-        notifCount.setText(String.valueOf(mNotifCount));
-        notifCount.setOnClickListener(new View.OnClickListener() {
+        MenuItem item = menu.findItem(R.id.action_badge);
+        MenuItemCompat.setActionView(item, R.layout.feed_card_stack_count);
+        buttonBadgeCardStack = (Button) MenuItemCompat.getActionView(item);
+        buttonBadgeCardStack.setText(String.valueOf(mCardStackCount));
+        buttonBadgeCardStack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(v.getContext(), "URrrrrra!", Toast.LENGTH_SHORT).show();
-                mNotifCount++;
+//                Toast.makeText(v.getContext(), "URrrrrra!", Toast.LENGTH_SHORT).show();
+//                mNotifCount++;
+                startActivity(new Intent(v.getContext(), CardStackActivity.class));
             }
         });
 
         return super.onCreateOptionsMenu(menu);
-
-        //return true;
     }
 
-    private void setNotifCount(int count){
-        mNotifCount = count;
+    private void setCardStackCount(int count) {
+        mCardStackCount = count;
         invalidateOptionsMenu();
     }
 
@@ -211,10 +204,7 @@ public class WorkActivityRecycler extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            setNotifCount(mNotifCount + 1);
-            return true;
-        }
+
 //        if (id == R.id.action_badge) {
 //
 //            return true;
@@ -299,7 +289,7 @@ public class WorkActivityRecycler extends AppCompatActivity
         } else if (id == R.id.nav_exit) {
 
             Intent homeIntent = new Intent(Intent.ACTION_MAIN);
-            homeIntent.addCategory( Intent.CATEGORY_HOME );
+            homeIntent.addCategory(Intent.CATEGORY_HOME);
             homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(homeIntent);
 

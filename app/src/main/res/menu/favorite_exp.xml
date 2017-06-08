@@ -6,19 +6,8 @@
         android:icon="@drawable/ic_settings_exp"
         android:orderInCategory="100"
         android:title="@string/action_settings"
-        android:actionLayout="@layout/feed_update_count"
-        app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/icon1"
-        android:icon="@drawable/ic_attitude"
-        android:orderInCategory="101"
-        android:title="icon"
-        app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/icon2"
-        android:icon="@drawable/ic_action_navigation_arrow_back"
-        android:orderInCategory="102"
-        android:title="icon"
-        app:showAsAction="ifRoom" />
+        android:actionLayout="@layout/feed_card_stack_count"
+        app:showAsAction="never" />
+
 
 </menu>

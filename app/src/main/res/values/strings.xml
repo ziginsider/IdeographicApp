@@ -12,4 +12,5 @@
 
     <string name="app_intro">Intro</string>
     <string name="title_activity_work_two">WorkTwoActivity</string>
+    <string name="card_stack">card stack</string>
 </resources>
