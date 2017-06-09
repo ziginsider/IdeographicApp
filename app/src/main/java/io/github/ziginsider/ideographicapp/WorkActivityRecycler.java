@@ -151,7 +151,7 @@ public class WorkActivityRecycler extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
         } else {
             if (doubleBackToExitPressedOnce) {
-                super.onBackPressed();
+                exitApp();
                 return;
             }
             this.doubleBackToExitPressedOnce = true;
@@ -288,10 +288,7 @@ public class WorkActivityRecycler extends AppCompatActivity
 
         } else if (id == R.id.nav_exit) {
 
-            Intent homeIntent = new Intent(Intent.ACTION_MAIN);
-            homeIntent.addCategory(Intent.CATEGORY_HOME);
-            homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(homeIntent);
+            exitApp();
 
         }
 
@@ -299,6 +296,13 @@ public class WorkActivityRecycler extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout_recycler);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void exitApp() {
+        Intent homeIntent = new Intent(Intent.ACTION_MAIN);
+        homeIntent.addCategory(Intent.CATEGORY_HOME);
+        homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(homeIntent);
     }
 
     @Override

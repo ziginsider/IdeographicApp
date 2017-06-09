@@ -63,78 +63,78 @@ public class MainActivity extends AppCompatActivity {
 //        navigationView.setNavigationItemSelectedListener(this);
 //    }
 
-    InitalDatabaseHandler dba;
+    //InitalDatabaseHandler dba;
     DatabaseHandler dbHandler;
 
-    boolean doubleBackToExitPressedOnce = false;
+    //boolean doubleBackToExitPressedOnce = false;
 
-    @ViewById(R.id.btn_open_recent)
-    Button btnAllTopics;
-
-    @Click(R.id.btn_open_recent)
-    void clickBtnAllTopics() {
-
-        ArrayList<Integer> idTopicsPageList = new ArrayList<Integer>();
-        idTopicsPageList.clear();
-
-        int currentId = dba.getIdTopicTopRecentTopics();
-
-        idTopicsPageList.add(currentId);
-
-        if (currentId != 0) {
-            do {
-                currentId = dbHandler.getTopicById(currentId).getTopicParentId();
-                idTopicsPageList.add(currentId);
-
-            } while (currentId != 0);
-        }
-        Intent i = new Intent(MainActivity.this,
-                WorkActivityRecycler_.class);
-        i.putExtra(Constants.EXTRA_TOPICS_OPEN_TABS, idTopicsPageList);
-        startActivity(i);
-    }
-
-    @Click(R.id.btn_all_exp)
-    void clickBtnAllExp() {
-
-        Intent i = new Intent(this, ResultTopicSearchActivity_.class);
-
-        this.startActivity(i);
-    }
-
-    @Click(R.id.btn_topics_recycler)
-    void clickBtnTopicRecycler() {
-
-        Intent i = new Intent(this, WorkActivityRecycler_.class);
-        ArrayList<Integer> startTopicsList = new ArrayList<>();
-        startTopicsList.add(0); //set topics root = "Topics"
-        i.putExtra(Constants.EXTRA_TOPICS_OPEN_TABS, startTopicsList);
-        this.startActivity(i);
-    }
-
-    @Click(R.id.btn_recent_topics)
-    void clickBtnRecentTopics() {
-
-        Intent i = new Intent(this, RecentTopicActivity_.class);
-        //i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        this.startActivity(i);
-    }
-
-    @Click(R.id.btn_favorite_exp)
-    void clickBtnFavoriteExp() {
-
-        Intent i = new Intent(this, FavoriteExpActivity_.class);
-        //i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        this.startActivity(i);
-    }
-
-    @Click(R.id.btn_statistic_topic)
-    void clickBtnStatisticTopics() {
-
-        Intent i = new Intent(this, StatisticTopicActivity_.class);
-        //i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        this.startActivity(i);
-    }
+//    @ViewById(R.id.btn_open_recent)
+//    Button btnAllTopics;
+//
+//    @Click(R.id.btn_open_recent)
+//    void clickBtnAllTopics() {
+//
+//        ArrayList<Integer> idTopicsPageList = new ArrayList<Integer>();
+//        idTopicsPageList.clear();
+//
+//        int currentId = dba.getIdTopicTopRecentTopics();
+//
+//        idTopicsPageList.add(currentId);
+//
+//        if (currentId != 0) {
+//            do {
+//                currentId = dbHandler.getTopicById(currentId).getTopicParentId();
+//                idTopicsPageList.add(currentId);
+//
+//            } while (currentId != 0);
+//        }
+//        Intent i = new Intent(MainActivity.this,
+//                WorkActivityRecycler_.class);
+//        i.putExtra(Constants.EXTRA_TOPICS_OPEN_TABS, idTopicsPageList);
+//        startActivity(i);
+//    }
+//
+//    @Click(R.id.btn_all_exp)
+//    void clickBtnAllExp() {
+//
+//        Intent i = new Intent(this, ResultTopicSearchActivity_.class);
+//
+//        this.startActivity(i);
+//    }
+//
+//    @Click(R.id.btn_topics_recycler)
+//    void clickBtnTopicRecycler() {
+//
+//        Intent i = new Intent(this, WorkActivityRecycler_.class);
+//        ArrayList<Integer> startTopicsList = new ArrayList<>();
+//        startTopicsList.add(0); //set topics root = "Topics"
+//        i.putExtra(Constants.EXTRA_TOPICS_OPEN_TABS, startTopicsList);
+//        this.startActivity(i);
+//    }
+//
+//    @Click(R.id.btn_recent_topics)
+//    void clickBtnRecentTopics() {
+//
+//        Intent i = new Intent(this, RecentTopicActivity_.class);
+//        //i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+//        this.startActivity(i);
+//    }
+//
+//    @Click(R.id.btn_favorite_exp)
+//    void clickBtnFavoriteExp() {
+//
+//        Intent i = new Intent(this, FavoriteExpActivity_.class);
+//        //i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+//        this.startActivity(i);
+//    }
+//
+//    @Click(R.id.btn_statistic_topic)
+//    void clickBtnStatisticTopics() {
+//
+//        Intent i = new Intent(this, StatisticTopicActivity_.class);
+//        //i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+//        this.startActivity(i);
+//    }
 //
 //    @Override
 //    protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
     @AfterViews
     void init() {
 
-        dba = new InitalDatabaseHandler(this); //setup inital db
+        //dba = new InitalDatabaseHandler(this); //setup inital db
 
         //Setup DB
         dbHandler = new DatabaseHandler(this);
@@ -164,45 +164,49 @@ public class MainActivity extends AppCompatActivity {
         dbHandler.close();
 
         Intent i = new Intent(this, WorkActivityRecycler_.class);
+
+
         ArrayList<Integer> startTopicsList = new ArrayList<>();
         startTopicsList.add(0); //set topics root = "Topics"
         i.putExtra(Constants.EXTRA_TOPICS_OPEN_TABS, startTopicsList);
+
+
         this.startActivity(i);
         this.finish();
     }
 
 
 
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            //super.onBackPressed();
-
-            if (doubleBackToExitPressedOnce) {
-                super.onBackPressed();
-                return;
-            }
-
-            this.doubleBackToExitPressedOnce = true;
-            Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
-
-            new Handler().postDelayed(new Runnable() {
-
-                @Override
-                public void run() {
-                    doubleBackToExitPressedOnce=false;
-                }
-            }, 2000);
-        }
-    }
+//    @Override
+//    public void onBackPressed() {
+//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+//        if (drawer.isDrawerOpen(GravityCompat.START)) {
+//            drawer.closeDrawer(GravityCompat.START);
+//        } else {
+//            //super.onBackPressed();
+//
+//            if (doubleBackToExitPressedOnce) {
+//                super.onBackPressed();
+//                return;
+//            }
+//
+//            this.doubleBackToExitPressedOnce = true;
+//            Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+//
+//            new Handler().postDelayed(new Runnable() {
+//
+//                @Override
+//                public void run() {
+//                    doubleBackToExitPressedOnce=false;
+//                }
+//            }, 2000);
+//        }
+//    }
 
 
     @Override
     protected void onDestroy() {
-        dba.close();
+        //dba.close();
         dbHandler.close();
         super.onDestroy();
     }
