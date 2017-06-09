@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
 //        navigationView.setNavigationItemSelectedListener(this);
 //    }
 
-    //InitalDatabaseHandler dba;
+    InitalDatabaseHandler dba;
     DatabaseHandler dbHandler;
 
     //boolean doubleBackToExitPressedOnce = false;
@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
     @AfterViews
     void init() {
 
-        //dba = new InitalDatabaseHandler(this); //setup inital db
+        dba = new InitalDatabaseHandler(this); //setup inital db
 
         //Setup DB
         dbHandler = new DatabaseHandler(this);
@@ -161,15 +161,28 @@ public class MainActivity extends AppCompatActivity {
             Log.d("Main", "Error open db", e);
         }
 
-        dbHandler.close();
+        //dbHandler.close();
 
         Intent i = new Intent(this, WorkActivityRecycler_.class);
 
 
-        ArrayList<Integer> startTopicsList = new ArrayList<>();
-        startTopicsList.add(0); //set topics root = "Topics"
-        i.putExtra(Constants.EXTRA_TOPICS_OPEN_TABS, startTopicsList);
+//        ArrayList<Integer> startTopicsList = new ArrayList<>();
+//        startTopicsList.add(0); //set topics root = "Topics"
+//        i.putExtra(Constants.EXTRA_TOPICS_OPEN_TABS, startTopicsList);
 
+
+        ArrayList<Integer> startTopicsList = new ArrayList<>();
+        //startTopicsList.add(dba.getIdTopicTopRecentTopics()); //set recent topic id
+
+        int currentId = dba.getIdTopicTopRecentTopics();
+        startTopicsList.add(currentId);
+        do {
+            currentId = dbHandler.getTopicById(currentId).getTopicParentId();
+            startTopicsList.add(currentId);
+
+        } while (currentId != 0);
+
+        i.putExtra(Constants.EXTRA_TOPICS_OPEN_TABS, startTopicsList);
 
         this.startActivity(i);
         this.finish();
@@ -206,7 +219,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        //dba.close();
+        dba.close();
         dbHandler.close();
         super.onDestroy();
     }
