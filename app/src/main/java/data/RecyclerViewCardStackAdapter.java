@@ -59,7 +59,7 @@ public class RecyclerViewCardStackAdapter extends RecyclerView.Adapter<RecyclerV
     @Override
     public void onBindViewHolder(final CardStackViewHolder holder, final int position) {
         holder.top.setText(String.valueOf(cards.get(position).mPosition));
-        holder.tabsNames.setText(mCardList.get(position).getParentTopics());
+        holder.tabsNames.setText(mCardList.get(position).getNameTopics());
 
         ArrayList<ItemData> items = new ArrayList<>();
 

@@ -11,6 +11,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,6 +32,9 @@ import java.util.ArrayList;
 import data.Constants;
 import data.DatabaseHandler;
 import data.InitalDatabaseHandler;
+import model.CardData;
+import model.RecentTopics;
+import model.Topics;
 
 @WindowFeature({Window.FEATURE_ACTION_BAR_OVERLAY})
 @EActivity(R.layout.activity_work_recycler)
@@ -142,6 +146,8 @@ public class WorkActivityRecycler extends AppCompatActivity
         for (int i = (idTopicsPageList.size() - 1); i >= 0; i--) { //set tabs
             fragmentSlidingTabsRecycler.addPage(idTopicsPageList.get(i));
         }
+
+        Toast.makeText(this, "Я в главном!!!", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -182,11 +188,20 @@ public class WorkActivityRecycler extends AppCompatActivity
         buttonBadgeCardStack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Toast.makeText(v.getContext(), "URrrrrra!", Toast.LENGTH_SHORT).show();
-//                mNotifCount++;
+
                 startActivity(new Intent(v.getContext(), CardStackActivity.class));
             }
         });
+        buttonBadgeCardStack.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Toast toast = Toast.makeText(WorkActivityRecycler.this, "Number of desktops", Toast.LENGTH_SHORT);
+                toast.setGravity(Gravity.TOP|Gravity.CENTER, 150, 100);
+                toast.show();
+                return true;
+            }
+        });
+
 
         return super.onCreateOptionsMenu(menu);
     }

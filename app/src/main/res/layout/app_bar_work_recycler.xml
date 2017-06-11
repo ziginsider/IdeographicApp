@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="io.github.ziginsider.ideographicapp.WorkActivityRecycler">
+    tools:context="io.github.ziginsider.ideographicapp.WorkActivityRecycler"
+    >
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar_layout_work_recycler"
@@ -42,13 +43,29 @@
         android:id="@+id/fab_recycler"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/ic_chevron_up"
+        android:layout_gravity="bottom|end"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="15dp"
+        android:src="@drawable/ic_arrow_small"
         fab:fab_colorNormal="@color/fab_color_primary"
         fab:fab_colorPressed="@color/fab_color_primary_pressed"
         fab:fab_colorRipple="@color/fab_color_ripple"
-        fab:fab_type="normal" />
+        fab:fab_type="normal"
+        />
+
+    <com.melnykov.fab.FloatingActionButton
+        android:id="@+id/fab_add_desk"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginRight="80dp"
+        android:layout_marginBottom="15dp"
+        android:src="@drawable/ic_plus_small"
+        fab:fab_colorNormal="@color/fab_color_primary"
+        fab:fab_colorPressed="@color/fab_color_primary_pressed"
+        fab:fab_colorRipple="@color/fab_color_ripple"
+        fab:fab_type="normal"
+        />
 
     <include layout="@layout/content_work_recycler" />
 

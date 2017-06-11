@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 
 import com.bignerdranch.expandablerecyclerview.Model.ParentObject;
 
@@ -501,6 +502,92 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return topicList;
     }
 
+    //Get topics names by id topic-parent
+    public ArrayList<String> getTopicNamesByIdParent(int idParent) {
+
+        ArrayList<String> names = new ArrayList<>();
+        String topic;
+
+        SQLiteDatabase dba = this.getReadableDatabase();
+
+        Cursor cursor = dba.query(Constants.TABLE_TOPIC_NAME,
+                new String[]{
+                        Constants.TOPIC_TEXT
+                        },
+                Constants.TOPIC_PARENT_ID + "=?",
+                new String[] {String.valueOf(idParent)},
+                null,
+                null,
+                null,
+                null);
+
+        //loop through...
+        if (cursor.moveToFirst()) {
+            do {
+
+                topic = cursor.getString(cursor.getColumnIndex(Constants.TOPIC_TEXT));
+                names.add(topic);
+
+            } while (cursor.moveToNext());
+
+            Log.d(Constants.LOG_TAG, ">>> Get Topic by id topics parent: Success");
+
+        } else {
+
+            Log.d(Constants.LOG_TAG, ">>> Get Topic by id topics parent: No matching data. Id Parent = "
+                    + String.valueOf(idParent));
+
+        }
+
+        cursor.close();
+        dba.close();
+
+        return names;
+    }
+
+    //Get topics IDs by id topic-parent
+    public ArrayList<Integer> getTopicIdsByIdParent(int idParent) {
+
+        ArrayList<Integer> identificators = new ArrayList<>();
+        int id;
+
+        SQLiteDatabase dba = this.getReadableDatabase();
+
+        Cursor cursor = dba.query(Constants.TABLE_TOPIC_NAME,
+                new String[]{
+                        Constants.KEY_ID
+                },
+                Constants.TOPIC_PARENT_ID + "=?",
+                new String[] {String.valueOf(idParent)},
+                null,
+                null,
+                null,
+                null);
+
+        //loop through...
+        if (cursor.moveToFirst()) {
+            do {
+
+                id = cursor.getInt(cursor.getColumnIndex(Constants.KEY_ID));
+                identificators.add(id);
+
+            } while (cursor.moveToNext());
+
+            Log.d(Constants.LOG_TAG, ">>> Get Topic IDs by id topics parent: Success");
+
+        } else {
+
+            Log.d(Constants.LOG_TAG, ">>> Get Topic IDs by id topics parent: No matching data. Id Parent = "
+                    + String.valueOf(idParent));
+
+        }
+
+        cursor.close();
+        dba.close();
+
+        return identificators;
+    }
+
     //Get topics count by id topic-parent
     public int getTopicCountByIdParent(int idParent) {
 
@@ -578,6 +665,46 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return topicList;
     }
 
+
+    //Get expressions names by id topic-parent
+    public ArrayList<String> getExpNamesByIdParent(int idParent) {
+
+        ArrayList<String> names = new ArrayList<>();
+        String name;
+
+        SQLiteDatabase dba = this.getReadableDatabase();
+
+        Cursor cursor = dba.query(Constants.TABLE_EXP_NAME,
+                new String[]{
+                        Constants.EXP_TEXT},
+                Constants.EXP_PARENT_ID + "=?",
+                new String[] {String.valueOf(idParent)},
+                null,
+                null,
+                Constants.KEY_ID + " DESC", // sort by _id inverse
+                null);
+
+        //loop through...
+        if (cursor.moveToFirst()) {
+            do {
+
+                name = cursor.getString(cursor.getColumnIndex(Constants.EXP_TEXT));
+                names.add(name);
+
+            } while (cursor.moveToNext());
+
+            Log.d(Constants.LOG_TAG, ">>> Get Expressions by id topics parent: Success");
+
+        } else {
+
+            Log.d(Constants.LOG_TAG, ">>> Get Expressions by id topics parent: No matching data");
+        }
+
+        cursor.close();
+        dba.close();
+
+        return names;
+    }
 
     //Get expressions by id topic-parent
     public ArrayList<Expressions> getExpByIdParent(int idParent) {

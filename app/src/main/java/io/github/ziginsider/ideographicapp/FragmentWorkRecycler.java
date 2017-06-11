@@ -7,13 +7,18 @@ package io.github.ziginsider.ideographicapp;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +28,8 @@ import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.ScaleAnimation;
 import android.widget.Toast;
+
+import com.melnykov.fab.FloatingActionButton;
 
 import java.util.ArrayList;
 
@@ -43,6 +50,9 @@ public class FragmentWorkRecycler extends Fragment {
     RecyclerView listTopicContentRecycler;
 
     com.melnykov.fab.FloatingActionButton fab;
+    com.melnykov.fab.FloatingActionButton fabAdd;
+
+    TabLayout tabLayout;
 
     private DatabaseHandler dba;
 
@@ -113,19 +123,41 @@ public class FragmentWorkRecycler extends Fragment {
         //clone fromDB -> foundItems
         cloneItems();
 
-        fab = (com.melnykov.fab.FloatingActionButton) getActivity().findViewById(R.id.fab_recycler);
+        fab = (FloatingActionButton) getActivity().findViewById(R.id.fab_recycler);
+        fabAdd = (FloatingActionButton) getActivity().findViewById(R.id.fab_add_desk);
 
         showListView();
         showHideView();
 
 
-//        tabbar = (AppBarLayout) getActivity().findViewById(R.id.appbar_layout_recycler);
-//        appbar = (AppBarLayout) getActivity().findViewById(R.id.appbar_layout_work_recycler);
-//        viewPager = (ViewPager) getActivity().findViewById(R.id.work_view_pager_recycler);
-//
-//
+        //tabbar = (AppBarLayout) getActivity().findViewById(R.id.appbar_layout_recycler);
+        //appbar = (AppBarLayout) getActivity().findViewById(R.id.appbar_layout_work_recycler);
+        tabLayout = (TabLayout) getActivity().findViewById(R.id.work_tab_layout_recycler);
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+
+
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                fabAdd.show();
+                fab.show();
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
+
+
+
+
         listTopicContentRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            int mLastFirstVisibleItem = 0;
+//            int mLastFirstVisibleItem = 0;
 
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -134,30 +166,47 @@ public class FragmentWorkRecycler extends Fragment {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                final int currentFirstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
+//                final int currentFirstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
 
-                if (currentFirstVisibleItem > this.mLastFirstVisibleItem) {
-
-//                    if (fab.getTag() == "show") {
-//                        fab.animate().translationY(fab.getBottom()).
-//                                setInterpolator(new AccelerateInterpolator()).
-//                                setDuration(getResources().
-//                                        getInteger(android.R.integer.config_mediumAnimTime)).
-//                                start();
-//                        fab.setTag("hide");
-//                    }
-                } else if (currentFirstVisibleItem < this.mLastFirstVisibleItem) {
-
-//                    fab.animate().translationY(0).
-//                            setInterpolator(new DecelerateInterpolator()).start();
-//                    fab.setTag("show");
+                ////
+                if (dy > 0) {
+                    fabAdd.hide();
+                    fab.hide();
+                }
+                else if (dy < 0) {
+                    fabAdd.show();
+                    fab.show();
                 }
 
-                this.mLastFirstVisibleItem = currentFirstVisibleItem;
+                ////
+
+
+
+//                if (currentFirstVisibleItem > this.mLastFirstVisibleItem) {
+//
+////                    if (fab.getTag() == "show") {
+////                        fab.animate().translationY(fab.getBottom()).
+////                                setInterpolator(new AccelerateInterpolator()).
+////                                setDuration(getResources().
+////                                        getInteger(android.R.integer.config_mediumAnimTime)).
+////                                start();
+////                        fab.setTag("hide");
+////                    }
+////                    fabAdd.hide();
+//                } else if (currentFirstVisibleItem < this.mLastFirstVisibleItem) {
+//                //} else if (dy < 0) {
+//
+////                    fab.animate().translationY(0).
+////                            setInterpolator(new DecelerateInterpolator()).start();
+////                    fab.setTag("show");
+// //                   fabAdd.show();
+//                }
+//
+//                this.mLastFirstVisibleItem = currentFirstVisibleItem;
             }
         });
-        Log.d("Zig", "End function RefreshData()");
-    }
+      Log.d("Zig", "End function RefreshData()");
+  }
 
     @Override
     public void onDetach() {

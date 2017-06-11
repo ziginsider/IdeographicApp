@@ -8,14 +8,14 @@ import java.util.ArrayList;
 
 public class CardData {
     private int cardTopicId;
-    private String parentTopics;
+    private String nameTopics;
     private ArrayList<String> childNames;
     private ArrayList<Integer> childTypes;
 
 
-    public CardData(int cardTopicId, String parentTopics, ArrayList<String> childNames, ArrayList<Integer> childTypes) {
+    public CardData(int cardTopicId, String nameTopics, ArrayList<String> childNames, ArrayList<Integer> childTypes) {
         this.cardTopicId = cardTopicId;
-        this.parentTopics = parentTopics;
+        this.nameTopics = nameTopics;
         this.childNames = childNames;
         this.childTypes = childTypes;
     }
@@ -36,12 +36,12 @@ public class CardData {
         this.cardTopicId = cardTopicId;
     }
 
-    public String getParentTopics() {
-        return parentTopics;
+    public String getNameTopics() {
+        return nameTopics;
     }
 
-    public void setParentTopics(String parentTopics) {
-        this.parentTopics = parentTopics;
+    public void setNameTopics(String nameTopics) {
+        this.nameTopics = nameTopics;
     }
 
     public ArrayList<Integer> getChildTypes() {
