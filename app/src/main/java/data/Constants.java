@@ -17,6 +17,8 @@ public class Constants {
     public static final String LOG_TAG = "Database Handler";
 
     public static final String TOPICS_ROOT_NAME = "Topics";
+    public static final String CURRENT_CARD = "CurrentCard";
+    public static final String CURRENT_COUNT_CARD = "CurrentCountCard"; //TODO int!!!
 
     public static final String BUNDLE_ID_TOPIC = "idtopicbundle";
     public static final String EXTRA_TOPICS_OPEN_TABS = "topicopentabs";
@@ -39,9 +41,14 @@ public class Constants {
     public static final String STATISTIC_TOPIC_ID = "StatisticIdTopic";
     public static final String STATISTIC_TOPIC_COUNTER = "StatisticCounterTopic";
 
+    public static final String CARD_TABLE_NAME = "CardTopicsTable";
+    public static final String CARD_TOPIC_TEXT = "CardTextTopic";
+    public static final String CARD_TOPIC_ID = "CardIdTopic";
+
     public static final int IMAGE_TYPE_TOPIC_BRANCH = 1;
     public static final int IMAGE_TYPE_TOPIC_LEAF = 2;
     public static final int IMAGE_TYPE_EXP = 3;
 
+     
 
 }

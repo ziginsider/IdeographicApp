@@ -9,6 +9,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
+import model.CardTopic;
 import model.FavoriteExpressions;
 import model.RecentTopics;
 import model.StatisticTopic;
@@ -22,6 +23,7 @@ public class InitalDatabaseHandler extends SQLiteOpenHelper {
     private final ArrayList<RecentTopics> recentTopicsList = new ArrayList<>();
     private final ArrayList<FavoriteExpressions> favoriteExpList = new ArrayList<>();
     private final ArrayList<StatisticTopic> statisticTopicsList = new ArrayList<>();
+    private final ArrayList<CardTopic> cardTopicList = new ArrayList<>();
 
 
     public InitalDatabaseHandler(Context context) {
@@ -52,11 +54,16 @@ public class InitalDatabaseHandler extends SQLiteOpenHelper {
                 Constants.STATISTIC_TOPIC_COUNTER + " INT" +
                 ")";
 
+        String CREATE_CARD_TABLE = "CREATE TABLE " + Constants.CARD_TABLE_NAME +
+                "(" + Constants.KEY_ID + " INTEGER PRIMARY KEY," +
+                Constants.CARD_TOPIC_TEXT + " TEXT, " +
+                Constants.CARD_TOPIC_ID + " INT" +
+                ")";
+
         db.execSQL(CREATE_RECENT_TABLE);
         db.execSQL(CREATE_FAVORITE_TABLE);
         db.execSQL(CREATE_STATISTIC_TABLE);
-
-
+        db.execSQL(CREATE_CARD_TABLE);
     }
 
     @Override
@@ -65,6 +72,7 @@ public class InitalDatabaseHandler extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + Constants.RECENT_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + Constants.FAVORITE_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + Constants.STATISTIC_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + Constants.CARD_TABLE_NAME);
 
         //create a new one
         onCreate(db);
@@ -560,6 +568,227 @@ public class InitalDatabaseHandler extends SQLiteOpenHelper {
 
         return Counter;
     }
+
+
+    ///////////////////////////
+    //Card topic
+    /////////////////////////
+
+    //add content to table card
+    public int addCardTopic(CardTopic cardTopic){
+        SQLiteDatabase dba = this.getWritableDatabase();
+        int id;
+
+        ContentValues values = new ContentValues();
+        values.put(Constants.CARD_TOPIC_TEXT, cardTopic.getTopicText());
+        values.put(Constants.CARD_TOPIC_ID, cardTopic.getTopicId());
+
+        id = (int) dba.insert(Constants.CARD_TABLE_NAME, null, values);
+        dba.close();
+
+        return id;
+    }
+
+    //Get card count by id topic
+    public int getCardCountByIdTopic(int idTopic) {
+
+        SQLiteDatabase dba = this.getReadableDatabase();
+
+        Cursor cursor = dba.query(Constants.CARD_TABLE_NAME,
+                new String[]{
+                        Constants.KEY_ID,
+                        Constants.CARD_TOPIC_TEXT,
+                        Constants.CARD_TOPIC_ID},
+                Constants.CARD_TOPIC_ID + "=?",
+                new String[] {String.valueOf(idTopic)},
+                null,
+                null,
+                null,
+                null);
+
+        int count = cursor.getCount();
+
+        cursor.close();
+        dba.close();
+
+        return count;
+    }
+
+    //Get card topic by id
+    public CardTopic getCardTopicByTopicId(int idTopic) {
+
+        CardTopic cardTopic = new CardTopic();
+        //topic.setTopicParentId(0);
+
+        SQLiteDatabase dba = this.getReadableDatabase();
+
+        Cursor cursor = dba.query(Constants.CARD_TABLE_NAME,
+                new String[] {
+                        Constants.KEY_ID,
+                        Constants.CARD_TOPIC_TEXT,
+                        Constants.CARD_TOPIC_ID},
+                Constants.CARD_TOPIC_ID + "=?",
+                new String[] {String.valueOf(idTopic)},
+                null,
+                null,
+                null,
+                null);
+
+        if (cursor.moveToFirst()) {
+
+            cardTopic.setTopicText(cursor.getString(cursor.getColumnIndex(Constants.CARD_TOPIC_TEXT)));
+            cardTopic.setTopicId(cursor.getInt(cursor.getColumnIndex(Constants.CARD_TOPIC_ID)));
+            cardTopic.setCardTopicId(cursor.getInt(cursor.getColumnIndex(Constants.KEY_ID)));
+
+        } else {
+
+            //Toast.makeText(getApplicationContext(), " No matching data", Toast.LENGTH_SHORT).show();
+            Log.d(Constants.LOG_TAG, ">>> Get Card Topic by id: No matching data");
+        }
+
+
+        cursor.close();
+        dba.close();
+
+        return cardTopic;
+    }
+
+    //get list cards topic
+    public ArrayList<CardTopic> getCardTopicList() {
+
+        cardTopicList.clear();
+
+        SQLiteDatabase dba = this.getReadableDatabase();
+
+        Cursor cursor = dba.query(Constants.CARD_TABLE_NAME,
+                new String[]{Constants.KEY_ID,
+                        Constants.CARD_TOPIC_TEXT,
+                        Constants.CARD_TOPIC_ID},
+                null,
+                null,
+                null,
+                null,
+                null);
+
+        //loop through...
+        if (cursor.moveToFirst()) {
+            do {
+
+                CardTopic cardTopic = new CardTopic();
+
+                cardTopic.setTopicText(cursor.getString(cursor.getColumnIndex(Constants.CARD_TOPIC_TEXT)));
+                cardTopic.setTopicId(cursor.getInt(cursor.getColumnIndex(Constants.CARD_TOPIC_ID)));
+                cardTopic.setCardTopicId(cursor.getInt(cursor.getColumnIndex(Constants.KEY_ID)));
+
+                cardTopicList.add(cardTopic);
+
+            } while (cursor.moveToNext());
+
+            Log.d(Constants.LOG_TAG, ">>> Get all Cards Topic: success");
+        } else {
+
+            Log.d(Constants.LOG_TAG, ">>> Get all Cards Topic: No matching data");
+        }
+
+        cursor.close();
+        dba.close();
+
+        return cardTopicList;
+    }
+
+    //Constants.RECENT_TOPIC_WEIGHT + " DESC"
+    //get last id Card
+    public int getCardLastId() {
+
+        int lastId = 0;
+
+        SQLiteDatabase dba = this.getReadableDatabase();
+
+        Cursor cursor = dba.query(Constants.CARD_TABLE_NAME,
+                new String[]{Constants.KEY_ID},
+                null,
+                null,
+                null,
+                null,
+                Constants.KEY_ID + " DESC");
+
+        //loop through...
+        if (cursor.moveToFirst()) {
+
+            lastId = cursor.getInt(cursor.getColumnIndex(Constants.KEY_ID));
+
+            Log.d(Constants.LOG_TAG, ">>> Get Card Last Id: success");
+        } else {
+
+            Log.d(Constants.LOG_TAG, ">>> Get Card Last Id: No matching data");
+        }
+
+        cursor.close();
+        dba.close();
+
+        return lastId;
+    }
+
+    //Get total Cards Topic
+    public int getTotalCardTopic() {
+
+        int totalCardTopic = 0;
+
+        String query = "SELECT * FROM " + Constants.CARD_TABLE_NAME;
+
+        SQLiteDatabase dba = this.getReadableDatabase();
+        Cursor cursor = dba.rawQuery(query, null);
+
+        totalCardTopic = cursor.getCount();
+
+        Log.d(Constants.LOG_TAG, ">>> Count Card Topic = " + String.valueOf(totalCardTopic));
+
+        cursor.close();
+        dba.close();
+
+        return totalCardTopic;
+    }
+
+//    //delete a card by id topic
+//    public void deleteCardTopicByIdTopic(int topicId) {
+//        SQLiteDatabase db = this.getWritableDatabase();
+//
+//        db.delete(Constants.CARD_TABLE_NAME, Constants.CARD_TOPIC_ID + " = ? ",
+//                new String[] {String.valueOf(topicId)});
+//        db.close();
+//    }
+
+    //delete a card topic
+    public void deleteCardTopicByIdCardTopic(int cardId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.delete(Constants.CARD_TABLE_NAME, Constants.KEY_ID + " = ? ",
+                new String[] {String.valueOf(cardId)});
+        db.close();
+    }
+
+    //Update card topic by id
+    public int updateCardTopicByIdCardTopic(int idCard, int newIdTopic, String newNameTopic) {
+
+        SQLiteDatabase dba = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        values.put(Constants.CARD_TOPIC_ID, newIdTopic);
+        values.put(Constants.CARD_TOPIC_TEXT, newNameTopic);
+
+        int totalUpdated = 0;
+
+        totalUpdated = dba.update(Constants.CARD_TABLE_NAME,
+                values,
+                Constants.KEY_ID + "=?",
+                new String[] {String.valueOf(idCard)});
+
+        dba.close();
+
+        return totalUpdated;
+    }
+
 
 
 }

@@ -1,7 +1,9 @@
 package io.github.ziginsider.ideographicapp;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
@@ -29,9 +31,11 @@ import org.androidannotations.annotations.WindowFeature;
 
 import java.util.ArrayList;
 
+import data.AsyncProvider;
 import data.Constants;
 import data.DatabaseHandler;
 import data.InitalDatabaseHandler;
+import data.PersistantStorage;
 import model.CardData;
 import model.RecentTopics;
 import model.Topics;
@@ -65,6 +69,7 @@ public class WorkActivityRecycler extends AppCompatActivity
 
     @FragmentById(R.id.fragment_sliding_tabs_recycler)
     FragmentSlidingTabsRecycler fragmentSlidingTabsRecycler;
+    private AfterNewCardClickTask afterNewCardClickTask;
 
     @AfterViews
     void init() {
@@ -111,6 +116,8 @@ public class WorkActivityRecycler extends AppCompatActivity
 
                     //  Apply changes
                     e.apply();
+
+
                 }
             }
         });
@@ -140,6 +147,10 @@ public class WorkActivityRecycler extends AppCompatActivity
                     getIntegerArrayListExtra(Constants.EXTRA_TOPICS_OPEN_TABS);
         } else {
 
+            //set new card
+            afterNewCardClickTask = new WorkActivityRecycler.AfterNewCardClickTask(this);
+            afterNewCardClickTask.execute();
+
             idTopicsPageList.add(0);
         }
 
@@ -147,7 +158,9 @@ public class WorkActivityRecycler extends AppCompatActivity
             fragmentSlidingTabsRecycler.addPage(idTopicsPageList.get(i));
         }
 
-        Toast.makeText(this, "Я в главном!!!", Toast.LENGTH_SHORT).show();
+        setCardStackCount();
+
+        //Toast.makeText(this, "Я в главном!!!", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -206,8 +219,15 @@ public class WorkActivityRecycler extends AppCompatActivity
         return super.onCreateOptionsMenu(menu);
     }
 
-    private void setCardStackCount(int count) {
-        mCardStackCount = count;
+    private void setCardStackCount() {
+
+        int currentCountCards = 1;
+        PersistantStorage.init(this);
+        if (PersistantStorage.getProperty(Constants.CURRENT_COUNT_CARD) != null) {
+            currentCountCards = Integer.valueOf(PersistantStorage.getProperty(Constants.CURRENT_COUNT_CARD));
+        }
+
+        mCardStackCount = currentCountCards;
         invalidateOptionsMenu();
     }
 
@@ -325,6 +345,40 @@ public class WorkActivityRecycler extends AppCompatActivity
         dba.close();
         dbHandler.close();
         super.onDestroy();
+    }
+
+    class AfterNewCardClickTask extends AsyncTask<Integer, Void, Void> {
+
+        private Context mContext;
+
+        public AfterNewCardClickTask(Context context) {
+            mContext = context;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+        }
+
+        @Override
+        protected Void doInBackground(Integer... params) {
+
+            AsyncProvider asyncProvider = new AsyncProvider();
+            asyncProvider.setNewCard(mContext);
+            return null;
+        }
+    }
+
+    @Override
+    protected void onStart() {
+
+        super.onStart();
+        setCardStackCount();
     }
 }
 

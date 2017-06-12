@@ -1,5 +1,6 @@
 package io.github.ziginsider.ideographicapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.provider.SyncStateContract;
 import android.support.v7.widget.RecyclerView;
@@ -12,8 +13,10 @@ import java.util.ArrayList;
 import data.Constants;
 import data.DatabaseHandler;
 import data.InitalDatabaseHandler;
+import data.PersistantStorage;
 import data.RecyclerViewCardStackAdapter;
 import model.CardData;
+import model.CardTopic;
 import model.RecentTopics;
 
 public class CardStackActivity extends BaseCardStackActivity {
@@ -21,9 +24,14 @@ public class CardStackActivity extends BaseCardStackActivity {
     InitalDatabaseHandler dba;
     DatabaseHandler dbHandler;
 
+    String currentCard;
+
+    PersistantStorage storage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_card_stack);
 
         dba = new InitalDatabaseHandler(this);
         dbHandler = new DatabaseHandler(this);
@@ -113,9 +121,13 @@ public class CardStackActivity extends BaseCardStackActivity {
 
         /////////////////////////////
 
+        //get current card id
+        PersistantStorage.init(this);
+        currentCard = PersistantStorage.getProperty(Constants.CURRENT_CARD);
+
         ArrayList<CardData> data = getCardsData();
 
-        setContentView(R.layout.activity_card_stack);
+        //setContentView(R.layout.activity_card_stack);
         StackCardLayoutManager stackCardLayoutManager =
                 new StackCardLayoutManager
                         (StackCardLayoutManager.VERTICAL,
@@ -130,28 +142,29 @@ public class CardStackActivity extends BaseCardStackActivity {
 
     private ArrayList<CardData> getCardsData() {
         ArrayList<CardData> data = new ArrayList<>();
-        ArrayList<RecentTopics> recentTopics = dba.getRecentTopicsList();
+        ArrayList<CardTopic> cardTopic = dba.getCardTopicList();
 
-        for (RecentTopics recentTopic: recentTopics) {
+        for (CardTopic card: cardTopic) {
             ArrayList<String> childTopicsNames = new ArrayList<>();
             ArrayList<Integer> childTopicsImgType = new ArrayList<>();
-            childTopicsNames = dbHandler.getTopicNamesByIdParent(recentTopic.getTopicId());
+            childTopicsNames = dbHandler.getTopicNamesByIdParent(card.getTopicId());
 
             if (childTopicsNames.isEmpty()) {
-                childTopicsNames = dbHandler.getExpNamesByIdParent(recentTopic.getTopicId());
+                childTopicsNames = dbHandler.getExpNamesByIdParent(card.getTopicId());
 
                 for (int i = 0; i < childTopicsNames.size(); i++) {
                     childTopicsImgType.add(Constants.IMAGE_TYPE_EXP);
                 }
 
-                data.add(new CardData(recentTopic.getTopicId(),
-                        recentTopic.getTopicText(), //TODO topics text >>>>
+                data.add(new CardData(card.getCardTopicId(),
+                        card.getTopicId(),
+                        card.getTopicText(), //TODO topics text >>>>
                         childTopicsNames,
                         childTopicsImgType));
             } else {
 
                 ArrayList<Integer> idTopicsChild = dbHandler
-                        .getTopicIdsByIdParent(recentTopic.getTopicId());
+                        .getTopicIdsByIdParent(card.getTopicId());
 
                 for (int id : idTopicsChild) {
 
@@ -161,8 +174,9 @@ public class CardStackActivity extends BaseCardStackActivity {
                         childTopicsImgType.add(Constants.IMAGE_TYPE_TOPIC_BRANCH);
                     }
                 }
-                data.add(new CardData(recentTopic.getTopicId(),
-                        recentTopic.getTopicText(),
+                data.add(new CardData(card.getCardTopicId(),
+                        card.getTopicId(),
+                        card.getTopicText(),
                         childTopicsNames,
                         childTopicsImgType));
             }
@@ -176,5 +190,38 @@ public class CardStackActivity extends BaseCardStackActivity {
         dba.close();
         dbHandler.close();
         super.onDestroy();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (PersistantStorage.getProperty(Constants.CURRENT_CARD).equals(currentCard)) {
+
+            super.onBackPressed();
+        } else {
+
+            int lastCardId = dba.getCardLastId();
+
+            ArrayList<Integer> idTopicsPageList = new ArrayList<Integer>();
+            idTopicsPageList.clear();
+
+            //TODO add to recent topics
+//            afterItemClickTask = new AfterItemClickTask(RecentTopicActivity.this);
+//            afterItemClickTask.execute(currentId);
+
+            idTopicsPageList.add(lastCardId);
+            do {
+                lastCardId = dbHandler.getTopicById(lastCardId).getTopicParentId();
+                idTopicsPageList.add(lastCardId);
+
+            } while (lastCardId != 0);
+
+
+            Intent i = new Intent(CardStackActivity.this,
+                    WorkActivityRecycler_.class);
+            i.putExtra(Constants.EXTRA_TOPICS_OPEN_TABS, idTopicsPageList);
+            startActivity(i);
+            CardStackActivity.this.finish();
+        }
+
     }
 }

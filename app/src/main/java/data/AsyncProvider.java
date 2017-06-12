@@ -4,6 +4,7 @@ import android.content.Context;
 
 import java.util.ArrayList;
 
+import model.CardTopic;
 import model.RecentTopics;
 import model.StatisticTopic;
 
@@ -11,7 +12,10 @@ import model.StatisticTopic;
  * Created by zigin on 08.11.2016.
  */
 
+
 public class AsyncProvider {
+
+    private PersistantStorage storage;
 
     public AsyncProvider() {
     }
@@ -114,6 +118,51 @@ public class AsyncProvider {
         }
         dba_data.close();
         dba_inital.close();
+    }
+
+    public void setNewCard(Context context) {
+        InitalDatabaseHandler dba_init = new InitalDatabaseHandler(context);
+        int newId;
+
+        newId = dba_init.addCardTopic(new CardTopic("Topics", 0));
+
+        PersistantStorage.init(context);
+        PersistantStorage.addProperty(Constants.CURRENT_CARD, String.valueOf(newId));
+
+        int currentCountCards = 1;
+        if (PersistantStorage.getProperty(Constants.CURRENT_COUNT_CARD) != null) {
+            currentCountCards = Integer.valueOf(PersistantStorage.getProperty(Constants.CURRENT_COUNT_CARD)) + 1;
+        }
+        PersistantStorage.addProperty(Constants.CURRENT_COUNT_CARD, String.valueOf(currentCountCards));
+
+        dba_init.close();
+    }
+
+    public void updateCardByIdCard(Context context, int idCard, int idTopic) {
+        InitalDatabaseHandler dba_init = new InitalDatabaseHandler(context);
+        DatabaseHandler dba_data = new DatabaseHandler(context);
+
+        dba_init.updateCardTopicByIdCardTopic(idCard,
+                idTopic,
+                dba_data.getTopicNameById(idTopic));
+
+        dba_init.close();
+        dba_data.close();
+    }
+
+    public void deleteCardByIdCard(Context context, int idCard) {
+        InitalDatabaseHandler dba_init = new InitalDatabaseHandler(context);
+
+        dba_init.deleteCardTopicByIdCardTopic(idCard);
+
+        int currentCountCards = 1;
+        PersistantStorage.init(context);
+        if (PersistantStorage.getProperty(Constants.CURRENT_COUNT_CARD) != null) {
+            currentCountCards = Integer.valueOf(PersistantStorage.getProperty(Constants.CURRENT_COUNT_CARD)) - 1;
+        }
+        PersistantStorage.addProperty(Constants.CURRENT_COUNT_CARD, String.valueOf(currentCountCards));
+
+        dba_init.close();
     }
 }
 

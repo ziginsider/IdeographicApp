@@ -61,9 +61,11 @@ public class BaseCardStackActivity extends AppCompatActivity {
                                             @NonNull final StackCardLayoutManager stackCardLayoutManager,
                                             @NonNull final View v) {
                 final int position = recyclerView.getChildLayoutPosition(v);
-                final String msg = String.format(Locale.US, "Item %1$d was clicked", position);
+                final String msg = String.format(Locale.US, "Item %1$d was clicked", position + 1);
                 Log.d("onCenterItemClicked", msg);
                 Toast.makeText(BaseCardStackActivity.this, msg, Toast.LENGTH_SHORT).show();
+
+
             }
 
 

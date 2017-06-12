@@ -56,7 +56,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
     public void addFragment(Fragment fragment, String title, Integer id) {
         int count = mFragmentList.size();
-        if (count > 1) {
+        if (count >= 1) {
             if (mFragmentIdList.get(count - 1).equals(id)) { //if previous topic id == current
                 return; // not add
             }

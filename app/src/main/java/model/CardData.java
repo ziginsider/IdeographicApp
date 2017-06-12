@@ -7,13 +7,14 @@ import java.util.ArrayList;
  */
 
 public class CardData {
+    private int cardUniqueId;
     private int cardTopicId;
     private String nameTopics;
     private ArrayList<String> childNames;
     private ArrayList<Integer> childTypes;
 
-
-    public CardData(int cardTopicId, String nameTopics, ArrayList<String> childNames, ArrayList<Integer> childTypes) {
+    public CardData(int cardUniqueId, int cardTopicId, String nameTopics, ArrayList<String> childNames, ArrayList<Integer> childTypes) {
+        this.cardUniqueId = cardUniqueId;
         this.cardTopicId = cardTopicId;
         this.nameTopics = nameTopics;
         this.childNames = childNames;
@@ -50,5 +51,13 @@ public class CardData {
 
     public void setChildTypes(ArrayList<Integer> childTypes) {
         this.childTypes = childTypes;
+    }
+
+    public int getCardUniqueId() {
+        return cardUniqueId;
+    }
+
+    public void setCardUniqueId(int cardUniqueId) {
+        this.cardUniqueId = cardUniqueId;
     }
 }

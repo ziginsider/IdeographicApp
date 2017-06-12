@@ -4,8 +4,10 @@ package io.github.ziginsider.ideographicapp;
  * Created by zigin on 26.10.2016.
  */
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -30,6 +32,7 @@ import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.ArrayList;
 
+import data.AsyncProvider;
 import data.Constants;
 import data.DatabaseHandler;
 import data.PersistantStorage;
@@ -43,6 +46,8 @@ public class FragmentSlidingTabsRecycler extends Fragment {
     private ViewPagerAdapter adapter;
 
     com.melnykov.fab.FloatingActionButton fab;
+    com.melnykov.fab.FloatingActionButton fabAdd;
+
     TextView textTopicNameBottomSheet;
     TextView textParentTopicNameBottomSheet;
     TextView textNumberOfSubtopics;
@@ -56,6 +61,8 @@ public class FragmentSlidingTabsRecycler extends Fragment {
     private PersistantStorage storage;
 
     private int selectedTabPosition;
+
+    private AfterNewCardClickTask afterNewCardClickTask;
 
     @Nullable
     @Override
@@ -180,6 +187,26 @@ public class FragmentSlidingTabsRecycler extends Fragment {
 
                             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                         }
+                    }
+                });
+
+                fabAdd = (com.melnykov.fab.FloatingActionButton) getActivity().findViewById(R.id.fab_add_desk);
+
+                fabAdd.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        //set new card
+                        afterNewCardClickTask = new FragmentSlidingTabsRecycler.AfterNewCardClickTask(view.getContext());
+                        afterNewCardClickTask.execute();
+
+                        Intent i = new Intent(view.getContext(), WorkActivityRecycler_.class);
+                        ArrayList<Integer> startTopicsList = new ArrayList<>();
+                        startTopicsList.add(0); //set topics root = "Topics"
+                        i.putExtra(Constants.EXTRA_TOPICS_OPEN_TABS, startTopicsList);
+                        Activity activity = (Activity)view.getContext();
+                        activity.startActivity(i);
+                        activity.finish();
                     }
                 });
 
@@ -356,6 +383,33 @@ public class FragmentSlidingTabsRecycler extends Fragment {
     public void onDetach() {
         super.onDetach();
         dba.close();
+    }
+
+    class AfterNewCardClickTask extends AsyncTask<Integer, Void, Void> {
+
+        private Context mContext;
+
+        public AfterNewCardClickTask(Context context) {
+            mContext = context;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+        }
+
+        @Override
+        protected Void doInBackground(Integer... params) {
+
+            AsyncProvider asyncProvider = new AsyncProvider();
+            asyncProvider.setNewCard(mContext);
+            return null;
+        }
     }
 }
 

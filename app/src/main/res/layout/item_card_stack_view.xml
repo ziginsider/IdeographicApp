@@ -13,9 +13,9 @@
             android:id="@+id/card_stack_top_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
             android:text="444"
             android:textColor="@android:color/white"
             android:textSize="18sp" />
@@ -30,11 +30,11 @@
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/card_stack_click_relative"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/card_stack_top_relative"
-        android:background="#FFF2F2F2"
->
+        android:background="#FFF2F2F2">
 
         <RelativeLayout
             android:id="@+id/card_relative_layout"
@@ -62,13 +62,27 @@
             android:id="@+id/card_stack_topic_recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginLeft="5dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginRight="10dp"
             android:layout_below="@id/card_relative_layout"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
+            android:clickable="true"
             android:scrollbars="none">
 
         </android.support.v7.widget.RecyclerView>
+
+        <Button
+            android:id="@+id/button_card_stack_click"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/card_stack_topic_recycler"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:background="@color/transparent"
+            android:layout_alignStart="@+id/card_stack_topic_recycler"
+            android:text="" />
 
     </RelativeLayout>
 </RelativeLayout>

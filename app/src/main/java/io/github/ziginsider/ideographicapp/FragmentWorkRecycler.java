@@ -462,9 +462,23 @@ public class FragmentWorkRecycler extends Fragment {
         @Override
         protected Void doInBackground(Integer... params) {
 
+            PersistantStorage.init(mContext);
+            String currentCard;
+            int currentCardId;
+
+
+
             AsyncProvider asyncProvider = new AsyncProvider();
             asyncProvider.setRecentTopic(mContext, params[0]);
             asyncProvider.setStatisticTopic(mContext, params[0]);
+
+            if (PersistantStorage.getProperty(Constants.CURRENT_CARD) == null) {
+                asyncProvider.setNewCard(mContext);
+            }
+
+            currentCard = PersistantStorage.getProperty(Constants.CURRENT_CARD);
+            currentCardId = Integer.valueOf(currentCard);
+            asyncProvider.updateCardByIdCard(mContext, currentCardId ,params[0]);
 
             return null;
         }

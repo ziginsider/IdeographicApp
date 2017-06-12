@@ -397,6 +397,41 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return topic;
     }
 
+    //Get topic name by id
+    public String getTopicNameById(int idTopic) {
+
+        String name = "";
+        //topic.setTopicParentId(0);
+
+        SQLiteDatabase dba = this.getReadableDatabase();
+
+        Cursor cursor = dba.query(Constants.TABLE_TOPIC_NAME,
+                new String[] {
+                        Constants.TOPIC_TEXT },
+                Constants.KEY_ID + "=?",
+                new String[] {String.valueOf(idTopic)},
+                null,
+                null,
+                null,
+                null);
+
+        if (cursor.moveToFirst()) {
+
+            name = cursor.getString(cursor.getColumnIndex(Constants.TOPIC_TEXT));
+
+        } else {
+
+            //Toast.makeText(getApplicationContext(), " No matching data", Toast.LENGTH_SHORT).show();
+            Log.d(Constants.LOG_TAG, ">>> Get Topic name by id: No matching data");
+        }
+
+
+        cursor.close();
+        dba.close();
+
+        return name;
+    }
+
 
 
     //Get exp by id
@@ -518,7 +553,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 new String[] {String.valueOf(idParent)},
                 null,
                 null,
-                null,
+                Constants.TOPIC_TEXT,
                 null);
 
         //loop through...
