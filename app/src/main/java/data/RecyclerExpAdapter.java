@@ -26,16 +26,16 @@ import model.FavoriteExpressions;
 
 public class RecyclerExpAdapter extends RecyclerView.Adapter<RecyclerExpAdapter.ViewHolder> {
 
-    private int clickedPosition=-1;
+    private int clickedPosition = -1;
     private ArrayList<Expressions> mExpList;
-    InitalDatabaseHandler dbInital;
-    private int countItems;
+    private InitalDatabaseHandler dbInital;
+    //private int countItems;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView textExp;
-        public RelativeLayout relativeLayout;
-        public ImageView imgFavoriteAdd;
+        private TextView textExp;
+        private RelativeLayout relativeLayout;
+        private ImageView imgFavoriteAdd;
 
         public ViewHolder(View view) {
             super(view);
@@ -47,7 +47,7 @@ public class RecyclerExpAdapter extends RecyclerView.Adapter<RecyclerExpAdapter.
 
     public RecyclerExpAdapter(ArrayList<Expressions> exp) {
         this.mExpList = exp;
-        this.countItems = exp.size();
+        //this.countItems = exp.size();
     }
 
     @Override
@@ -59,17 +59,19 @@ public class RecyclerExpAdapter extends RecyclerView.Adapter<RecyclerExpAdapter.
         //there is programmatically change layout: size, paddings, margin, etc...
         dbInital = new InitalDatabaseHandler(parent.getContext());
 
-        RecyclerExpAdapter.ViewHolder vh = new RecyclerExpAdapter.ViewHolder(v);
+        //RecyclerExpAdapter.ViewHolder vh = new RecyclerExpAdapter.ViewHolder(v);
 
-        return vh;
+        return new RecyclerExpAdapter.ViewHolder(v);
     }
 
     //refresh recycler item
 
     @Override
-    public void onBindViewHolder(final RecyclerExpAdapter.ViewHolder holder, final int position) {
+    public void onBindViewHolder(RecyclerExpAdapter.ViewHolder holder, final int position) {
 
-        holder.textExp.setText(mExpList.get(position).getExpText());
+        final Expressions mCurrentExpItem = mExpList.get(position);
+
+        holder.textExp.setText(mCurrentExpItem.getExpText());
 
         if (position == clickedPosition){
             holder.relativeLayout.setBackgroundResource(R.drawable.bg_current_topic);
@@ -77,7 +79,7 @@ public class RecyclerExpAdapter extends RecyclerView.Adapter<RecyclerExpAdapter.
             holder.relativeLayout.setBackgroundResource(R.drawable.ripple_exp_new);
         }
 
-        if (dbInital.isExpInFavoriteList(mExpList.get(position).getExpId())) {
+        if (dbInital.isExpInFavoriteList(mCurrentExpItem.getExpId())) {
             holder.imgFavoriteAdd.setImageResource(R.drawable.bookmark_ok);
         } else {
             holder.imgFavoriteAdd.setImageResource(R.drawable.bookmark_no);
@@ -88,7 +90,7 @@ public class RecyclerExpAdapter extends RecyclerView.Adapter<RecyclerExpAdapter.
             @Override
             public void onClick(View view) {
                 ClipboardManager clipboard = (ClipboardManager) view.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText(mExpList.get(position).getExpText(), mExpList.get(position).getExpText());
+                ClipData clip = ClipData.newPlainText(mCurrentExpItem.getExpText(), mCurrentExpItem.getExpText());
                 clipboard.setPrimaryClip(clip);
                 //set the position
                 clickedPosition = position;
@@ -112,7 +114,7 @@ public class RecyclerExpAdapter extends RecyclerView.Adapter<RecyclerExpAdapter.
             @Override
             public void onClick(View v) {
 
-            if (dbInital.isExpInFavoriteList(mExpList.get(position).getExpId())) {
+            if (dbInital.isExpInFavoriteList(mCurrentExpItem.getExpId())) {
 
                 Toast toast = Toast.makeText(v.getContext(),
                         "Removed from favorite list", Toast.LENGTH_SHORT);
@@ -123,7 +125,7 @@ public class RecyclerExpAdapter extends RecyclerView.Adapter<RecyclerExpAdapter.
                 toastContainer.addView(imgBookmarkRemove, 0);
                 toast.show();
 
-                dbInital.deleteFavoriteExp(mExpList.get(position).getExpId());
+                dbInital.deleteFavoriteExp(mCurrentExpItem.getExpId());
 
             } else {
 
@@ -137,29 +139,27 @@ public class RecyclerExpAdapter extends RecyclerView.Adapter<RecyclerExpAdapter.
                 toast.show();
 
                 FavoriteExpressions favoriteExp = new FavoriteExpressions();
-                favoriteExp.setTextExp(mExpList.get(position).getExpText());
-                favoriteExp.setIdExp(mExpList.get(position).getExpId());
-                favoriteExp.setIdParentTopic(mExpList.get(position).getExpParentId());
+                favoriteExp.setTextExp(mCurrentExpItem.getExpText());
+                favoriteExp.setIdExp(mCurrentExpItem.getExpId());
+                favoriteExp.setIdParentTopic(mCurrentExpItem.getExpParentId());
 
                 dbInital.addFavoriteExp(favoriteExp);
 
             }
-
-
-
-
-                notifyDataSetChanged();
+            notifyDataSetChanged();
             }
         });
 
-
-        if (position == (countItems - 1)) {
-            dbInital.close();
-        }
     }
 
     @Override
     public int getItemCount() {
         return  mExpList.size();
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        dbInital.close();
+        super.onDetachedFromRecyclerView(recyclerView);
     }
 }

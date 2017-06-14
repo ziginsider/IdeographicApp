@@ -46,17 +46,20 @@ public class RecyclerTopicCardStackAdapter extends RecyclerView.Adapter<Recycler
 
     @Override
     public void onBindViewHolder(RecyclerTopicCardStackAdapter.ViewHolder holder, int position) {
-        holder.textItem.setText(mItemList.get(position).getNameItem());
 
-        if (mItemList.get(position).getImageItemType() == Constants.IMAGE_TYPE_TOPIC_BRANCH) {
+        ItemData mCurrentItem = mItemList.get(position);
+
+        holder.textItem.setText(mCurrentItem.getNameItem());
+
+        if (mCurrentItem.getImageItemType() == Constants.IMAGE_TYPE_TOPIC_BRANCH) {
             holder.relativeItem.setBackgroundResource(R.drawable.ripple_topic_new);
             holder.imageItem.setImageResource(R.drawable.ic_chevron_color_right);
         }
-        if (mItemList.get(position).getImageItemType() == Constants.IMAGE_TYPE_TOPIC_LEAF) {
+        if (mCurrentItem.getImageItemType() == Constants.IMAGE_TYPE_TOPIC_LEAF) {
             holder.relativeItem.setBackgroundResource(R.drawable.ripple_topic_new);
             holder.imageItem.setImageResource(R.drawable.ic_three_circle_green);
         }
-        if (mItemList.get(position).getImageItemType() == Constants.IMAGE_TYPE_EXP) {
+        if (mCurrentItem.getImageItemType() == Constants.IMAGE_TYPE_EXP) {
             holder.relativeItem.setBackgroundResource(R.drawable.ripple_exp_new);
             holder.imageItem.setImageResource(R.drawable.bookmark_no);
         }

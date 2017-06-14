@@ -28,8 +28,8 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     private final ArrayList<String> mFragmentTitleList = new ArrayList<>();
     private final ArrayList<Integer> mFragmentIdList = new ArrayList<>();
     Context context;
-    ViewPager viewPager;
-    TabLayout tabLayout;
+    private ViewPager viewPager;
+    private TabLayout tabLayout;
 
     public ViewPagerAdapter(FragmentManager manager, Context context, ViewPager viewPager,
                             TabLayout tabLayout) {
@@ -163,14 +163,14 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         return view;
     }
 
-    public void destroyFragmentView(ViewGroup container, int position, Object object) {
+    private void destroyFragmentView(ViewGroup container, int position, Object object) {
         FragmentManager manager = ((Fragment) object).getFragmentManager();
         FragmentTransaction trans = manager.beginTransaction();
         trans.remove((Fragment) object);
         trans.commit();
     }
 
-    public void removeTab(int position) {
+    private void removeTab(int position) {
         if (tabLayout.getChildCount() > 0) {
             tabLayout.removeTabAt(position);
         }

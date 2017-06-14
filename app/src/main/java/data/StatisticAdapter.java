@@ -28,21 +28,20 @@ public class StatisticAdapter extends RecyclerView.Adapter<StatisticAdapter.View
     //private int clickedPosition;
     private DatabaseHandler dba;
     //private InitalDatabaseHandler dbInital;
-    private int countItems;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView textTopic;
-        public int idTopic;
-        public TextView textCounterTopic;
-        public RelativeLayout relativeLayout;
-        public ImageView imgStatisticTopic;
+        private TextView textTopic;
+        private int idTopic;
+        private TextView textCounterTopic;
+        //private RelativeLayout relativeLayout;
+        private ImageView imgStatisticTopic;
 
         public ViewHolder(View view) {
             super(view);
             this.textTopic = (TextView) view.findViewById(R.id.text_item_statistic_topic);
             this.textCounterTopic = (TextView) view.findViewById(R.id.number_clicked_statistic_topic);
-            this.relativeLayout = (RelativeLayout) view.findViewById(R.id.relative_statistic_topic);
+            //this.relativeLayout = (RelativeLayout) view.findViewById(R.id.relative_statistic_topic);
             this.imgStatisticTopic = (ImageView) view.findViewById(R.id.image_item_statistic_topic);
             this.idTopic = 0;
         }
@@ -50,7 +49,6 @@ public class StatisticAdapter extends RecyclerView.Adapter<StatisticAdapter.View
 
     public StatisticAdapter(ArrayList<StatisticTopic> statisticTopicItems) {
         this.statisticTopicList = statisticTopicItems;
-        this.countItems = statisticTopicItems.size();
     }
 
     @Override
@@ -73,10 +71,12 @@ public class StatisticAdapter extends RecyclerView.Adapter<StatisticAdapter.View
     @Override
     public void onBindViewHolder(StatisticAdapter.ViewHolder holder, final int position) {
 
-        holder.textTopic.setText(statisticTopicList.get(position).getTextTopic());
-        holder.idTopic = statisticTopicList.get(position).getIdTopic();
+        StatisticTopic mCurrentStatItem = statisticTopicList.get(position);
+
+        holder.textTopic.setText(mCurrentStatItem.getTextTopic());
+        holder.idTopic = mCurrentStatItem.getIdTopic();
         holder.textCounterTopic.setText("Number of Clicks = " +
-                String.valueOf(statisticTopicList.get(position).getCounterTopic()));
+                String.valueOf(mCurrentStatItem.getCounterTopic()));
 
 
 //        if (position == clickedPosition){
@@ -91,11 +91,6 @@ public class StatisticAdapter extends RecyclerView.Adapter<StatisticAdapter.View
             holder.imgStatisticTopic.setImageResource(R.drawable.ic_three_circle_green);
         }
 
-        if (position == (countItems - 1)) {
-            dba.close();
-            //dbInital.close();
-        }
-
     }
 
 
@@ -104,5 +99,9 @@ public class StatisticAdapter extends RecyclerView.Adapter<StatisticAdapter.View
         return  statisticTopicList.size();
     }
 
-
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        dba.close();
+        super.onDetachedFromRecyclerView(recyclerView);
+    }
 }

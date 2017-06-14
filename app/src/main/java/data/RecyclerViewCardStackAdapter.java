@@ -76,15 +76,17 @@ public class RecyclerViewCardStackAdapter extends RecyclerView.Adapter<RecyclerV
 
     @Override
     public void onBindViewHolder(final CardStackViewHolder holder, final int position) {
+
+        final CardData mCardCurrentItem = mCardList.get(position);
         holder.top.setText(String.valueOf(cards.get(position).mPosition));
-        holder.tabsNames.setText(mCardList.get(position).getNameTopics());
+        holder.tabsNames.setText(mCardCurrentItem.getNameTopics());
 
         ArrayList<ItemData> items = new ArrayList<>();
 
-        for(int i = 0; i < mCardList.get(position).getChildTypes().size(); i++) {
+        for(int i = 0; i < mCardCurrentItem.getChildTypes().size(); i++) {
 
-            items.add(new ItemData(mCardList.get(position).getChildNames().get(i),
-                    mCardList.get(position).getChildTypes().get(i)));
+            items.add(new ItemData(mCardCurrentItem.getChildNames().get(i),
+                    mCardCurrentItem.getChildTypes().get(i)));
         }
 
         holder.recycler.setHasFixedSize(true);
@@ -106,7 +108,7 @@ public class RecyclerViewCardStackAdapter extends RecyclerView.Adapter<RecyclerV
         holder.recycler.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, "Click " + mCardList.get(position).getNameTopics(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Click " + mCardCurrentItem.getNameTopics(), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -116,12 +118,12 @@ public class RecyclerViewCardStackAdapter extends RecyclerView.Adapter<RecyclerV
                 //Toast.makeText(context, "Button Click " + mCardList.get(position).getNameTopics(), Toast.LENGTH_SHORT).show();
                 PersistantStorage.init(v.getContext());
                 PersistantStorage.addProperty(Constants.CURRENT_CARD,
-                        String.valueOf(mCardList.get(position).getCardUniqueId()));
+                        String.valueOf(mCardCurrentItem.getCardUniqueId()));
 
                 ArrayList<Integer> idTopicsPageList = new ArrayList<Integer>();
                 //idTopicsPageList.clear();
 
-                int currentId = mCardList.get(position).getCardTopicId();
+                int currentId = mCardCurrentItem.getCardTopicId();
                 //add to recent topics
                 //TODO recent add 2
 //                afterItemClickTask = new AfterItemClickTask(RecentTopicActivity.this);
@@ -154,13 +156,15 @@ public class RecyclerViewCardStackAdapter extends RecyclerView.Adapter<RecyclerV
 
     public void remove(int position) {
 
+        CardData mCurrentCardItem = mCardList.get(position);
+
         PersistantStorage.init(context);
         int currentCardId = Integer.valueOf(PersistantStorage.getProperty(Constants.CURRENT_CARD));
-        if (mCardList.get(position).getCardUniqueId() == currentCardId) {
+        if (mCurrentCardItem.getCardUniqueId() == currentCardId) {
             int newCurrentId = dba.getCardLastId();
             PersistantStorage.addProperty(Constants.CURRENT_CARD, String.valueOf(newCurrentId));
         }
-        dba.deleteCardTopicByIdCardTopic(mCardList.get(position).getCardUniqueId());
+        dba.deleteCardTopicByIdCardTopic(mCurrentCardItem.getCardUniqueId());
 
         int currentCountCards = 1;
         //PersistantStorage.init(context);
@@ -198,8 +202,9 @@ public class RecyclerViewCardStackAdapter extends RecyclerView.Adapter<RecyclerV
     }
 
     @Override
-    protected void finalize() throws Throwable {
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        dba_data.close();
         dba.close();
-        super.finalize();
+        super.onDetachedFromRecyclerView(recyclerView);
     }
 }

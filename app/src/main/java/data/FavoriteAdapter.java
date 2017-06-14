@@ -30,29 +30,27 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
     //private int clickedPosition;
     private DatabaseHandler dba;
     private InitalDatabaseHandler dbInital;
-    private int countItems;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView textExp;
-        public int idExp;
-        public TextView textParentTopic;
-        public RelativeLayout relativeLayout;
-        public ImageView imgFavoriteExp;
+        private TextView textExp;
+        //private int idExp;
+        private TextView textParentTopic;
+        //private RelativeLayout relativeLayout;
+        private ImageView imgFavoriteExp;
 
         public ViewHolder(View view) {
             super(view);
             this.textExp = (TextView) view.findViewById(R.id.txt_item_favorite_exp);
             this.textParentTopic = (TextView) view.findViewById(R.id.txt_item_favorite_parent_topic);
-            this.relativeLayout = (RelativeLayout) view.findViewById(R.id.relative_layout_favorite_exp);
+            //this.relativeLayout = (RelativeLayout) view.findViewById(R.id.relative_layout_favorite_exp);
             this.imgFavoriteExp = (ImageView) view.findViewById(R.id.img_item_favorite_exp);
-            this.idExp = 0;
+            //this.idExp = 0;
         }
     }
 
     public FavoriteAdapter(ArrayList<FavoriteExpressions> favoriteItems) {
         this.favoriteExpList = favoriteItems;
-        this.countItems = favoriteItems.size();
     }
 
     @Override
@@ -65,9 +63,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
         dba = new DatabaseHandler(parent.getContext());
         dbInital = new InitalDatabaseHandler(parent.getContext());
 
-        FavoriteAdapter.ViewHolder vh = new FavoriteAdapter.ViewHolder(v);
-
-        return vh;
+        return new FavoriteAdapter.ViewHolder(v);
     }
 
     //refresh recycler item
@@ -75,10 +71,11 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
     @Override
     public void onBindViewHolder(FavoriteAdapter.ViewHolder holder, final int position) {
 
-        holder.textExp.setText(favoriteExpList.get(position).getTextExp());
+        final FavoriteExpressions mCurrentFavoriteItem = favoriteExpList.get(position);
+
+        holder.textExp.setText(mCurrentFavoriteItem.getTextExp());
         holder.textParentTopic.setText(dba.
-           getTopicById(favoriteExpList.
-                get(position).
+           getTopicById(mCurrentFavoriteItem.
                 getIdParentTopic()).
            getTopicText());
 
@@ -88,7 +85,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
 //            holder.relativeLayout.setBackgroundResource(R.drawable.ripple_bg_exp);
 //        }
 
-        if (dbInital.isExpInFavoriteList(favoriteExpList.get(position).getIdExp())) {
+        if (dbInital.isExpInFavoriteList(mCurrentFavoriteItem.getIdExp())) {
             holder.imgFavoriteExp.setImageResource(R.drawable.bookmark_ok);
         } else {
             holder.imgFavoriteExp.setImageResource(R.drawable.bookmark_no);
@@ -102,8 +99,8 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
             public void onClick(View view) {
                 ClipboardManager clipboard = (ClipboardManager) view.getContext().
                         getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText(favoriteExpList.get(position).getTextExp(),
-                        favoriteExpList.get(position).getTextExp());
+                ClipData clip = ClipData.newPlainText(mCurrentFavoriteItem.getTextExp(),
+                        mCurrentFavoriteItem.getTextExp());
                 clipboard.setPrimaryClip(clip);
                 Toast.makeText(view.getContext(), "Copied to clipboard", Toast.LENGTH_SHORT).show();
 
@@ -116,7 +113,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
 
 
                 try {
-                    dbInital.deleteFavoriteExp(favoriteExpList.get(position).getIdExp());
+                    dbInital.deleteFavoriteExp(mCurrentFavoriteItem.getIdExp());
 
                     favoriteExpList.remove(position);
                     notifyItemRemoved(position);
@@ -130,11 +127,6 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
             }
         });
 
-        if (position == (countItems - 1)) {
-            dba.close();
-            dbInital.close();
-        }
-
     }
 
 
@@ -143,5 +135,10 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
         return  favoriteExpList.size();
     }
 
-
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        dba.close();
+        dbInital.close();
+        super.onDetachedFromRecyclerView(recyclerView);
+    }
 }

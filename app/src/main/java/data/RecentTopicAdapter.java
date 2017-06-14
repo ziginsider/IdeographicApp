@@ -24,29 +24,27 @@ public class RecentTopicAdapter extends RecyclerView.Adapter<RecentTopicAdapter.
     private ArrayList<RecentTopics> recentTopicsList;
     //private int clickedPosition;
     private DatabaseHandler dba;
-    private int countItems;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView textTopic;
-        public TextView numberTopic;
-        public int idTopic;
-        public ImageView imageNextItem;
-        public RelativeLayout relativeLayout;
+        private TextView textTopic;
+        private TextView numberTopic;
+        private int idTopic;
+        private ImageView imageNextItem;
+        //private RelativeLayout relativeLayout;
 
         public ViewHolder(View view) {
             super(view);
             this.textTopic = (TextView) view.findViewById(R.id.text_item_recent_topic);
             this.numberTopic = (TextView) view.findViewById(R.id.number_item_recent_topic);
             this.imageNextItem = (ImageView) view.findViewById(R.id.image_item_recent_topic);
-            this.relativeLayout = (RelativeLayout) view.findViewById(R.id.relative_recent_topic);
+            //this.relativeLayout = (RelativeLayout) view.findViewById(R.id.relative_recent_topic);
             this.idTopic = 0;
         }
     }
 
     public RecentTopicAdapter(ArrayList<RecentTopics> recentItems) {
         this.recentTopicsList = recentItems;
-        this.countItems = recentItems.size();
     }
 
     @Override
@@ -58,9 +56,7 @@ public class RecentTopicAdapter extends RecyclerView.Adapter<RecentTopicAdapter.
         //there is programmatically change layout: size, paddings, margin, etc...
         dba = new DatabaseHandler(parent.getContext());
 
-        RecentTopicAdapter.ViewHolder vh = new RecentTopicAdapter.ViewHolder(v);
-
-        return vh;
+        return new RecentTopicAdapter.ViewHolder(v);
     }
 
     //refresh recycler item
@@ -68,9 +64,11 @@ public class RecentTopicAdapter extends RecyclerView.Adapter<RecentTopicAdapter.
     @Override
     public void onBindViewHolder(RecentTopicAdapter.ViewHolder holder, final int position) {
 
-        holder.textTopic.setText(recentTopicsList.get(position).getTopicText());
+        RecentTopics mCurrentRecentItem = recentTopicsList.get(position);
+
+        holder.textTopic.setText(mCurrentRecentItem.getTopicText());
         holder.numberTopic.setText(String.valueOf(position + 1) + ".");
-        holder.idTopic = recentTopicsList.get(position).getTopicId();
+        holder.idTopic = mCurrentRecentItem.getTopicId();
 
 //        if (position == clickedPosition){
 //            holder.relativeLayout.setBackgroundResource(R.drawable.bg_current_topic);
@@ -112,15 +110,17 @@ public class RecentTopicAdapter extends RecyclerView.Adapter<RecentTopicAdapter.
 //            }
 //        });
 
-        if (position == (countItems - 1)) {
-            dba.close();
-        }
-
     }
 
 
     @Override
     public int getItemCount() {
         return  recentTopicsList.size();
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        dba.close();
+        super.onDetachedFromRecyclerView(recyclerView);
     }
 }

@@ -25,18 +25,16 @@ public class RecyclerTopicAdapter extends RecyclerView.Adapter<RecyclerTopicAdap
     //private DatabaseHandler dba;
     //private int clickedPosition;
     private ArrayList<Topics> mTopicsList;
-    private int countItem;
-    private PersistantStorage storage;
     private String mNameSelectTopic;
     private DatabaseHandler dba;
     //public static OnItemClickListener listener;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView textTopic;
-        public int idTopic;
-        public RelativeLayout relativeLayout;
-        public ImageView imageNextItem; // topic or expression
+        private TextView textTopic;
+        private int idTopic;
+        private RelativeLayout relativeLayout;
+        private ImageView imageNextItem; // topic or expression
 
         public ViewHolder(final View view) {
             super(view);
@@ -58,7 +56,6 @@ public class RecyclerTopicAdapter extends RecyclerView.Adapter<RecyclerTopicAdap
 
     public RecyclerTopicAdapter(ArrayList<Topics> topics) {
         this.mTopicsList = topics;
-        this.countItem = topics.size();
 
     }
 
@@ -71,20 +68,18 @@ public class RecyclerTopicAdapter extends RecyclerView.Adapter<RecyclerTopicAdap
         //there is programmatically change layout: size, paddings, margin, etc...
 
         dba = new DatabaseHandler(parent.getContext());
-        storage.init(parent.getContext());
+        PersistantStorage.init(parent.getContext());
         if (mTopicsList.get(0).getTopicParentId() == 0) {
 
-            mNameSelectTopic = storage.getProperty(Constants.TOPICS_ROOT_NAME);
+            mNameSelectTopic = PersistantStorage.getProperty(Constants.TOPICS_ROOT_NAME);
 
         } else {//TODO optimization
-            mNameSelectTopic = storage.getProperty(dba.getTopicById(mTopicsList.get(0).
+            mNameSelectTopic = PersistantStorage.getProperty(dba.getTopicById(mTopicsList.get(0).
                     getTopicParentId()).
                     getTopicText());
         }
 
-        RecyclerTopicAdapter.ViewHolder vh = new RecyclerTopicAdapter.ViewHolder(v);
-
-        return vh;
+        return new RecyclerTopicAdapter.ViewHolder(v);
     }
 
     //refresh recycler item
@@ -92,8 +87,9 @@ public class RecyclerTopicAdapter extends RecyclerView.Adapter<RecyclerTopicAdap
     @Override
     public void onBindViewHolder(RecyclerTopicAdapter.ViewHolder holder, final int position) {
 
-        holder.textTopic.setText(mTopicsList.get(position).getTopicText());
-        holder.idTopic = mTopicsList.get(position).getTopicId();
+        Topics mCurrentTopicsItem = mTopicsList.get(position);
+        holder.textTopic.setText(mCurrentTopicsItem.getTopicText());
+        holder.idTopic = mCurrentTopicsItem.getTopicId();
 
         //holder.itemView.setLongClickable(true);
 
@@ -103,7 +99,7 @@ public class RecyclerTopicAdapter extends RecyclerView.Adapter<RecyclerTopicAdap
 //            holder.relativeLayout.setBackgroundResource(R.drawable.ripple_topic_new);
 //        }
 
-        if (mTopicsList.get(position).getTopicText().equals(mNameSelectTopic)) {
+        if (mCurrentTopicsItem.getTopicText().equals(mNameSelectTopic)) {
             holder.relativeLayout.setBackgroundResource(R.drawable.bg_current_topic);
         } else {
             holder.relativeLayout.setBackgroundResource(R.drawable.ripple_topic_new);
@@ -140,11 +136,6 @@ public class RecyclerTopicAdapter extends RecyclerView.Adapter<RecyclerTopicAdap
 //        });
 
         //TODO what is it??
-        if (position == (countItem - 1)) {
-
-            dba.close();
-        }
-
     }
 
     @Override
@@ -165,7 +156,11 @@ public class RecyclerTopicAdapter extends RecyclerView.Adapter<RecyclerTopicAdap
 //    }
 
 
-
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        dba.close();
+        super.onDetachedFromRecyclerView(recyclerView);
+    }
 }
 
 
