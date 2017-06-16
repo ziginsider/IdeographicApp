@@ -55,8 +55,8 @@ public class WorkActivityRecycler extends AppCompatActivity
     @ViewById(R.id.toolbar_work_recycler)
     Toolbar toolbar;
 
-    @ViewById(R.id.fab_recycler)
-    com.melnykov.fab.FloatingActionButton fab;
+//    @ViewById(R.id.fab_recycler)
+//    com.melnykov.fab.FloatingActionButton fab;
 
     @ViewById(R.id.drawer_layout_recycler)
     DrawerLayout drawer;
@@ -87,7 +87,7 @@ public class WorkActivityRecycler extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        fab.setTag("show");
+//        fab.setTag("show");
 
         navigationView.setNavigationItemSelectedListener(this);
 
