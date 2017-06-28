@@ -630,10 +630,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         Cursor cursor = dba.query(Constants.TABLE_TOPIC_NAME,
                 new String[]{
-                        Constants.KEY_ID,
-                        Constants.TOPIC_TEXT,
-                        Constants.TOPIC_PARENT_ID,
-                        Constants.TOPIC_LABELS},
+                        Constants.KEY_ID},
                 Constants.TOPIC_PARENT_ID + "=?",
                 new String[] {String.valueOf(idParent)},
                 null,
@@ -794,9 +791,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         Cursor cursor = dba.query(Constants.TABLE_EXP_NAME,
                 new String[]{
-                        Constants.KEY_ID,
-                        Constants.EXP_TEXT,
-                        Constants.EXP_PARENT_ID},
+                        Constants.KEY_ID},
                 Constants.EXP_PARENT_ID + "=?",
                 new String[] {String.valueOf(idParent)},
                 null,
@@ -999,9 +994,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         Cursor cursor = dba.query(Constants.TABLE_TOPIC_NAME,
                 new String[] {
-                        Constants.KEY_ID,
-                        Constants.TOPIC_TEXT,
-                        Constants.TOPIC_PARENT_ID,
                         Constants.TOPIC_LABELS },
                 Constants.KEY_ID + "=?",
                 new String[] {String.valueOf(idTopic)},

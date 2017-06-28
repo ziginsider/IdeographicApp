@@ -98,10 +98,7 @@ public class InitalDatabaseHandler extends SQLiteOpenHelper {
 
         Cursor cursor = dba.query(Constants.RECENT_TABLE_NAME,
                 new String[]{
-                        Constants.KEY_ID,
-                        Constants.RECENT_TOPIC_TEXT,
-                        Constants.RECENT_TOPIC_ID,
-                        Constants.RECENT_TOPIC_WEIGHT},
+                        Constants.KEY_ID},
                 Constants.RECENT_TOPIC_ID + "=?",
                 new String[] {String.valueOf(idTopic)},
                 null,
@@ -209,10 +206,8 @@ public class InitalDatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase dba = this.getReadableDatabase();
 
         Cursor cursor = dba.query(Constants.RECENT_TABLE_NAME,
-                new String[]{Constants.KEY_ID,
-                        Constants.RECENT_TOPIC_TEXT,
-                        Constants.RECENT_TOPIC_ID,
-                        Constants.RECENT_TOPIC_WEIGHT},
+                new String[]{
+                        Constants.RECENT_TOPIC_ID},
                 null,
                 null,
                 null,
@@ -243,9 +238,7 @@ public class InitalDatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase dba = this.getReadableDatabase();
 
         Cursor cursor = dba.query(Constants.RECENT_TABLE_NAME,
-                new String[]{Constants.KEY_ID,
-                        Constants.RECENT_TOPIC_TEXT,
-                        Constants.RECENT_TOPIC_ID,
+                new String[]{
                         Constants.RECENT_TOPIC_WEIGHT},
                 null,
                 null,
@@ -596,9 +589,7 @@ public class InitalDatabaseHandler extends SQLiteOpenHelper {
 
         Cursor cursor = dba.query(Constants.CARD_TABLE_NAME,
                 new String[]{
-                        Constants.KEY_ID,
-                        Constants.CARD_TOPIC_TEXT,
-                        Constants.CARD_TOPIC_ID},
+                        Constants.KEY_ID},
                 Constants.CARD_TOPIC_ID + "=?",
                 new String[] {String.valueOf(idTopic)},
                 null,
@@ -788,7 +779,5 @@ public class InitalDatabaseHandler extends SQLiteOpenHelper {
 
         return totalUpdated;
     }
-
-
 
 }
